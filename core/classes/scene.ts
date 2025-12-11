@@ -1,4 +1,4 @@
-import Konva from "konva";
+import Konva from "@/lib/konva";
 import MobjectMap from "../maps/MobjectMap";
 
 class Scene extends Konva.Stage {

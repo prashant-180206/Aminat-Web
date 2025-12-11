@@ -24,10 +24,10 @@ const Edit = () => {
       <Button
         className="absolute bottom-4 left-4 z-50"
         onClick={() => {
-          scene?.addMobject("rect");
+          scene?.addMobject("plane");
         }}
       >
-        Add Curve
+        Add Polygon
       </Button>
     </div>
   );

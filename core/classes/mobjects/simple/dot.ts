@@ -1,5 +1,6 @@
 // anim/classes/mobjects/simple/dot.ts
 import { DotProperties } from "@/core/types/properties";
+import { p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 // import type { Point } from './parametricCurve';
 
@@ -40,7 +41,7 @@ export class Dot extends Konva.Circle {
     this.fill(color);
     this.strokeWidth(0);
     this.radius(radius * scale);
-    this.position(position);
+    this.position(p2c(position.x, position.y));
     this.rotation(rotation);
   }
 }

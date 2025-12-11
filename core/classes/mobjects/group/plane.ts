@@ -1,0 +1,186 @@
+import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
+import { PlaneProperties } from "@/core/types/properties";
+import { p2c } from "@/core/utils/conversion";
+import Konva from "@/lib/konva";
+
+export class MPlane extends Konva.Group {
+  private _properties: PlaneProperties;
+
+  private axisLayer = new Konva.Group();
+  private gridLayer = new Konva.Group();
+  private labelLayer = new Konva.Group();
+
+  constructor(config: Partial<PlaneProperties> = {}) {
+    super({
+      draggable: true, // enable drag
+    });
+
+    const xrange = DEFAULT_WIDTH / DEFAULT_SCALE / 2;
+    const yrange = DEFAULT_HEIGHT / DEFAULT_SCALE / 2;
+
+    this._properties = {
+      position: { x: 0, y: 0 },
+      color: "transparent",
+      scale: 1,
+      rotation: 0,
+      width: DEFAULT_WIDTH,
+      height: DEFAULT_HEIGHT,
+      xrange: [-xrange, xrange],
+      yrange: [-yrange, yrange],
+      gridcolor: "#ddd",
+      gridthickness: 1,
+      showgrid: true,
+      showlabels: true,
+      labelcolor: "#555",
+      axiscolor: "#000",
+      axissthickness: 2,
+      ...config,
+    };
+
+    this.add(this.gridLayer);
+    this.add(this.axisLayer);
+    this.add(this.labelLayer);
+
+    this.updateFromProperties();
+  }
+
+  get properties(): PlaneProperties {
+    return { ...this._properties };
+  }
+
+  set properties(newProps: Partial<PlaneProperties>) {
+    Object.assign(this._properties, newProps);
+    this.updateFromProperties();
+  }
+
+  private updateFromProperties() {
+    const {
+      position,
+      scale,
+      rotation,
+      width,
+      height,
+      xrange,
+      yrange,
+      gridcolor,
+      gridthickness,
+      showgrid,
+      showlabels,
+      labelcolor,
+      axiscolor,
+      axissthickness,
+    } = this._properties;
+
+    // group transform (dragging will change this position too)
+    const p = p2c(position.x, position.y);
+    this.position({
+      x: p.x - width / 2,
+      y: p.y - height / 2,
+    });
+    this.scale({ x: scale, y: scale });
+    this.rotation(rotation);
+
+    this.gridLayer.removeChildren();
+    this.axisLayer.removeChildren();
+    this.labelLayer.removeChildren();
+
+    const [xmin, xmax] = xrange;
+    const [ymin, ymax] = yrange;
+    const xspan = xmax - xmin;
+    const yspan = ymax - ymin;
+
+    const toCanvasX = (x: number) => ((x - xmin) / xspan) * width;
+    const toCanvasY = (y: number) => height - ((y - ymin) / yspan) * height;
+
+    // axes
+    if (xmin < 0 && xmax > 0) {
+      const x0 = toCanvasX(0);
+      this.axisLayer.add(
+        new Konva.Line({
+          points: [x0, 0, x0, height],
+          stroke: axiscolor,
+          strokeWidth: axissthickness,
+        })
+      );
+    }
+
+    if (ymin < 0 && ymax > 0) {
+      const y0 = toCanvasY(0);
+      this.axisLayer.add(
+        new Konva.Line({
+          points: [0, y0, width, y0],
+          stroke: axiscolor,
+          strokeWidth: axissthickness,
+        })
+      );
+    }
+
+    // grid
+    if (showgrid) {
+      const xStart = Math.ceil(xmin);
+      const xEnd = Math.floor(xmax);
+      for (let x = xStart; x <= xEnd; x++) {
+        if (x === 0) continue;
+        const cx = toCanvasX(x);
+        this.gridLayer.add(
+          new Konva.Line({
+            points: [cx, 0, cx, height],
+            stroke: gridcolor,
+            strokeWidth: gridthickness,
+          })
+        );
+      }
+
+      const yStart = Math.ceil(ymin);
+      const yEnd = Math.floor(ymax);
+      for (let y = yStart; y <= yEnd; y++) {
+        if (y === 0) continue;
+        const cy = toCanvasY(y);
+        this.gridLayer.add(
+          new Konva.Line({
+            points: [0, cy, width, cy],
+            stroke: gridcolor,
+            strokeWidth: gridthickness,
+          })
+        );
+      }
+    }
+
+    // labels
+    if (showlabels) {
+      const fontSize = 12;
+
+      const xStart = Math.ceil(xmin);
+      const xEnd = Math.floor(xmax);
+      for (let x = xStart; x <= xEnd; x++) {
+        const cx = toCanvasX(x);
+        const cy = toCanvasY(0);
+        this.labelLayer.add(
+          new Konva.Text({
+            x: cx + 2,
+            y: cy + 2,
+            text: String(x),
+            fontSize,
+            fill: labelcolor,
+          })
+        );
+      }
+
+      const yStart = Math.ceil(ymin);
+      const yEnd = Math.floor(ymax);
+      for (let y = yStart; y <= yEnd; y++) {
+        const cx = toCanvasX(0);
+        const cy = toCanvasY(y);
+        this.labelLayer.add(
+          new Konva.Text({
+            x: cx + 2,
+            y: cy + 2,
+            text: String(y),
+            fontSize,
+            fill: labelcolor,
+          })
+        );
+      }
+    }
+  }
+}

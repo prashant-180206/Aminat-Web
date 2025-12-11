@@ -19,7 +19,10 @@ export interface LineProperties extends BaseProperties {
   start: Point;
   end: Point;
   thickness: number;
-  bordercolor: string;
+}
+
+export interface VectorProperties extends LineProperties {
+  pointerSize: number;
 }
 
 export interface CircleProperties extends BaseProperties {
@@ -27,6 +30,7 @@ export interface CircleProperties extends BaseProperties {
   bordercolor: string;
   thickness: number;
 }
+
 export interface RectangleProperties extends BaseProperties {
   width: number;
   height: number;
@@ -34,10 +38,15 @@ export interface RectangleProperties extends BaseProperties {
   thickness: number;
   cornerRadius: number;
 }
+
 export interface TextProperties extends BaseProperties {
   content: string;
   fontsize: number;
+  fontfamily: string;
+  bold: boolean;
+  italic: boolean;
 }
+
 export interface PolygonProperties extends BaseProperties {
   points: Point[];
   bordercolor: string;
@@ -46,4 +55,18 @@ export interface PolygonProperties extends BaseProperties {
 
 export interface DotProperties extends BaseProperties {
   radius: number;
+}
+
+export interface PlaneProperties extends BaseProperties {
+  width: number;
+  height: number;
+  xrange: [number, number];
+  yrange: [number, number];
+  gridcolor: string;
+  gridthickness: number;
+  showgrid: boolean;
+  showlabels: boolean;
+  labelcolor: string;
+  axiscolor: string;
+  axissthickness: number;
 }
