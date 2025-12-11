@@ -1,22 +1,18 @@
 import { DEFAULT_SCALE } from "@/core/config";
-import Konva from "konva";
-import Scene from "../../scene";
-
-interface MCircleProperties {
-  radius: number;
-  color: string;
-  bordercolor: string;
-  thickness: number;
-  position: { x: number; y: number };
-}
+// import Konva from "konva";
+import { p2c } from "@/core/utils/conversion";
+import { CircleProperties } from "@/core/types/properties";
+import { Konva } from "@/lib/konva";
 
 class MCircle extends Konva.Circle {
-  private _properties: MCircleProperties = {
+  private _properties: CircleProperties = {
     radius: 2,
     color: "blue",
     bordercolor: "black",
     thickness: 4,
     position: { x: 0, y: 0 },
+    scale: 1,
+    rotation: 0,
   };
 
   constructor(config?: Konva.CircleConfig) {
@@ -25,16 +21,17 @@ class MCircle extends Konva.Circle {
     this.fill(this._properties.color);
     this.stroke(this._properties.bordercolor);
     this.strokeWidth(this._properties.thickness);
-    this.position({ x: 0, y: 0 });
+    this.position(p2c(0, 0));
+    // this.rotation(this._properties.rotation);
   }
 
   // Object getter - returns copy to prevent mutation
-  get properties(): MCircleProperties {
+  get properties(): CircleProperties {
     return { ...this._properties };
   }
 
   // Object setter - accepts full or partial properties object
-  set properties(value: Partial<MCircleProperties>) {
+  set properties(value: Partial<CircleProperties>) {
     Object.assign(this._properties, value);
 
     // Sync Konva properties
@@ -45,7 +42,7 @@ class MCircle extends Konva.Circle {
     if (value.bordercolor !== undefined) this.stroke(value.bordercolor);
     if (value.thickness !== undefined) this.strokeWidth(value.thickness);
     if (value.position !== undefined) {
-      const newpos = Scene.p2c(
+      const newpos = p2c(
         value.position.x ?? this._properties.position.x,
         value.position.y ?? this._properties.position.y
       );

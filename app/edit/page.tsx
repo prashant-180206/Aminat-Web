@@ -1,22 +1,33 @@
 "use client";
-import React from "react";
-import SceneView from "./scene";
+import React, { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { useScene } from "@/hooks/SceneContext";
-// import { getScene } from "@/lib/scene";
+
+// Lazy load heavy SceneView
+const SceneView = React.lazy(() => import("./scene"));
 
 const Edit = () => {
   const { scene } = useScene();
+
   return (
-    <div>
-      <SceneView />
-      <div className="konva-container"></div>
+    <div className="h-screen w-screen bg-gray-100">
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-screen">
+            <div className="text-lg">Loading scene...</div>
+          </div>
+        }
+      >
+        <SceneView />
+      </Suspense>
+
       <Button
+        className="absolute bottom-4 left-4 z-50"
         onClick={() => {
-          scene?.addMobject("circle");
+          scene?.addMobject("rect");
         }}
       >
-        Click me
+        Add Curve
       </Button>
     </div>
   );
