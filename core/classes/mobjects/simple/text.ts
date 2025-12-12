@@ -39,6 +39,7 @@ export class MText extends Konva.Text {
     this.on("dblclick dbltap", () => {
       this.startEditing();
     });
+    this.name("Text");
   }
 
   // Getter/Setter for properties

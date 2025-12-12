@@ -28,6 +28,7 @@ export class MRect extends Konva.Rect {
     };
 
     this.updateFromProperties();
+    this.name("Rect");
   }
 
   // Getter/Setter for properties

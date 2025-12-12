@@ -22,5 +22,5 @@ export default function SceneView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={containerref} className="bg-blue-500 inline-block" />;
+  return <div ref={containerref} className=" inline-block " />;
 }

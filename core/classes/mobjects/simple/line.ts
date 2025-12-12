@@ -26,6 +26,7 @@ export class MLine extends Konva.Line {
     };
 
     this.updateFromProperties();
+    this.name("Line");
   }
 
   // Getter/Setter for properties

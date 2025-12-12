@@ -42,6 +42,7 @@ export class MPlane extends Konva.Group {
     this.add(this.labelLayer);
 
     this.updateFromProperties();
+    this.name("Plane");
   }
 
   get properties(): PlaneProperties {

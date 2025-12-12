@@ -30,6 +30,7 @@ export class MPolygon extends Konva.Shape {
     };
 
     this.updateFromProperties();
+    this.name("Polygon");
   }
 
   // Getter/Setter for properties

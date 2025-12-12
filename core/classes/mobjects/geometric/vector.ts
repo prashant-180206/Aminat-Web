@@ -27,6 +27,7 @@ export class MVector extends Konva.Arrow {
     };
 
     this.updateFromProperties();
+    this.name("Vector");
   }
 
   // Getter/Setter for properties

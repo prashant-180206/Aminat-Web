@@ -23,6 +23,7 @@ class MCircle extends Konva.Circle {
     this.strokeWidth(this._properties.thickness);
     this.position(p2c(0, 0));
     // this.rotation(this._properties.rotation);
+    this.name("Circle");
   }
 
   // Object getter - returns copy to prevent mutation

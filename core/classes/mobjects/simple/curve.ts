@@ -29,6 +29,7 @@ export class ParametricCurve extends Konva.Line {
     };
 
     this.updateFromProperties();
+    this.name("Curve");
   }
 
   // Getter/Setter for properties

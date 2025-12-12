@@ -23,6 +23,7 @@ export class Dot extends Konva.Circle {
     };
 
     this.updateFromProperties();
+    this.name("Dot");
   }
 
   // Getter/Setter for properties
