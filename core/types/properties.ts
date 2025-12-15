@@ -5,6 +5,8 @@ export interface BaseProperties {
   color: string;
   scale: number;
   rotation: number;
+  opacity: number;
+  zindex: number;
 }
 
 export interface CurveProperties extends BaseProperties {
@@ -62,10 +64,11 @@ export interface PlaneProperties extends BaseProperties {
   height: number;
   xrange: [number, number];
   yrange: [number, number];
-  gridcolor: string;
+  // gridcolor: string;
   gridthickness: number;
   showgrid: boolean;
   showlabels: boolean;
+  labelsize: number;
   labelcolor: string;
   axiscolor: string;
   axissthickness: number;

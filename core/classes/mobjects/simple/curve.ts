@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // anim/classes/mobjects/simple/parametricCurve.ts
 import { CurveProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { evaluate } from "mathjs";
 
@@ -25,6 +26,8 @@ export class ParametricCurve extends Konva.Line {
       Yfunc: "sin(t)",
       thickness: 3,
       bordercolor: "blue",
+      opacity: 1,
+      zindex: 0,
       ...config,
     };
 
@@ -42,6 +45,17 @@ export class ParametricCurve extends Konva.Line {
     this.updateFromProperties();
   }
 
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = c2p(pos.x, pos.y);
+    // this._properties.thickness = this.strokeWidth();
+    // this._properties.color = this.stroke() as string;
+    this._properties.scale = this.scaleX();
+    this._properties.rotation = this.rotation();
+    // this._properties.opacity = this.opacity();
+    // this._properties.zindex = this.zIndex();
+  }
+
   private updateFromProperties() {
     const {
       position,
@@ -53,6 +67,8 @@ export class ParametricCurve extends Konva.Line {
       parameterRange,
       Xfunc,
       Yfunc,
+      opacity,
+      zindex,
     } = this._properties;
 
     // Apply base properties
@@ -61,22 +77,30 @@ export class ParametricCurve extends Konva.Line {
     this.strokeWidth(thickness);
     this.scale({ x: scale, y: scale });
     this.rotation(rotation);
-
+    this.opacity(opacity);
+    this.zIndex(zindex);
+    // this.fill(color); // Lines don't have fill
     // Generate parametric curve
     this.generateCurve(Xfunc, Yfunc, parameterRange);
   }
 
   private generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
     const [tMin, tMax] = range;
-    const samples = 30;
+    const samples = (tMax - tMin) * 30;
     const points: number[] = [];
     const step = (tMax - tMin) / samples;
 
     // Get canvas position for centering
     for (let i = 0; i <= samples; i++) {
       const t = tMin + i * step;
-      const x = evaluate(Xfunc, { t }) as number;
-      const y = evaluate(Yfunc, { t }) as number;
+      let x: number, y: number;
+      try {
+        x = evaluate(Xfunc, { t }) as number;
+        y = evaluate(Yfunc, { t }) as number;
+      } catch (e) {
+        x = t;
+        y = t;
+      }
 
       // Convert math coords to canvas coords, then offset by position
       const canvasX = p2c(x, y).x - this.position().x;

@@ -1,6 +1,6 @@
 // anim/classes/mobjects/simple/line.ts
 import { LineProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class MLine extends Konva.Line {
@@ -21,6 +21,8 @@ export class MLine extends Konva.Line {
       start: { x: 0, y: 0 },
       end: { x: 1, y: 1 },
       thickness: 3,
+      opacity: 1,
+      zindex: 0,
 
       ...config,
     };
@@ -40,8 +42,17 @@ export class MLine extends Konva.Line {
   }
 
   private updateFromProperties() {
-    const { position, color, scale, rotation, start, end, thickness } =
-      this._properties;
+    const {
+      position,
+      color,
+      scale,
+      rotation,
+      start,
+      end,
+      thickness,
+      opacity,
+      zindex,
+    } = this._properties;
 
     // Convert points to canvas coordinates
     const canvasStart = { x: start.x * scale, y: start.y * scale };
@@ -55,5 +66,24 @@ export class MLine extends Konva.Line {
     this.strokeWidth(thickness * scale);
     this.position(position);
     this.rotation(rotation);
+    this.opacity(opacity);
+    this.zIndex(zindex);
+  }
+
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = { x: pos.x, y: pos.y };
+    const pts = this.points();
+    const startCanvas = c2p(pts[0], pts[1]);
+    const endCanvas = c2p(pts[2], pts[3]);
+    this._properties.start = {
+      x: startCanvas.x / this._properties.scale,
+      y: startCanvas.y / this._properties.scale,
+    };
+    this._properties.end = {
+      x: endCanvas.x / this._properties.scale,
+      y: endCanvas.y / this._properties.scale,
+    };
+    // this._properties.color = this.stroke() as string;
   }
 }

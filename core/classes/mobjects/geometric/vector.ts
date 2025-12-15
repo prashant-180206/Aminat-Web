@@ -22,6 +22,8 @@ export class MVector extends Konva.Arrow {
       start: { x: 0, y: 0 },
       end: { x: 1, y: 1 },
       thickness: 3,
+      opacity: 1,
+      zindex: 0,
       pointerSize: 10,
       ...config,
     };
@@ -67,5 +69,13 @@ export class MVector extends Konva.Arrow {
     this.pointerWidth(pointerSize * scale);
     this.position(position);
     this.rotation(rotation);
+  }
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = p2c(pos.x, pos.y);
+    // this._properties.thickness = this.strokeWidth();
+    // this._properties.color = this.stroke() as string;
+    this._properties.scale = this.scaleX();
+    this._properties.rotation = this.rotation();
   }
 }

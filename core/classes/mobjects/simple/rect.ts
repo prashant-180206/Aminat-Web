@@ -1,7 +1,7 @@
 // anim/classes/mobjects/simple/rect.ts
 import { DEFAULT_SCALE } from "@/core/config";
 import { RectangleProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 
 export class MRect extends Konva.Rect {
@@ -24,6 +24,8 @@ export class MRect extends Konva.Rect {
       bordercolor: "black",
       thickness: 2,
       cornerRadius: 0,
+      zindex: 0,
+      opacity: 1,
       ...config,
     };
 
@@ -52,6 +54,8 @@ export class MRect extends Konva.Rect {
       bordercolor,
       thickness,
       cornerRadius,
+      zindex,
+      opacity,
     } = this._properties;
 
     this.fill(color);
@@ -65,6 +69,26 @@ export class MRect extends Konva.Rect {
       y: pos.y - this.height() / 2,
     });
     this.rotation(rotation);
-    this.cornerRadius(cornerRadius);
+    if (cornerRadius >= 0) this.cornerRadius(cornerRadius);
+    this.opacity(opacity);
+    this.zIndex(zindex);
+  }
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = c2p(
+      pos.x + this.width() / 2,
+      pos.y + this.height() / 2
+    );
+    this._properties.width =
+      this.width() / (this._properties.scale * DEFAULT_SCALE);
+    this._properties.height =
+      this.height() / (this._properties.scale * DEFAULT_SCALE);
+    // this._properties.color = this.fill() as string;
+    // this._properties.bordercolor = this.stroke() as string;
+    // this._properties.thickness = this.strokeWidth();
+    // this._properties.cornerRadius = this.cornerRadius() as number;
+    this._properties.rotation = this.rotation();
+    // this._properties.opacity = this.opacity();/
+    // this._properties.zindex = this.zIndex();
   }
 }

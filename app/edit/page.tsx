@@ -15,7 +15,7 @@ export default function Edit() {
       <EditSidebar />
 
       <div className="flex-1 flex flex-row items-center justify-center">
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-evenly ">
           <PropertiesEditor />
           <Suspense
             fallback={

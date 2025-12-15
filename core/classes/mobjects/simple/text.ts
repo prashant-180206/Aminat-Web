@@ -2,7 +2,7 @@
 // anim/classes/mobjects/simple/text.ts
 import Konva from "@/lib/konva";
 import { TextProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 
 export class MText extends Konva.Text {
   private _properties: TextProperties;
@@ -30,6 +30,8 @@ export class MText extends Konva.Text {
       fontfamily: "Arial",
       bold: false,
       italic: false,
+      zindex: 0,
+      opacity: 1,
       ...config,
     };
 
@@ -63,6 +65,8 @@ export class MText extends Konva.Text {
       fontfamily,
       bold,
       italic,
+      zindex,
+      opacity,
     } = this._properties;
 
     const fontWeight = bold ? "bold" : "normal";
@@ -73,6 +77,8 @@ export class MText extends Konva.Text {
     this.fontFamily(fontfamily);
     this.fontSize(fontsize);
     this.fontStyle(`${fontStyle} ${fontWeight}`.trim());
+    this.opacity(opacity);
+    this.zIndex(zindex);
 
     const pt = p2c(position.x, position.y);
     // keep centering behavior as in your sample
@@ -345,5 +351,15 @@ export class MText extends Konva.Text {
     this.cleanupTextarea();
     const layer = this.getLayer();
     if (layer) layer.batchDraw();
+  }
+
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = c2p(
+      pos.x + this.width() / 2,
+      pos.y + this.height() / 2
+    );
+    this._properties.color = this.fill() as string;
+    this._properties.scale = this.scaleX();
   }
 }

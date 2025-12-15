@@ -20,14 +20,16 @@ export class MPlane extends Konva.Group {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "transparent",
+      color: "gray",
       scale: 1,
       rotation: 0,
       width: DEFAULT_WIDTH,
       height: DEFAULT_HEIGHT,
       xrange: [-xrange, xrange],
       yrange: [-yrange, yrange],
-      gridcolor: "#ddd",
+      labelsize: 16,
+      opacity: 1,
+      zindex: 0,
       gridthickness: 1,
       showgrid: true,
       showlabels: true,
@@ -63,13 +65,16 @@ export class MPlane extends Konva.Group {
       height,
       xrange,
       yrange,
-      gridcolor,
       gridthickness,
       showgrid,
       showlabels,
       labelcolor,
       axiscolor,
+      color,
       axissthickness,
+      labelsize,
+      opacity,
+      zindex,
     } = this._properties;
 
     // group transform (dragging will change this position too)
@@ -80,6 +85,8 @@ export class MPlane extends Konva.Group {
     });
     this.scale({ x: scale, y: scale });
     this.rotation(rotation);
+    this.opacity(opacity);
+    this.zIndex(zindex);
 
     this.gridLayer.removeChildren();
     this.axisLayer.removeChildren();
@@ -126,7 +133,7 @@ export class MPlane extends Konva.Group {
         this.gridLayer.add(
           new Konva.Line({
             points: [cx, 0, cx, height],
-            stroke: gridcolor,
+            stroke: color,
             strokeWidth: gridthickness,
           })
         );
@@ -140,7 +147,7 @@ export class MPlane extends Konva.Group {
         this.gridLayer.add(
           new Konva.Line({
             points: [0, cy, width, cy],
-            stroke: gridcolor,
+            stroke: color,
             strokeWidth: gridthickness,
           })
         );
@@ -149,7 +156,7 @@ export class MPlane extends Konva.Group {
 
     // labels
     if (showlabels) {
-      const fontSize = 12;
+      const fontSize = labelsize;
 
       const xStart = Math.ceil(xmin);
       const xEnd = Math.floor(xmax);
@@ -183,5 +190,16 @@ export class MPlane extends Konva.Group {
         );
       }
     }
+  }
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = p2c(
+      pos.x + this._properties.width / 2,
+      pos.y + this._properties.height / 2
+    );
+    this._properties.scale = this.scaleX();
+    this._properties.rotation = this.rotation();
+    // this._properties.opacity = this.opacity();
+    // this._properties.zindex = this.zIndex();
   }
 }

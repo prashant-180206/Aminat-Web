@@ -1,6 +1,6 @@
 // anim/classes/mobjects/simple/polygon.ts
 import { Point, PolygonProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class MPolygon extends Konva.Shape {
@@ -21,11 +21,13 @@ export class MPolygon extends Konva.Shape {
       points: [
         { x: 0, y: 0 },
         { x: 1, y: 0 },
-        { x: 0, y: 1 },
         { x: 1, y: 1 },
+        { x: 0, y: 1 },
       ],
       bordercolor: "black",
       thickness: 3,
+      zindex: 0,
+      opacity: 1,
       ...config,
     };
 
@@ -52,6 +54,8 @@ export class MPolygon extends Konva.Shape {
       points,
       thickness = 1,
       bordercolor,
+      opacity,
+      zindex,
     } = this._properties;
 
     // set transform properties on the node (Konva applies transforms outside sceneFunc)
@@ -67,6 +71,8 @@ export class MPolygon extends Konva.Shape {
       strokeWidth: thickness,
       fill: color,
       listening: true,
+      opacity: opacity,
+      zIndex: zindex,
     });
 
     // Build local points array in pixel coordinates relative to the node origin.
@@ -130,5 +136,17 @@ export class MPolygon extends Konva.Shape {
   setPoints(points: Point[]) {
     this._properties.points = points;
     this.updateFromProperties();
+  }
+
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = c2p(pos.x, pos.y);
+    // this._properties.thickness = this.strokeWidth();
+    // this._properties.color = this.fill() as string;
+    // this._properties.bordercolor = this.stroke() as string;
+    this._properties.scale = this.scaleX();
+    this._properties.rotation = this.rotation();
+    // this._properties.opacity = this.opacity();/
+    // this._properties.zindex = this.zIndex();
   }
 }

@@ -1,6 +1,6 @@
 import { DEFAULT_SCALE } from "@/core/config";
 // import Konva from "konva";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import { CircleProperties } from "@/core/types/properties";
 import { Konva } from "@/lib/konva";
 
@@ -13,6 +13,8 @@ class MCircle extends Konva.Circle {
     position: { x: 0, y: 0 },
     scale: 1,
     rotation: 0,
+    opacity: 1,
+    zindex: 0,
   };
 
   constructor(config?: Konva.CircleConfig) {
@@ -24,6 +26,22 @@ class MCircle extends Konva.Circle {
     this.position(p2c(0, 0));
     // this.rotation(this._properties.rotation);
     this.name("Circle");
+  }
+
+  UpdateFromKonvaProperties() {
+    const pos = this.position();
+    this._properties.position = c2p(
+      pos.x + this.radius(),
+      pos.y + this.radius()
+    );
+    this._properties.radius = this.radius() / DEFAULT_SCALE;
+    this._properties.color = this.fill() as string;
+    // this._properties.bordercolor = this.stroke() as string;
+    // this._properties.thickness = this.strokeWidth();
+    // this._properties.opacity = this.opacity();
+    this._properties.scale = this.scaleX();
+    this._properties.rotation = this.rotation();
+    // this._properties.zindex = this.zIndex();
   }
 
   // Object getter - returns copy to prevent mutation
@@ -49,6 +67,11 @@ class MCircle extends Konva.Circle {
       );
       this.position({ x: newpos.x, y: newpos.y });
     }
+    if (value.opacity !== undefined) this.opacity(value.opacity);
+    if (value.scale !== undefined)
+      this.scale({ x: value.scale, y: value.scale });
+    if (value.rotation !== undefined) this.rotation(value.rotation);
+    if (value.zindex !== undefined) this.zIndex(value.zindex);
   }
 }
 

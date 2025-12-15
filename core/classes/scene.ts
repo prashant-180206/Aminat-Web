@@ -11,7 +11,6 @@ class Scene extends Konva.Stage {
     this.add(layer);
     this.layer = layer as Konva.Layer;
   }
-
   activeMobject: Mobject | null = null;
 
   addMobject(str: string) {
@@ -23,9 +22,11 @@ class Scene extends Konva.Stage {
 
     mobject.on("click", () => {
       this.activeMobject = mobject;
+      mobject?.UpdateFromKonvaProperties();
     });
     // this.onActiveMobjectChange();
     this.TotalObjects += 1;
+    mobject.properties = { zindex: this.TotalObjects };
     this.Mobjects.push(addid);
     this.layer.add(mobject as Konva.Shape);
     this.layer.draw();
