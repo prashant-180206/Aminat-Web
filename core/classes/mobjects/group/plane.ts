@@ -193,10 +193,8 @@ export class MPlane extends Konva.Group {
   }
   UpdateFromKonvaProperties() {
     const pos = this.position();
-    this._properties.position = p2c(
-      pos.x + this._properties.width / 2,
-      pos.y + this._properties.height / 2
-    );
+    this._properties.position = { x: pos.x, y: pos.y };
+    // this._properties.position = p2c(pos.x, pos.y);
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
     // this._properties.opacity = this.opacity();

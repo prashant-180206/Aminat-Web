@@ -11,10 +11,12 @@ class Scene extends Konva.Stage {
     this.add(layer);
     this.layer = layer as Konva.Layer;
   }
+
   activeMobject: Mobject | null = null;
 
   addMobject(str: string) {
     const mobject = MobjectMap[str].func();
+    this.layer.add(mobject as Konva.Shape);
     mobject.setDraggable(true);
     // mobject.properties
     const addid = `${mobject.name() || "mobject"}-${this.TotalObjects}`;
@@ -26,11 +28,18 @@ class Scene extends Konva.Stage {
     });
     // this.onActiveMobjectChange();
     this.TotalObjects += 1;
-    mobject.properties = { zindex: this.TotalObjects };
+    mobject.properties = { zindex: this.TotalObjects - 1 };
     this.Mobjects.push(addid);
-    this.layer.add(mobject as Konva.Shape);
     this.layer.draw();
     return mobject;
+  }
+
+  removeMobject(id: string) {
+    const mobject = this.getMobjectById(id);
+    if (mobject) {
+      mobject.destroy();
+      this.Mobjects = this.Mobjects.filter((mid) => mid !== id);
+    }
   }
 
   getMobjectById(id: string) {

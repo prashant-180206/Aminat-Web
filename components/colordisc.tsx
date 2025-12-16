@@ -1,3 +1,5 @@
+import { Input } from "./ui/input";
+
 type ColorDiscProps = {
   value: string;
   onChange: (val: string) => void;
@@ -17,7 +19,7 @@ export const ColorDisc = ({ value, onChange }: ColorDiscProps) => {
         input?.click();
       }}
     >
-      <input
+      <Input
         type="color"
         value={value}
         onChange={(e) => {

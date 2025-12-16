@@ -15,23 +15,23 @@ export default function Edit() {
       <EditSidebar />
 
       <div className="flex-1 flex flex-row items-center justify-center">
-        <div className="flex flex-col items-center justify-evenly ">
-          <PropertiesEditor />
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center h-full w-full">
-                <div className="text-sm text-zinc-400">Loading scene...</div>
-              </div>
-            }
-          >
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full w-full">
+              <div className="text-sm text-zinc-400">Loading scene...</div>
+            </div>
+          }
+        >
+          <div className="flex flex-col items-center justify-evenly ">
+            <PropertiesEditor />
             <div
               className="flex flex-row bg-bg-dark "
               style={{ height: DEFAULT_HEIGHT, width: DEFAULT_WIDTH }}
             >
               <SceneView />
             </div>
-          </Suspense>
-        </div>
+          </div>
+        </Suspense>
       </div>
     </div>
   );

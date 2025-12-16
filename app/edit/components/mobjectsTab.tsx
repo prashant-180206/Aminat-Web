@@ -7,7 +7,7 @@ import React from "react";
 
 const Objects = () => {
   const mobjects = Object.entries(MobjectMap);
-  const { scene, setActiveMobject } = useScene();
+  const { scene, setActiveMobject, setActiveMobjectId } = useScene();
   return (
     <div className="h-full w-full flex flex-wrap gap-2 p-4 items-center justify-center ">
       {mobjects.map(([key, val]) => {
@@ -24,7 +24,11 @@ const Objects = () => {
                   const mobj = scene.addMobject(key);
 
                   mobj.on("click", () => {
+                    scene.activeMobject = mobj;
                     setActiveMobject(mobj);
+                    setActiveMobjectId(mobj.id());
+                    mobj.UpdateFromKonvaProperties();
+                    console.log("Mobject clicked:", mobj.id());
                   });
                 }
               }}

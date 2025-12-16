@@ -18,10 +18,10 @@ export type PropertyDescriptor = {
 };
 
 export const usePropertyDescriptors = (): PropertyDescriptor[] => {
-  const { activeMobject, scene } = useScene();
+  const { activeMobject, scene, activeMobjectId } = useScene();
 
   return useMemo(() => {
-    if (!activeMobject || !scene) return [];
+    if (!activeMobject || !scene || !activeMobjectId) return [];
 
     return Object.entries(activeMobject.properties).map(([key, val]) => {
       let type: PropertyDescriptor["type"] = typeof val as any;
@@ -62,5 +62,5 @@ export const usePropertyDescriptors = (): PropertyDescriptor[] => {
         },
       };
     });
-  }, [activeMobject, scene]);
+  }, [activeMobject, scene, activeMobjectId]);
 };
