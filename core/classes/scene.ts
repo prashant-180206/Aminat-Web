@@ -1,15 +1,18 @@
 import Konva from "@/lib/konva";
 import MobjectMap, { Mobject } from "../maps/MobjectMap";
+import { AnimationManager } from "./animation/animationManager";
 
 class Scene extends Konva.Stage {
   layer: Konva.Layer;
   private TotalObjects: number = 0;
   private Mobjects: string[] = [];
+  private animManager: AnimationManager | null = null;
   constructor(config: Konva.StageConfig) {
     super(config);
     const layer = new Konva.Layer();
     this.add(layer);
     this.layer = layer as Konva.Layer;
+    this.animManager = new AnimationManager();
   }
 
   activeMobject: Mobject | null = null;
@@ -45,6 +48,8 @@ class Scene extends Konva.Stage {
   getMobjectById(id: string) {
     return this.layer.findOne(`#${id}`) as Mobject;
   }
+
+  // AddAnimations({id}, :{id:string}) {}
 }
 
 export default Scene;

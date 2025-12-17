@@ -28,7 +28,7 @@ const Objects = () => {
                     setActiveMobject(mobj);
                     setActiveMobjectId(mobj.id());
                     mobj.UpdateFromKonvaProperties();
-                    console.log("Mobject clicked:", mobj.id());
+                    // console.log("Mobject clicked:", mobj.id());s
                   });
                 }
               }}

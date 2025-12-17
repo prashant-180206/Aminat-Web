@@ -1,100 +1,111 @@
-Animat Web is an animation framework focused on building mathematical animations in the browser, inspired by Manim. It uses Konva for canvas rendering and a simple, composable `Mobject` system to construct scenes with shapes, vectors, curves, text, and coordinate planes.
+Animat Web is an interactive, browser-based animation toolkit focused on mathematical visualizations (inspired by Manim). It uses Konva for 2D canvas rendering and a composable “mobject” class system to build scenes with shapes, vectors, curves, text, and coordinate planes. The `/edit` page provides a visual editor to add and manipulate these objects.
 
-## Overview
+## Target & Vision
 
-Animat centers around a `Scene` that manages a Konva `Stage` and `Layer`. Visual elements are implemented as classes (mobjects) wrapping Konva nodes with a unified properties interface and math-friendly coordinates. A small coordinate conversion utility maps between mathematical space and canvas pixels, making it intuitive to position and scale objects.
+- Build math animations in the browser with an approachable, interactive editor.
+- Keep authoring math-friendly: positions and sizes are expressed in a centered math coordinate system, not pixels.
+- Provide an extensible engine where each visual entity is a typed class with a uniform `properties` API.
+- Evolve toward timelines and keyframes for property-based animations.
 
-## Key Features
+## High-Level Architecture
 
-- **Math Coordinates:** Consistent conversion between math space and canvas via `p2c()` and `c2p()` using defaults from `core/config.ts`.
-- **Scene Management:** `Scene` extends `Konva.Stage` and manages a primary `Layer`, offering `addMobject(name)` via a registry.
-- **Mobjects Library:** Ready-to-use shapes in `core/classes/mobjects`:
-	- **Simple:** `circle`, `rect`, `dot`, `line`, `polygon`, `text`
-	- **Geometric:** `vector`
-	- **Group:** `plane` (axes, grid, labels)
-- **Parametric Curves:** `ParametricCurve` evaluates `Xfunc` and `Yfunc` with `mathjs` to render curves over a parameter range.
-- **Interactive Text Editing:** `MText` supports inline editing on double click with a transformer and DOM textarea overlay.
-- **Plane/Grid System:** `MPlane` renders axes, grid lines, and numeric labels over configured x/y ranges.
-- **Konva Integration:** All mobjects subclass Konva nodes and sync from typed `properties`.
+- **Scene Engine (Core):** `Scene` wraps a Konva `Stage` and a primary `Layer`, manages mobject lifecycle, and centralizes selection. See [core/classes/scene.ts](core/classes/scene.ts).
+- **Mobjects:** Classes that extend Konva nodes but expose strongly-typed `properties` for math-first usage. See [core/classes/mobjects](core/classes/mobjects).
+- **Registry:** A name→constructor map lets the editor add new objects by key. See [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts).
+- **Coordinates:** Utilities convert between math space and canvas pixels using defaults from [core/config.ts](core/config.ts). See [core/utils/conversion.ts](core/utils/conversion.ts).
+- **Animation:** `AnimationManager` groups Konva tweens and plays them in sequence or by group. See [core/classes/animation/animationManager.ts](core/classes/animation/animationManager.ts).
+- **Editor UI:** The Next.js app renders `/edit`, providing sidebar tools, property editing, and a canvas area wired to the engine via React context. See [app/edit](app/edit).
 
-## Project Structure
+## Editor Flow (app/edit)
 
-- **App (Next.js):**
-	- [app/edit/page.tsx](app/edit/page.tsx): lazy-loads the scene view and provides UI to add mobjects.
-	- [app/edit/scene.tsx](app/edit/scene.tsx): scene composition (lazy loaded).
-- **Core (Engine):**
-	- [core/config.ts](core/config.ts): default width/height/scale constants.
-	- [core/classes/scene.ts](core/classes/scene.ts): `Scene` stage + layer, adds mobjects from a map.
-	- [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts): registry mapping names to mobject constructors.
-	- [core/types/properties.ts](core/types/properties.ts): typed property interfaces for all mobjects.
-	- [core/utils/conversion.ts](core/utils/conversion.ts): `p2c`/`c2p` math↔canvas conversions.
-	- Mobjects:
-		- [core/classes/mobjects/simple](core/classes/mobjects/simple): `circle`, `rect`, `dot`, `line`, `polygon`, `text`, `curve`
-		- [core/classes/mobjects/geometric/vector.ts](core/classes/mobjects/geometric/vector.ts)
-		- [core/classes/mobjects/group/plane.ts](core/classes/mobjects/group/plane.ts)
-- **Lib:**
-	- [lib/konva.ts](lib/konva.ts): Konva import shim.
+- **Context wiring:** [hooks/SceneContext.tsx](hooks/SceneContext.tsx) holds `scene`, `activeMobject`, and their IDs. The provider wraps [app/edit/layout.tsx](app/edit/layout.tsx).
+- **Scene mount:** [app/edit/scene.tsx](app/edit/scene.tsx) creates a `Scene` on mount with `DEFAULT_WIDTH`/`DEFAULT_HEIGHT` and stores it in context.
+- **Add objects:** [app/edit/components/mobjectsTab.tsx](app/edit/components/mobjectsTab.tsx) lists entries from the registry. Clicking one calls `scene.addMobject(key)` and wires up selection.
+- **Edit properties:** [app/edit/components/propertiesEditor.tsx](app/edit/components/propertiesEditor.tsx) derives typed inputs from the active mobject via [app/edit/components/input/propertyDescriptor.tsx](app/edit/components/input/propertyDescriptor.tsx). Inputs in [app/edit/components/propertyCard.tsx](app/edit/components/propertyCard.tsx) update `mobj.properties` directly.
+- **Sidebar shell:** [app/edit/components/sidebar.tsx](app/edit/components/sidebar.tsx) uses Radix Tabs and a collapsible panel for tools.
 
-## Usage
+## Mobjects Library (core/classes/mobjects)
 
-### Run Dev Server
+- **Simple:** [circle](core/classes/mobjects/simple/circle.ts), [rect](core/classes/mobjects/simple/rect.ts), [dot](core/classes/mobjects/simple/dot.ts), [line](core/classes/mobjects/simple/line.ts), [polygon](core/classes/mobjects/simple/polygon.ts), [text](core/classes/mobjects/simple/text.ts), [curve](core/classes/mobjects/simple/curve.ts)
+- **Geometric:** [vector](core/classes/mobjects/geometric/vector.ts)
+- **Group:** [plane](core/classes/mobjects/group/plane.ts) (axes, grid, numeric labels)
+
+All mobjects:
+- Extend a Konva node type (`Konva.Shape`, `Konva.Group`, etc.).
+- Maintain a private `_properties` store and expose `get properties()`/`set properties()`.
+- Convert between math↔canvas as needed using `p2c`/`c2p`.
+
+Notable implementations:
+- **Text (`MText`):** Double-click to inline-edit content using a DOM `<textarea>` overlay and a Konva `Transformer` for width handles.
+- **Plane (`MPlane`):** Renders axes, grid lines, and labels based on `xrange`/`yrange`, `labelsize`, `axiscolor`, etc.
+
+## Coordinates & Defaults
+
+- Defaults live in [core/config.ts](core/config.ts): `DEFAULT_WIDTH = 850`, `DEFAULT_HEIGHT = 480`, `DEFAULT_SCALE = 50`.
+- Convert canvas→math: `c2p(x, y)`; math→canvas: `p2c(x, y)` ([core/utils/conversion.ts](core/utils/conversion.ts)).
+- Most sizes and positions are expressed in math units; mobjects multiply by `DEFAULT_SCALE` internally to render in pixels.
+
+## Scene API (core/classes/scene.ts)
+
+- `addMobject(key: string)`: instantiates via the registry, adds to the layer, assigns an id like `name-N`, and makes it draggable.
+- `removeMobject(id: string)`: removes and cleans up the Konva node and internal lists.
+- `getMobjectById(id: string)`: convenience lookup in the layer.
+- `activeMobject`: tracks the current selection (also mirrored in editor context).
+
+## Animation (core/classes/animation)
+
+- `AnimationManager` stores `Konva.Tween`s, groups them, and advances through groups with `animate()`, `animateNext()`, or `animateGroup(ids)`. Useful for sequencing property changes.
+- `CreateAnimation` is a thin extension of `Konva.Tween` for future specialization.
+
+## Extending the System
+
+1) Create a class that extends a Konva node and exposes typed `properties`.
+
+```ts
+// Example: Minimal ellipse (sketch)
+class MEllipse extends Konva.Ellipse {
+  private _properties = { position: { x: 0, y: 0 }, rx: 2, ry: 1, color: "#09f", scale: 1, rotation: 0, opacity: 1, zindex: 0 };
+  get properties() { return { ...this._properties }; }
+  set properties(p: Partial<typeof this._properties>) { Object.assign(this._properties, p); /* sync Konva + p2c */ }
+}
+```
+
+2) Register it in [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts):
+
+```ts
+import { Ellipse } from "lucide-react";
+// ...
+ellipse: { func: () => new MEllipse(), name: "Ellipse", Icon: Ellipse }
+```
+
+It will automatically appear in the `/edit` sidebar. If you add new property shapes, extend the descriptors in [app/edit/components/input/propertyDescriptor.tsx](app/edit/components/input/propertyDescriptor.tsx) and rendering in [app/edit/components/propertyCard.tsx](app/edit/components/propertyCard.tsx).
+
+## Development
+
+- Node/PNPM/NPM: standard Next.js 16 app with React 19.
+- Key deps: `konva`, `react-konva`, `lucide-react`, `@radix-ui/*`, `mathjs`.
+
+Scripts:
 
 ```bash
 npm install
-npm run dev
+npm run dev   # start dev server on http://localhost:3000
+npm run build # build
+npm run start # start production build
+npm run lint  # run eslint
 ```
 
-Open http://localhost:3000 and navigate to `/edit`.
+Open the editor at http://localhost:3000/edit
 
-### Add a Mobject to the Scene
+## Notes & Limitations
 
-From the edit view, the button triggers `scene.addMobject("plane")` by default (see [app/edit/page.tsx](app/edit/page.tsx)). You can add other mobjects available in the registry: `circle`, `curve`, `rect`, `dot`, `line`, `polygon`, `text`, `vector`, `plane`.
+- Server-side rendering is disabled for the scene; Konva nodes are created client-side in [app/edit/scene.tsx](app/edit/scene.tsx).
+- `TrackerManager` exists as a placeholder in [core/classes/Tracker/TrackerManager.ts](core/classes/Tracker/TrackerManager.ts) for future features.
+- Parametric curves rely on `mathjs` expressions; invalid expressions will fail to render.
 
-Programmatically, after creating a `Scene` with a valid Konva stage config:
+## Roadmap
 
-```ts
-import Scene from "@/core/classes/scene";
-
-const scene = new Scene({ container: "container-id", width: 850, height: 600 });
-scene.addMobject("circle");
-scene.addMobject("vector");
-scene.addMobject("plane");
-```
-
-### Working with Properties
-
-Each mobject exposes a typed `properties` getter/setter. For example:
-
-```ts
-import { MRect } from "@/core/classes/mobjects/simple/rect";
-
-const rect = new MRect();
-rect.properties = {
-	position: { x: 0, y: 0 },
-	width: 3,
-	height: 2,
-	color: "skyblue",
-	bordercolor: "black",
-	thickness: 2,
-};
-scene.layer.add(rect);
-scene.layer.draw();
-```
-
-### Coordinates and Scaling
-
-- Canvas defaults come from [core/config.ts](core/config.ts): width 850, height 600, scale 50.
-- To place at math coordinates `(x, y)`, set `properties.position = { x, y }` and the node will be positioned via `p2c`.
-- Sizes like radius/width/height often multiply by `DEFAULT_SCALE` to remain math-friendly.
-
-## Notes
-
-- Animat is inspired by Manim but tailored for an interactive web UI with Konva.
-- Parametric curves rely on `mathjs` `evaluate`, so ensure expressions like `"sin(t)"` and `"t"` are valid.
-- Text editing uses DOM overlay; it requires a browser environment (will not run server-side).
-
-## Roadmap Ideas
-
-- Animation timelines and keyframes for mobject properties.
-- Grouping/transform hierarchies beyond plane.
-- Export to video or GIF with frame rendering.
+- Property keyframing and timeline UI hooked to `AnimationManager`.
+- Group transforms and nested hierarchies beyond the plane.
+- Export to MP4/GIF via headless frame rendering.
+- Snapping, rulers, and better selection handles.
