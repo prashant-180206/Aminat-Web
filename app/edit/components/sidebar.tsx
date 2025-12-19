@@ -6,10 +6,12 @@ import {
 } from "@/components/ui/collapsible";
 import { Tabs } from "@/components/ui/tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { DraftingCompass, Settings } from "lucide-react";
+import { DraftingCompass, Settings, PlayCircle } from "lucide-react";
 
 import React from "react";
 import Objects from "./mobjectsTab";
+import AnimationsTab from "./animationsTab";
+import MoreTab from "./moreTab";
 
 const EditSidebar = () => {
   return (
@@ -28,6 +30,11 @@ const EditSidebar = () => {
               <DraftingCompass size={28} strokeWidth={1.75} />
             </Button>
           </TabsTrigger>
+          <TabsTrigger value="animations" asChild>
+            <Button>
+              <PlayCircle size={28} strokeWidth={1.75} />
+            </Button>
+          </TabsTrigger>
           <TabsTrigger value="settings" asChild>
             <Button>
               <Settings size={28} strokeWidth={1.75} />
@@ -40,6 +47,10 @@ const EditSidebar = () => {
             <TabsContent value="mobjects">
               {/* Mobjects content goes here */}
               <Objects />
+            </TabsContent>
+            <TabsContent value="animations">
+              <AnimationsTab />
+              <MoreTab />
             </TabsContent>
             <TabsContent value="settings">
               {/* Settings content goes here */}

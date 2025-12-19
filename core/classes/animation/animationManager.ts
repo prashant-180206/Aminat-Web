@@ -1,10 +1,20 @@
 import Konva from "@/lib/konva";
 
+export type AnimationType = "create" | "destroy" | "move" | "scaleMove";
+
+export type AnimationMeta = {
+  id: string;
+  targetId: string; // mobject id
+  type: AnimationType;
+  label?: string;
+};
+
 export class AnimationManager {
   private animations = new Map<string, Konva.Tween>();
   private order: string[][] = [];
   private activeIndex = 0;
   private counter = 0;
+  private metas = new Map<string, AnimationMeta>();
 
   //  * Adds a group of animations that should play together
 
@@ -21,8 +31,21 @@ export class AnimationManager {
     return ids;
   }
 
+  // Add a single tween as its own group with meta
+  addTweenAsGroup(tween: Konva.Tween, meta: Omit<AnimationMeta, "id">): string {
+    const id = `anim-${this.counter++}`;
+    this.animations.set(id, tween);
+    this.metas.set(id, { ...meta, id });
+    this.order.push([id]);
+    return id;
+  }
+
   getAnimationFromId(id: string): Konva.Tween | undefined {
     return this.animations.get(id);
+  }
+
+  getMeta(id: string): AnimationMeta | undefined {
+    return this.metas.get(id);
   }
 
   //  * Moves a whole animation group up or down in the playback order
@@ -56,6 +79,13 @@ export class AnimationManager {
     return this.order.map((group) => [...group]);
   }
 
+  // Returns groups with meta info for UI
+  getGroupsWithMeta(): AnimationMeta[][] {
+    return this.order.map((group) =>
+      group.map((id) => this.metas.get(id)!).filter(Boolean)
+    );
+  }
+
   animate() {
     if (this.order.length === 0) return;
 
@@ -86,6 +116,7 @@ export class AnimationManager {
 
     tween.destroy();
     this.animations.delete(id);
+    this.metas.delete(id);
 
     this.order = this.order
       .map((group) => group.filter((animId) => animId !== id))
@@ -97,6 +128,7 @@ export class AnimationManager {
   }
 
   resetAll() {
+    this.activeIndex = 0;
     this.animations.forEach((tween) => tween.reset());
   }
 }

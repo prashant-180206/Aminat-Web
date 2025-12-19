@@ -1,3 +1,5 @@
+# Animat Web
+
 Animat Web is an interactive, browser-based animation toolkit focused on mathematical visualizations (inspired by Manim). It uses Konva for 2D canvas rendering and a composable “mobject” class system to build scenes with shapes, vectors, curves, text, and coordinate planes. The `/edit` page provides a visual editor to add and manipulate these objects.
 
 ## Target & Vision
@@ -31,11 +33,13 @@ Animat Web is an interactive, browser-based animation toolkit focused on mathema
 - **Group:** [plane](core/classes/mobjects/group/plane.ts) (axes, grid, numeric labels)
 
 All mobjects:
+
 - Extend a Konva node type (`Konva.Shape`, `Konva.Group`, etc.).
 - Maintain a private `_properties` store and expose `get properties()`/`set properties()`.
 - Convert between math↔canvas as needed using `p2c`/`c2p`.
 
 Notable implementations:
+
 - **Text (`MText`):** Double-click to inline-edit content using a DOM `<textarea>` overlay and a Konva `Transformer` for width handles.
 - **Plane (`MPlane`):** Renders axes, grid lines, and labels based on `xrange`/`yrange`, `labelsize`, `axiscolor`, etc.
 
@@ -59,7 +63,7 @@ Notable implementations:
 
 ## Extending the System
 
-1) Create a class that extends a Konva node and exposes typed `properties`.
+1. Create a class that extends a Konva node and exposes typed `properties`.
 
 ```ts
 // Example: Minimal ellipse (sketch)
@@ -70,7 +74,7 @@ class MEllipse extends Konva.Ellipse {
 }
 ```
 
-2) Register it in [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts):
+1. Register it in [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts):
 
 ```ts
 import { Ellipse } from "lucide-react";
@@ -95,7 +99,7 @@ npm run start # start production build
 npm run lint  # run eslint
 ```
 
-Open the editor at http://localhost:3000/edit
+Open the editor at <http://localhost:3000/edit>
 
 ## Notes & Limitations
 
