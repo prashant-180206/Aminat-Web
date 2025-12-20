@@ -83,8 +83,8 @@ const AnimationsTab: React.FC = () => {
         </Button>
         <Button
           variant="destructive"
-          onClick={destroy}
           disabled={!ensureTarget()}
+          onClick={destroy}
         >
           Destroy
         </Button>

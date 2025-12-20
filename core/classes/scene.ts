@@ -8,7 +8,16 @@ import {
   AnimationType,
 } from "./animation/animationManager";
 import { getAnim } from "./animation/animations";
-// import { AnimationType, getAnim } from "@/anim/getAnim";
+import { TrackerManager } from "./Tracker/TrackerManager";
+import { ValueTracker } from "./Tracker/valuetracker";
+// import { TrackerManager } from "./animation/TrackerManager";
+// import { ValueTracker } from "./animation/ValueTracker";
+
+type TrackerBinding = {
+  mobjectId: string;
+  trackerName: string;
+  updateFn: (mobject: Mobject, value: number) => void;
+};
 
 class Scene extends Konva.Stage {
   layer: Konva.Layer;
@@ -16,11 +25,17 @@ class Scene extends Konva.Stage {
 
   private totalObjects = 0;
   private animManager = new AnimationManager();
+  private trackerManager: TrackerManager;
+
+  // deferred bindings
+  private trackerBindings: TrackerBinding[] = [];
 
   constructor(config: Konva.StageConfig) {
     super(config);
     this.layer = new Konva.Layer();
     this.add(this.layer);
+
+    this.trackerManager = new TrackerManager(this.layer);
   }
 
   /* ---------------- Mobject lifecycle ---------------- */
@@ -44,10 +59,70 @@ class Scene extends Konva.Stage {
 
   removeMobject(id: string) {
     this.layer.findOne(`#${id}`)?.destroy();
+
+    // clean bindings
+    this.trackerBindings = this.trackerBindings.filter(
+      (b) => b.mobjectId !== id
+    );
   }
 
   getMobjectById(id: string) {
     return this.layer.findOne(`#${id}`) as Mobject | null;
+  }
+
+  /* ---------------- Tracker APIs ---------------- */
+
+  addValueTracker(
+    name: string,
+    options: Parameters<TrackerManager["addValueTracker"]>[1]
+  ): ValueTracker {
+    return this.trackerManager.addValueTracker(name, options);
+  }
+
+  getTracker(name: string) {
+    return this.trackerManager.getTracker(name);
+  }
+
+  animateTracker(
+    name: string,
+    target: number,
+    config?: Parameters<TrackerManager["animateTrackerTo"]>[2]
+  ) {
+    return this.trackerManager.animateTrackerTo(name, target, config);
+  }
+
+  /* ---------------- Tracker ↔ Mobject binding ---------------- */
+
+  /**
+   * Placeholder binding API.
+   * Logic is intentionally deferred.
+   */
+  bindTrackerToMobject(
+    mobjectId: string,
+    trackerName: string,
+    updateFn: (mobject: Mobject, value: number) => void
+  ) {
+    const tracker = this.trackerManager.getTracker(trackerName);
+    if (!tracker) {
+      throw new Error(`Tracker "${trackerName}" not found`);
+    }
+
+    const binding: TrackerBinding = {
+      mobjectId,
+      trackerName,
+      updateFn,
+    };
+
+    this.trackerBindings.push(binding);
+
+    // attach updater
+    tracker.addUpdater((value) => {
+      const mobject = this.getMobjectById(mobjectId);
+      if (!mobject) return;
+
+      updateFn(mobject, value);
+      this.layer.batchDraw();
+    });
   }
 
   /* ---------------- Animation APIs ---------------- */

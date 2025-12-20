@@ -27,7 +27,7 @@ const MoreTab: React.FC = () => {
   }, [scene]);
 
   return (
-    <div className="p-4 flex flex-col gap-3 w-[300px]">
+    <div className="p-4 flex flex-col gap-3 w-[250px]">
       <div className="flex gap-2">
         <Button
           onClick={() => {
