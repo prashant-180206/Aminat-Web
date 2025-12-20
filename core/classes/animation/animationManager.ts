@@ -1,6 +1,15 @@
 import Konva from "@/lib/konva";
 
-export type AnimationType = "create" | "destroy" | "move" | "scaleMove";
+export type AnimationType =
+  | "create"
+  | "destroy"
+  | "move"
+  | "scaleMove"
+  | "radiuschange"
+  | "moveLineEnd"
+  | "moveLineStart"
+  | "changeCurveRange"
+  | "writetext";
 
 export type AnimationMeta = {
   id: string;

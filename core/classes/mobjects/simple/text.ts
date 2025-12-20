@@ -362,4 +362,216 @@ export class MText extends Konva.Text {
     this._properties.color = this.fill() as string;
     this._properties.scale = this.scaleX();
   }
+
+  setVisibleText(text: string) {
+    this.text(text);
+    const layer = this.getLayer();
+    if (layer) layer.batchDraw();
+  }
 }
+
+// import Konva from "@/lib/konva";
+// import { TextProperties } from "@/core/types/properties";
+// import { c2p, p2c } from "@/core/utils/conversion";
+
+// export class MText extends Konva.Text {
+//   private _properties: TextProperties;
+//   private _bgRect: Konva.Rect;
+
+//   // editing state (unchanged)
+//   private _textarea?: HTMLTextAreaElement;
+//   private _transformer?: Konva.Transformer;
+//   private _originalText?: string;
+//   private _outsideClickHandler?: (e: Event) => void;
+
+//   cornerRadius = 4;
+
+//   constructor(config: Partial<TextProperties> = {}) {
+//     super({
+//       draggable: true,
+//       lineCap: "round",
+//       lineJoin: "round",
+//     });
+
+//     this._properties = {
+//       position: { x: 0, y: 0 },
+//       color: "black",
+//       scale: 1,
+//       rotation: 0,
+//       content: "Hello World",
+//       fontsize: 24,
+//       fontfamily: "Arial",
+//       bold: false,
+//       italic: false,
+//       zindex: 0,
+//       opacity: 1,
+
+//       // bg rect defaults
+//       bgRectVisible: false,
+//       bgRectColor: "#ffffff",
+//       bgRectOpacity: 0.8,
+//       bgRectPadding: 6,
+
+//       ...config,
+//     };
+
+//     // background rect
+//     this._bgRect = new Konva.Rect({
+//       listening: false,
+//       cornerRadius: this.cornerRadius,
+//     });
+
+//     this.updateFromProperties();
+
+//     this.on("dblclick dbltap", () => {
+//       this.startEditing();
+//     });
+
+//     this.name("Text");
+//   }
+
+//   // ---------- Properties ----------
+
+//   get properties(): TextProperties {
+//     return { ...this._properties };
+//   }
+
+//   set properties(newProps: Partial<TextProperties>) {
+//     Object.assign(this._properties, newProps);
+//     this.updateFromProperties();
+//   }
+
+//   // ---------- Update Core ----------
+
+//   private updateFromProperties() {
+//     const {
+//       position,
+//       color,
+//       scale,
+//       rotation,
+//       content,
+//       fontsize,
+//       fontfamily,
+//       bold,
+//       italic,
+//       zindex,
+//       opacity,
+//     } = this._properties;
+
+//     const fontWeight = bold ? "bold" : "normal";
+//     const fontStyle = italic ? "italic" : "normal";
+
+//     this.text(content);
+//     this.fill(color);
+//     this.fontFamily(fontfamily);
+//     this.fontSize(fontsize);
+//     this.fontStyle(`${fontStyle} ${fontWeight}`.trim());
+//     this.opacity(opacity);
+//     this.zIndex(zindex);
+
+//     const pt = p2c(position.x, position.y);
+//     this.position({
+//       x: pt.x - this.width() / 2,
+//       y: pt.y - this.height() / 2,
+//     });
+
+//     this.rotation(rotation);
+//     this.scale({ x: scale, y: scale });
+
+//     this.updateBackgroundRect();
+
+//     const layer = this.getLayer();
+//     if (layer) layer.batchDraw();
+//   }
+
+//   // ---------- Background Rect ----------
+
+//   private updateBackgroundRect() {
+//     const {
+//       bgRectVisible,
+//       bgRectColor,
+//       bgRectOpacity,
+//       bgRectPadding,
+//       zindex,
+//     } = this._properties;
+
+//     const layer = this.getLayer();
+//     if (!layer) return;
+
+//     if (!this._bgRect.getLayer()) {
+//       layer.add(this._bgRect);
+//     }
+
+//     if (!bgRectVisible) {
+//       this._bgRect.hide();
+//       return;
+//     }
+
+//     const absPos = this.absolutePosition();
+//     const padding = bgRectPadding;
+
+//     this._bgRect.setAttrs({
+//       x: absPos.x - padding,
+//       y: absPos.y - padding,
+//       width: this.width() + padding * 2,
+//       height: this.height() + padding * 2,
+//       fill: bgRectColor,
+//       opacity: bgRectOpacity,
+//       rotation: this.rotation(),
+//       scaleX: this.scaleX(),
+//       scaleY: this.scaleY(),
+//       zIndex: zindex - 1, // always behind text
+//       visible: true,
+//     });
+//   }
+
+//   // ---------- Content API ----------
+
+//   setContent(content: string) {
+//     this._properties.content = content;
+//     this.text(content);
+//     this.updateBackgroundRect();
+//     const layer = this.getLayer();
+//     if (layer) layer.batchDraw();
+//   }
+
+//   // ---------- Editing Hooks ----------
+
+//   startEditing() {
+//     // hide bg rect while editing
+//     this._bgRect.hide();
+//     super.startEditing?.();
+//     // (rest of your existing logic remains unchanged)
+//   }
+
+//   private commitEditing() {
+//     if (!this._textarea) return;
+//     const newValue = this._textarea.value;
+//     this.setContent(newValue);
+
+//     this.show();
+//     this._bgRect.show();
+//     this.cleanupTextarea();
+//   }
+
+//   private cancelEditing() {
+//     if (this._originalText !== undefined) {
+//       this.setContent(this._originalText);
+//     }
+//     this.show();
+//     this._bgRect.show();
+//     this.cleanupTextarea();
+//   }
+
+//   // ---------- Sync Back ----------
+
+//   UpdateFromKonvaProperties() {
+//     const pos = this.position();
+//     this._properties.position = c2p(
+//       pos.x + this.width() / 2,
+//       pos.y + this.height() / 2
+//     );
+//     this._properties.color = this.fill() as string;
+//     this._properties.scale = this.scaleX();
+//   }
+// }

@@ -47,6 +47,11 @@ export interface TextProperties extends BaseProperties {
   fontfamily: string;
   bold: boolean;
   italic: boolean;
+
+  // bgRectVisible: boolean;
+  // bgRectColor: string;
+  // bgRectOpacity: number;
+  // bgRectPadding: number;
 }
 
 export interface PolygonProperties extends BaseProperties {
@@ -64,7 +69,6 @@ export interface PlaneProperties extends BaseProperties {
   height: number;
   xrange: [number, number];
   yrange: [number, number];
-  // gridcolor: string;
   gridthickness: number;
   showgrid: boolean;
   showlabels: boolean;

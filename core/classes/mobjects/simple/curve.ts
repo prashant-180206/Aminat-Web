@@ -124,4 +124,9 @@ export class ParametricCurve extends Konva.Line {
     this._properties.parameterRange = range;
     this.generateCurve(Xfunc, Yfunc, range);
   }
+
+  setParameterRange(range: [number, number]) {
+    this._properties.parameterRange = range;
+    this.generateCurve(this._properties.Xfunc, this._properties.Yfunc, range);
+  }
 }
