@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // anim/classes/mobjects/simple/parametricCurve.ts
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { CurveProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { evaluate } from "mathjs";
 
 export class ParametricCurve extends Konva.Line {
+  public animgetter: AnimGetter;
   private _properties: CurveProperties;
 
   constructor(config: Partial<CurveProperties> = {}) {
@@ -15,6 +17,8 @@ export class ParametricCurve extends Konva.Line {
       lineJoin: "round",
       strokeWidth: 3,
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

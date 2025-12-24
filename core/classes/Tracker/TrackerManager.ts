@@ -152,4 +152,33 @@ export class TrackerManager {
     });
     this.trackers.clear();
   }
+
+  //   Extra Functions (if any) can be added here
+  // core/animation/TrackerManager.ts
+  addValueTrackerWithSlider(
+    name: string,
+    options: AddTrackerOptions
+  ): { tracker: ValueTracker; slider?: Slider } {
+    const tracker = this.addValueTracker(name, {
+      ...options,
+      slider: undefined, // prevent auto-adding to layer
+    });
+
+    let slider: Slider | undefined;
+
+    if (options.slider) {
+      slider = new Slider(tracker, {
+        min: options.min,
+        max: options.max,
+        width: options.slider.width,
+        height: options.slider.height,
+        trackColor: options.slider.trackColor,
+        thumbColor: options.slider.thumbColor,
+        thumbRadius: options.slider.thumbRadius,
+        initial: options.initial,
+      });
+    }
+
+    return { tracker, slider };
+  }
 }

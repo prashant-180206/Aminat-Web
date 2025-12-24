@@ -1,10 +1,12 @@
 import { DEFAULT_SCALE } from "@/core/config";
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 // import Konva from "konva";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { CircleProperties } from "@/core/types/properties";
 import { Konva } from "@/lib/konva";
 
 class MCircle extends Konva.Circle {
+  public animgetter: AnimGetter;
   private _properties: CircleProperties = {
     radius: 2,
     color: "blue",
@@ -19,6 +21,7 @@ class MCircle extends Konva.Circle {
 
   constructor(config?: Konva.CircleConfig) {
     super(config);
+    this.animgetter = new AnimGetter(this);
     this.radius(this._properties.radius * DEFAULT_SCALE);
     this.fill(this._properties.color);
     this.stroke(this._properties.bordercolor);

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useScene } from "@/hooks/SceneContext";
+import { AnimMeta } from "@/core/types/animation";
 
 const NumberField: React.FC<{
   label: string;
@@ -25,7 +26,19 @@ const NumberField: React.FC<{
 );
 
 const AnimationsTab: React.FC = () => {
-  const { scene, activeMobjectId } = useScene();
+  const { scene, activeMobjectId, activeMobject } = useScene();
+
+  const animNames = activeMobject?.animgetter.getAnimNames() || [];
+  const [selectedAnim, setSelectedAnim] = useState<string | null>(
+    animNames.length > 0 ? animNames[0] : null
+  );
+  const [input, setInput] = useState<{ [key: string]: "string" | "number" }>(
+    {}
+  );
+  const [animMeta, setAnimMeta] = useState<AnimMeta | null>(
+    activeMobject?.animgetter.getAnimMeta(selectedAnim!) || null
+  );
+
   const [duration, setDuration] = useState<number>(0.6);
   const [toX, setToX] = useState<number>(1);
   const [toY, setToY] = useState<number>(1);

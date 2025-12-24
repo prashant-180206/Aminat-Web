@@ -1,17 +1,25 @@
 // core/scene.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Konva from "@/lib/konva";
 import MobjectMap, { Mobject } from "../maps/MobjectMap";
+
 import {
   AnimationManager,
   AnimationMeta,
   AnimationType,
 } from "./animation/animationManager";
-import { getAnim } from "./animation/animations";
+// import { getAnim } from "./animation/animations";
 import { TrackerManager } from "./Tracker/TrackerManager";
 import { ValueTracker } from "./Tracker/valuetracker";
+
 // import { TrackerManager } from "./animation/TrackerManager";
 // import { ValueTracker } from "./animation/ValueTracker";
+// import { Slider } from "@/ui/slider";
+
+/* ------------------------------------------------------------ */
+/* Types                                                        */
+/* ------------------------------------------------------------ */
 
 type TrackerBinding = {
   mobjectId: string;
@@ -19,33 +27,44 @@ type TrackerBinding = {
   updateFn: (mobject: Mobject, value: number) => void;
 };
 
+/* ------------------------------------------------------------ */
+/* Scene                                                        */
+/* ------------------------------------------------------------ */
+
 class Scene extends Konva.Stage {
+  /* ---------------- Public ---------------- */
+
   layer: Konva.Layer;
   activeMobject: Mobject | null = null;
+
+  /* ---------------- Private ---------------- */
 
   private totalObjects = 0;
   private animManager = new AnimationManager();
   private trackerManager: TrackerManager;
 
-  // deferred bindings
   private trackerBindings: TrackerBinding[] = [];
+
+  /* ------------------------------------------------------------ */
 
   constructor(config: Konva.StageConfig) {
     super(config);
+
     this.layer = new Konva.Layer();
     this.add(this.layer);
 
     this.trackerManager = new TrackerManager(this.layer);
   }
 
-  /* ---------------- Mobject lifecycle ---------------- */
+  /* ============================================================ */
+  /* MOBJECT LIFECYCLE                                            */
+  /* ============================================================ */
 
-  addMobject(type: string) {
+  addMobject(type: string): Mobject {
     const mobject = MobjectMap[type].func();
-    this.layer.add(mobject as Konva.Shape);
 
-    mobject.setDraggable(true);
     mobject.id(`${mobject.name() || "mobject"}-${this.totalObjects++}`);
+    mobject.setDraggable(true);
     mobject.properties = { zindex: this.totalObjects - 1 };
 
     mobject.on("click", () => {
@@ -53,49 +72,79 @@ class Scene extends Konva.Stage {
       mobject.UpdateFromKonvaProperties();
     });
 
+    this.layer.add(mobject as Konva.Shape);
     this.layer.draw();
+
     return mobject;
   }
 
   removeMobject(id: string) {
     this.layer.findOne(`#${id}`)?.destroy();
 
-    // clean bindings
+    // cleanup bindings
     this.trackerBindings = this.trackerBindings.filter(
       (b) => b.mobjectId !== id
     );
   }
 
-  getMobjectById(id: string) {
+  getMobjectById(id: string): Mobject | null {
     return this.layer.findOne(`#${id}`) as Mobject | null;
   }
 
-  /* ---------------- Tracker APIs ---------------- */
+  /* ============================================================ */
+  /* TRACKERS + SLIDERS                                           */
+  /* ============================================================ */
 
-  addValueTracker(
-    name: string,
-    options: Parameters<TrackerManager["addValueTracker"]>[1]
+  /**
+   * Creates a ValueTracker and attaches its Slider to a mobject.
+   * Slider moves with the mobject and is a real Konva node.
+   */
+  addValueTrackerWithSliderToMobject(
+    mobjectId: string,
+    trackerName: string,
+    options: Parameters<TrackerManager["addValueTrackerWithSlider"]>[1]
   ): ValueTracker {
-    return this.trackerManager.addValueTracker(name, options);
-  }
+    const mobject = this.getMobjectById(mobjectId);
+    if (!mobject) {
+      throw new Error(`Mobject "${mobjectId}" not found`);
+    }
 
-  getTracker(name: string) {
-    return this.trackerManager.getTracker(name);
-  }
+    const { tracker, slider } = this.trackerManager.addValueTrackerWithSlider(
+      trackerName,
+      options
+    );
 
-  animateTracker(
-    name: string,
-    target: number,
-    config?: Parameters<TrackerManager["animateTrackerTo"]>[2]
-  ) {
-    return this.trackerManager.animateTrackerTo(name, target, config);
-  }
+    if (slider) {
+      const container = new Konva.Group({
+        name: `tracker-slider-${trackerName}`,
+      });
 
-  /* ---------------- Tracker ↔ Mobject binding ---------------- */
+      container.add(slider);
+
+      slider.position(options.slider?.position ?? { x: 0, y: -40 });
+
+      this.layer.add(container);
+
+      const syncPosition = () => {
+        container.position({
+          x: mobject.x(),
+          y: mobject.y(),
+        });
+        this.layer.batchDraw();
+      };
+
+      // sync lifecycle
+      syncPosition();
+      mobject.on("dragmove", syncPosition);
+      mobject.on("xChange yChange", syncPosition);
+    }
+
+    return tracker;
+  }
 
   /**
    * Placeholder binding API.
-   * Logic is intentionally deferred.
+   * Update logic is intentionally external & pluggable.
    */
   bindTrackerToMobject(
     mobjectId: string,
@@ -115,7 +164,6 @@ class Scene extends Konva.Stage {
 
     this.trackerBindings.push(binding);
 
-    // attach updater
     tracker.addUpdater((value) => {
       const mobject = this.getMobjectById(mobjectId);
       if (!mobject) return;
@@ -125,7 +173,21 @@ class Scene extends Konva.Stage {
     });
   }
 
-  /* ---------------- Animation APIs ---------------- */
+  /* ============================================================ */
+  /* TRACKER ANIMATION                                           */
+  /* ============================================================ */
+
+  animateTracker(
+    trackerName: string,
+    target: number,
+    config?: Parameters<TrackerManager["animateTrackerTo"]>[2]
+  ) {
+    return this.trackerManager.animateTrackerTo(trackerName, target, config);
+  }
+
+  /* ============================================================ */
+  /* ANIMATION MANAGER                                           */
+  /* ============================================================ */
 
   getAnimationGroups(): AnimationMeta[][] {
     return this.animManager.getGroupsWithMeta();
@@ -151,30 +213,29 @@ class Scene extends Konva.Stage {
     this.animManager.removeAnimation(id);
   }
 
-  /* ---------------- High-level animation creation ---------------- */
+  /* ============================================================ */
+  /* HIGH-LEVEL ANIMATION CREATION                                */
+  /* ============================================================ */
 
   createAnimation(
     targetId: string,
     type: AnimationType,
-    options: any = {}
+    inputs: any = {}
   ): string | null {
     const node = this.getMobjectById(targetId);
     if (!node) return null;
 
-    const tween = getAnim(node, type, {
-      ...options,
-      onFinish:
-        type === "destroy"
-          ? () => this.removeMobject(targetId)
-          : options.onFinish,
-    });
+    const animMeta = node.animgetter.getAnimMeta(type);
+    if (!animMeta) return null;
+
+    const tween = animMeta.func(inputs);
 
     if (!tween) return null;
 
     return this.animManager.addTweenAsGroup(tween, {
       targetId,
       type,
-      label: options.label,
+      label: animMeta.title,
     });
   }
 }

@@ -1,9 +1,11 @@
 // anim/classes/mobjects/simple/polygon.ts
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { Point, PolygonProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class MPolygon extends Konva.Shape {
+  public animgetter: AnimGetter;
   private _properties: PolygonProperties;
 
   constructor(config: Partial<PolygonProperties> = {}) {
@@ -12,6 +14,8 @@ export class MPolygon extends Konva.Shape {
       lineJoin: "round",
       draggable: true,
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

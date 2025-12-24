@@ -1,9 +1,11 @@
 // anim/classes/mobjects/simple/line.ts
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { LineProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class MLine extends Konva.Line {
+  public animgetter: AnimGetter;
   private _properties: LineProperties;
 
   constructor(config: Partial<LineProperties> = {}) {
@@ -12,6 +14,8 @@ export class MLine extends Konva.Line {
       lineCap: "round",
       lineJoin: "round",
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

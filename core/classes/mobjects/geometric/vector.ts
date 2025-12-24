@@ -1,9 +1,11 @@
 // anim/classes/mobjects/vector.ts
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { VectorProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class MVector extends Konva.Arrow {
+  public animgetter: AnimGetter;
   private _properties: VectorProperties;
 
   constructor(config: Partial<VectorProperties> = {}) {
@@ -13,6 +15,8 @@ export class MVector extends Konva.Arrow {
       lineJoin: "round",
       points: [0, 0, 100, 100],
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },
@@ -70,6 +74,7 @@ export class MVector extends Konva.Arrow {
     this.position(position);
     this.rotation(rotation);
   }
+
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = p2c(pos.x, pos.y);

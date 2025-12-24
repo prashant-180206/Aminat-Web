@@ -1,10 +1,12 @@
 // anim/classes/mobjects/simple/rect.ts
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DEFAULT_SCALE } from "@/core/config";
 import { RectangleProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 
 export class MRect extends Konva.Rect {
+  public animgetter: AnimGetter;
   private _properties: RectangleProperties;
 
   constructor(config: Partial<RectangleProperties> = {}) {
@@ -13,6 +15,8 @@ export class MRect extends Konva.Rect {
       lineCap: "round",
       lineJoin: "round",
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

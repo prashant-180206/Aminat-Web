@@ -1,12 +1,14 @@
 // anim/classes/mobjects/simple/dot.ts
 // import { DEFAULT_SCALE } from "@/core/config";
 // import { DEFAULT_SCALE } from "@/core/config";
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DotProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 // import type { Point } from './parametricCurve';
 
 export class Dot extends Konva.Circle {
+  public animgetter: AnimGetter;
   private _properties: DotProperties;
 
   constructor(config: Partial<DotProperties> = {}) {
@@ -14,6 +16,8 @@ export class Dot extends Konva.Circle {
       lineCap: "round",
       lineJoin: "round",
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

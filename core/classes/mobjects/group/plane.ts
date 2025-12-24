@@ -1,9 +1,11 @@
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
 import { PlaneProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class MPlane extends Konva.Group {
+  public animgetter: AnimGetter;
   private _properties: PlaneProperties;
 
   private axisLayer = new Konva.Group();
@@ -14,6 +16,8 @@ export class MPlane extends Konva.Group {
     super({
       draggable: true, // enable drag
     });
+
+    this.animgetter = new AnimGetter(this);
 
     const xrange = DEFAULT_WIDTH / DEFAULT_SCALE / 2;
     const yrange = DEFAULT_HEIGHT / DEFAULT_SCALE / 2;
@@ -191,6 +195,7 @@ export class MPlane extends Konva.Group {
       }
     }
   }
+
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = { x: pos.x, y: pos.y };

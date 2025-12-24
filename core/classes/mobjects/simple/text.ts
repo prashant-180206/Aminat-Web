@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // anim/classes/mobjects/simple/text.ts
+import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
 import { TextProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 
 export class MText extends Konva.Text {
+  public animgetter: AnimGetter;
   private _properties: TextProperties;
   // editing state
   private _textarea?: HTMLTextAreaElement;
@@ -19,6 +21,8 @@ export class MText extends Konva.Text {
       lineCap: "round",
       lineJoin: "round",
     });
+
+    this.animgetter = new AnimGetter(this);
 
     this._properties = {
       position: { x: 0, y: 0 },
