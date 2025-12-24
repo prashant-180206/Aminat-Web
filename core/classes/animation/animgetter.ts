@@ -7,6 +7,7 @@ import Konva from "@/lib/konva";
 export class AnimGetter {
   private AnimGetterMap = new Map<string, AnimMeta>();
   private node: Konva.Node;
+  private counter = 0;
 
   constructor(obj: Konva.Node) {
     this.node = obj;
@@ -17,6 +18,8 @@ export class AnimGetter {
         duration: "number",
         easing: "string",
       },
+      mobjId: this.node.id(),
+      type: "Create",
       func: (args: { [key: string]: any }) => {
         const targetScaleX = this.node.scaleX() || 1;
         const targetScaleY = this.node.scaleY() || 1;
@@ -26,7 +29,7 @@ export class AnimGetter {
         this.node.scale({ x: 0, y: 0 });
         (this.node as any).opacity?.(0);
 
-        return new Konva.Tween({
+        const tween = new Konva.Tween({
           node: this.node,
           duration: args.duration || 1,
           easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
@@ -34,6 +37,17 @@ export class AnimGetter {
           scaleY: targetScaleY,
           opacity: targetOpacity,
         });
+
+        console.log("Create Anim Func called", tween);
+        tween.play();
+
+        return {
+          id: `${this.node.id()}-Create-${this.counter++}`,
+          mobjId: this.node.id(),
+          type: "Create",
+          label: `Creating ${this.node.id()}`,
+          anim: tween,
+        };
       },
     });
 
@@ -43,8 +57,10 @@ export class AnimGetter {
         duration: "number",
         easing: "string",
       },
+      mobjId: this.node.id(),
+      type: "Destroy",
       func: (args: { [key: string]: any }) => {
-        return new Konva.Tween({
+        const tween = new Konva.Tween({
           node: this.node,
           duration: args.duration || 1,
           easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
@@ -52,6 +68,13 @@ export class AnimGetter {
           scaleY: 0,
           opacity: 0,
         });
+        return {
+          id: `${this.node.id()}-Destroy-${this.counter++}`,
+          mobjId: this.node.id(),
+          type: "Destroy",
+          label: `Destroying ${this.node.id()}`,
+          anim: tween,
+        };
       },
     });
 
@@ -63,23 +86,35 @@ export class AnimGetter {
         toX: "number",
         toY: "number",
       },
+      mobjId: this.node.id(),
+      type: "Move",
+
       func: (args: { [key: string]: any }) => {
         if (args.toX === undefined || args.toY === undefined) return null;
         const canvas = p2c(args.toX, args.toY);
 
-        return new Konva.Tween({
+        const tween = new Konva.Tween({
           node: this.node,
           duration: args.duration || 1,
           easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
           x: canvas.x,
           y: canvas.y,
         });
+        return {
+          id: `${this.node.id()}-Move-${canvas.x}-${canvas.y}-${this
+            .counter++}`,
+          mobjId: this.node.id(),
+          type: "Move",
+          label: `Moving ${this.node.id()}`,
+          anim: tween,
+        };
       },
     });
   }
 
   addAnimFunc(name: string, meta: AnimMeta) {
     this.AnimGetterMap.set(name, meta);
+    this.counter++;
   }
 
   getAnimMeta(name: string): AnimMeta | null {

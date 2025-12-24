@@ -1,29 +1,15 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useScene } from "@/hooks/SceneContext";
-import { AnimMeta } from "@/core/types/animation";
-
-const NumberField: React.FC<{
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-  step?: number;
-}> = ({ label, value, onChange, step = 0.1 }) => (
-  <div className="flex items-center gap-2">
-    <Label className="w-20 text-sm">{label}</Label>
-    <Input
-      type="number"
-      className="w-24 py-1"
-      step={step}
-      value={Number.isFinite(value) ? value : 0}
-      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-    />
-  </div>
-);
+import { AnimInfo, AnimMeta } from "@/core/types/animation";
+// import Konva from "@/lib/konva";
+import { toast } from "sonner";
+import { Combobox } from "@/components/combobox";
+import { easingMap } from "@/core/maps/easingMap";
 
 const AnimationsTab: React.FC = () => {
   const { scene, activeMobjectId, activeMobject } = useScene();
@@ -32,86 +18,110 @@ const AnimationsTab: React.FC = () => {
   const [selectedAnim, setSelectedAnim] = useState<string | null>(
     animNames.length > 0 ? animNames[0] : null
   );
-  const [input, setInput] = useState<{ [key: string]: "string" | "number" }>(
-    {}
-  );
+  const [input, setInput] = useState<{ [key: string]: string | number }>({});
   const [animMeta, setAnimMeta] = useState<AnimMeta | null>(
     activeMobject?.animgetter.getAnimMeta(selectedAnim!) || null
   );
 
-  const [duration, setDuration] = useState<number>(0.6);
-  const [toX, setToX] = useState<number>(1);
-  const [toY, setToY] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1);
+  const [animGroup, setAnimGroup] = useState<AnimInfo[]>([]);
 
-  const targetInfo = useMemo(() => {
-    if (!scene || !activeMobjectId) return "No selection";
-    return `Target: ${activeMobjectId}`;
-  }, [scene, activeMobjectId]);
+  const selectAnim = (name: string) => {
+    setSelectedAnim(name);
+    const meta = activeMobject?.animgetter.getAnimMeta(name) || null;
+    setAnimMeta(meta);
+    if (!meta) return;
+    setInput(meta.input);
+  };
 
-  const ensureTarget = () => scene && activeMobjectId;
+  const addAnim = () => {
+    if (!animMeta) return;
+    const res = animMeta.func(input);
+    if (!res) {
+      return;
+    }
+    const newanimgrp = [...animGroup, res];
+    setAnimGroup(newanimgrp);
+    // setInput(animMeta.input);
+  };
 
-  const create = () => {
-    if (!ensureTarget()) return;
-    scene!.createAnimation(activeMobjectId!, "create", { duration });
-  };
-  const destroy = () => {
-    if (!ensureTarget()) return;
-    scene!.createAnimation(activeMobjectId!, "destroy", { duration });
-  };
-  const move = () => {
-    if (!ensureTarget()) return;
-    scene!.createAnimation(activeMobjectId!, "move", {
-      duration,
-      to: { x: toX, y: toY },
-    });
-  };
-  const scaleMove = () => {
-    if (!ensureTarget()) return;
-    scene!.createAnimation(activeMobjectId!, "scaleMove", {
-      duration,
-      to: { x: toX, y: toY },
-      scale,
-    });
+  const addAnimGroup = () => {
+    // scene.
+    if (!scene) return;
+    if (animGroup.length === 0) return;
+    // Logic to add the tweens as a Group
+    scene.addAnimations(...animGroup);
+    setAnimGroup([]);
   };
 
   return (
-    <div className="p-4 flex flex-col gap-3 w-[300px]">
-      <div className="text-xs text-zinc-500">{targetInfo}</div>
-      <NumberField
-        label="Duration"
-        value={duration}
-        onChange={setDuration}
-        step={0.1}
+    <div className="p-4 flex flex-col gap-3 w-[250px]">
+      <p>{"Target : " + activeMobjectId}</p>
+      <Combobox
+        options={animNames.map((name) => ({ label: name, value: name }))}
+        value={selectedAnim}
+        onChange={selectAnim}
       />
-      <div className="flex gap-3">
-        <NumberField label="To X" value={toX} onChange={setToX} step={0.1} />
-        <NumberField label="To Y" value={toY} onChange={setToY} step={0.1} />
-      </div>
-      <NumberField label="Scale" value={scale} onChange={setScale} step={0.1} />
 
-      <div className="grid grid-cols-2 gap-2 mt-2">
-        <Button variant="default" onClick={create} disabled={!ensureTarget()}>
-          Create
-        </Button>
-        <Button
-          variant="destructive"
-          disabled={!ensureTarget()}
-          onClick={destroy}
-        >
-          Destroy
-        </Button>
-        <Button variant="outline" onClick={move} disabled={!ensureTarget()}>
-          Move
-        </Button>
-        <Button
-          variant="outline"
-          onClick={scaleMove}
-          disabled={!ensureTarget()}
-        >
-          Scale & Move
-        </Button>
-      </div>
+      {input &&
+        Object.entries(input).map(([key, type]) => {
+          if (key === "easing") {
+            return (
+              <Combobox
+                key={key}
+                options={Object.keys(easingMap).map((val) => ({
+                  label: val,
+                  value: val,
+                }))}
+                value={Object.keys(easingMap)[3]}
+                onChange={(val) => {
+                  setInput((prev) => ({ ...prev, [key]: val }));
+                }}
+                placeholder={key}
+              />
+            );
+          }
+          return (
+            <div key={key} className="flex flex-col gap-1 ">
+              <Label>{key}</Label>
+              <Input
+                type={type === "number" ? "number" : "text"}
+                defaultValue={type === "number" ? 0 : key}
+                onChange={(e) => {
+                  const value =
+                    type === "number" ? Number(e.target.value) : e.target.value;
+                  setInput((prev) => ({ ...prev, [key]: value }));
+                }}
+              />
+            </div>
+          );
+        })}
+
+      <Button
+        onClick={() => {
+          addAnim();
+          toast.success(
+            "Animation group added (not really, this is a placeholder)"
+          );
+        }}
+      >
+        Add Animation
+      </Button>
+      <Button onClick={addAnimGroup}>Add Animation Group</Button>
+
+      {/* <Button
+        onClick={() => {
+          scene?.playCurrentGroup();
+        }}
+      >
+        Play Current Group
+      </Button>
+      <Button
+        onClick={() => {
+          scene?.resetAnimations();
+        }}
+      >
+        Reset All Animations
+      </Button> */}
     </div>
   );
 };

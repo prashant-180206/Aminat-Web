@@ -1,38 +1,19 @@
-import Konva from "@/lib/konva";
-
-export type AnimationType =
-  | "create"
-  | "destroy"
-  | "move"
-  | "scaleMove"
-  | "radiuschange"
-  | "moveLineEnd"
-  | "moveLineStart"
-  | "changeCurveRange"
-  | "writetext";
-
-export type AnimationMeta = {
-  id: string;
-  targetId: string; // mobject id
-  type: AnimationType;
-  label?: string;
-};
+import { AnimInfo } from "@/core/types/animation";
 
 export class AnimationManager {
-  private animations = new Map<string, Konva.Tween>();
+  private animations = new Map<string, AnimInfo>();
   private order: string[][] = [];
   private activeIndex = 0;
   private counter = 0;
-  private metas = new Map<string, AnimationMeta>();
 
   //  * Adds a group of animations that should play together
 
-  addAnimations(...tweens: Konva.Tween[]): string[] {
+  addAnimations(...tweens: AnimInfo[]): string[] {
     const ids: string[] = [];
 
-    tweens.forEach((tween) => {
+    tweens.forEach((animData) => {
       const id = `anim-${this.counter++}`;
-      this.animations.set(id, tween);
+      this.animations.set(id, animData);
       ids.push(id);
     });
 
@@ -40,21 +21,12 @@ export class AnimationManager {
     return ids;
   }
 
-  // Add a single tween as its own group with meta
-  addTweenAsGroup(tween: Konva.Tween, meta: Omit<AnimationMeta, "id">): string {
-    const id = `anim-${this.counter++}`;
-    this.animations.set(id, tween);
-    this.metas.set(id, { ...meta, id });
-    this.order.push([id]);
-    return id;
+  getAnimationFromId(id: string): AnimInfo | null {
+    return this.animations.get(id) || null;
   }
 
-  getAnimationFromId(id: string): Konva.Tween | undefined {
+  getInfo(id: string): AnimInfo | undefined {
     return this.animations.get(id);
-  }
-
-  getMeta(id: string): AnimationMeta | undefined {
-    return this.metas.get(id);
   }
 
   //  * Moves a whole animation group up or down in the playback order
@@ -89,9 +61,9 @@ export class AnimationManager {
   }
 
   // Returns groups with meta info for UI
-  getGroupsWithMeta(): AnimationMeta[][] {
+  getGroupsWithMeta(): AnimInfo[][] {
     return this.order.map((group) =>
-      group.map((id) => this.metas.get(id)!).filter(Boolean)
+      group.map((id) => this.animations.get(id)!).filter(Boolean)
     );
   }
 
@@ -100,7 +72,7 @@ export class AnimationManager {
 
     const group = this.order[this.activeIndex];
     group.forEach((id) => {
-      this.animations.get(id)?.play();
+      this.animations.get(id)?.anim?.play();
     });
 
     this.activeIndex = (this.activeIndex + 1) % this.order.length;
@@ -113,19 +85,13 @@ export class AnimationManager {
     this.animate();
   }
 
-  animateGroup(ids: string[]) {
-    ids.forEach((id) => {
-      this.animations.get(id)?.play();
-    });
-  }
-
   removeAnimation(id: string) {
-    const tween = this.animations.get(id);
-    if (!tween) return;
+    const animData = this.animations.get(id);
+    if (!animData) return;
 
-    tween.destroy();
+    animData.anim.destroy();
     this.animations.delete(id);
-    this.metas.delete(id);
+    // this.metas.delete(id);
 
     this.order = this.order
       .map((group) => group.filter((animId) => animId !== id))
@@ -138,6 +104,6 @@ export class AnimationManager {
 
   resetAll() {
     this.activeIndex = 0;
-    this.animations.forEach((tween) => tween.reset());
+    this.animations.forEach((animData) => animData.anim.reset());
   }
 }

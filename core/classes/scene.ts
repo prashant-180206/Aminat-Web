@@ -1,17 +1,14 @@
 // core/scene.ts
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import Konva from "@/lib/konva";
 import MobjectMap, { Mobject } from "../maps/MobjectMap";
 
-import {
-  AnimationManager,
-  AnimationMeta,
-  AnimationType,
-} from "./animation/animationManager";
+import { AnimationManager } from "./animation/animationManager";
 // import { getAnim } from "./animation/animations";
 import { TrackerManager } from "./Tracker/TrackerManager";
 import { ValueTracker } from "./Tracker/valuetracker";
+import { AnimInfo } from "../types/animation";
 
 // import { TrackerManager } from "./animation/TrackerManager";
 // import { ValueTracker } from "./animation/ValueTracker";
@@ -189,7 +186,7 @@ class Scene extends Konva.Stage {
   /* ANIMATION MANAGER                                           */
   /* ============================================================ */
 
-  getAnimationGroups(): AnimationMeta[][] {
+  getAnimationGroups(): AnimInfo[][] {
     return this.animManager.getGroupsWithMeta();
   }
 
@@ -217,26 +214,8 @@ class Scene extends Konva.Stage {
   /* HIGH-LEVEL ANIMATION CREATION                                */
   /* ============================================================ */
 
-  createAnimation(
-    targetId: string,
-    type: AnimationType,
-    inputs: any = {}
-  ): string | null {
-    const node = this.getMobjectById(targetId);
-    if (!node) return null;
-
-    const animMeta = node.animgetter.getAnimMeta(type);
-    if (!animMeta) return null;
-
-    const tween = animMeta.func(inputs);
-
-    if (!tween) return null;
-
-    return this.animManager.addTweenAsGroup(tween, {
-      targetId,
-      type,
-      label: animMeta.title,
-    });
+  addAnimations(...anims: AnimInfo[]): string[] {
+    return this.animManager.addAnimations(...anims);
   }
 }
 
