@@ -5,10 +5,12 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DotProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
+import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
 // import type { Point } from './parametricCurve';
 
 export class Dot extends Konva.Circle {
   public animgetter: AnimGetter;
+  public trackerconnector: TrackerConnector;
   private _properties: DotProperties;
 
   constructor(config: Partial<DotProperties> = {}) {
@@ -18,6 +20,7 @@ export class Dot extends Konva.Circle {
     });
 
     this.animgetter = new AnimGetter(this);
+    this.trackerconnector = new TrackerConnector(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

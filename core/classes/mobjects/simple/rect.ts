@@ -4,9 +4,11 @@ import { DEFAULT_SCALE } from "@/core/config";
 import { RectangleProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
+import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
 
 export class MRect extends Konva.Rect {
   public animgetter: AnimGetter;
+  public trackerconnector: TrackerConnector;
   private _properties: RectangleProperties;
 
   constructor(config: Partial<RectangleProperties> = {}) {
@@ -17,6 +19,7 @@ export class MRect extends Konva.Rect {
     });
 
     this.animgetter = new AnimGetter(this);
+    this.trackerconnector = new TrackerConnector(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

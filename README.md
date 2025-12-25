@@ -11,12 +11,13 @@ Animat Web is an interactive, browser-based animation toolkit focused on mathema
 
 ## High-Level Architecture
 
-- **Scene Engine (Core):** `Scene` wraps a Konva `Stage` and a primary `Layer`, manages mobject lifecycle, and centralizes selection. See [core/classes/scene.ts](core/classes/scene.ts).
-- **Mobjects:** Classes that extend Konva nodes but expose strongly-typed `properties` for math-first usage. See [core/classes/mobjects](core/classes/mobjects).
-- **Registry:** A name→constructor map lets the editor add new objects by key. See [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts).
-- **Coordinates:** Utilities convert between math space and canvas pixels using defaults from [core/config.ts](core/config.ts). See [core/utils/conversion.ts](core/utils/conversion.ts).
-- **Animation:** `AnimationManager` groups Konva tweens and plays them in sequence or by group. See [core/classes/animation/animationManager.ts](core/classes/animation/animationManager.ts).
-- **Editor UI:** The Next.js app renders `/edit`, providing sidebar tools, property editing, and a canvas area wired to the engine via React context. See [app/edit](app/edit).
+- **Scene Engine:** `Scene` wraps `Konva.Stage` + a primary `Konva.Layer`, adds/removes mobjects, tracks `activeMobject`, and integrates `AnimationManager` + `TrackerManager`. See [core/classes/scene.ts](core/classes/scene.ts).
+- **Mobjects:** Typed classes extending Konva nodes with math-first `properties`, per-node `animgetter`, and a public `trackerconnector`. See [core/classes/mobjects](core/classes/mobjects).
+- **Registry:** `MobjectMap` maps keys → constructors for editor creation. See [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts).
+- **Coordinates:** `p2c`/`c2p` convert math↔canvas using defaults from [core/config.ts](core/config.ts). See [core/utils/conversion.ts](core/utils/conversion.ts).
+- **Animation:** Per-node catalogs (`AnimGetter`) produce tweens; `AnimationManager` groups and plays them. See [core/classes/animation](core/classes/animation).
+- **Trackers:** `ValueTracker`, `Slider`, and `TrackerManager` manage numeric controls; `TrackerConnector` binds tracker values to node attributes. See [core/classes/Tracker](core/classes/Tracker).
+- **Editor UI:** The Next.js `/edit` page provides sidebar tools, property editing, and canvas wired via React context. See [app/edit](app/edit).
 
 ## Editor Flow (app/edit)
 
@@ -26,40 +27,7 @@ Animat Web is an interactive, browser-based animation toolkit focused on mathema
 - **Edit properties:** [app/edit/components/propertiesEditor.tsx](app/edit/components/propertiesEditor.tsx) derives typed inputs from the active mobject via [app/edit/components/input/propertyDescriptor.tsx](app/edit/components/input/propertyDescriptor.tsx). Inputs in [app/edit/components/propertyCard.tsx](app/edit/components/propertyCard.tsx) update `mobj.properties` directly.
 - **Sidebar shell:** [app/edit/components/sidebar.tsx](app/edit/components/sidebar.tsx) uses Radix Tabs and a collapsible panel for tools.
 
-## Mobjects Library (core/classes/mobjects)
-
-- **Simple:** [circle](core/classes/mobjects/simple/circle.ts), [rect](core/classes/mobjects/simple/rect.ts), [dot](core/classes/mobjects/simple/dot.ts), [line](core/classes/mobjects/simple/line.ts), [polygon](core/classes/mobjects/simple/polygon.ts), [text](core/classes/mobjects/simple/text.ts), [curve](core/classes/mobjects/simple/curve.ts)
-- **Geometric:** [vector](core/classes/mobjects/geometric/vector.ts)
-- **Group:** [plane](core/classes/mobjects/group/plane.ts) (axes, grid, numeric labels)
-
-All mobjects:
-
-- Extend a Konva node type (`Konva.Shape`, `Konva.Group`, etc.).
-- Maintain a private `_properties` store and expose `get properties()`/`set properties()`.
-- Convert between math↔canvas as needed using `p2c`/`c2p`.
-
-Notable implementations:
-
-- **Text (`MText`):** Double-click to inline-edit content using a DOM `<textarea>` overlay and a Konva `Transformer` for width handles.
-- **Plane (`MPlane`):** Renders axes, grid lines, and labels based on `xrange`/`yrange`, `labelsize`, `axiscolor`, etc.
-
-## Coordinates & Defaults
-
-- Defaults live in [core/config.ts](core/config.ts): `DEFAULT_WIDTH = 850`, `DEFAULT_HEIGHT = 480`, `DEFAULT_SCALE = 50`.
-- Convert canvas→math: `c2p(x, y)`; math→canvas: `p2c(x, y)` ([core/utils/conversion.ts](core/utils/conversion.ts)).
-- Most sizes and positions are expressed in math units; mobjects multiply by `DEFAULT_SCALE` internally to render in pixels.
-
-## Scene API (core/classes/scene.ts)
-
-- `addMobject(key: string)`: instantiates via the registry, adds to the layer, assigns an id like `name-N`, and makes it draggable.
-- `removeMobject(id: string)`: removes and cleans up the Konva node and internal lists.
-- `getMobjectById(id: string)`: convenience lookup in the layer.
-- `activeMobject`: tracks the current selection (also mirrored in editor context).
-
-## Animation (core/classes/animation)
-
-- `AnimationManager` stores `Konva.Tween`s, groups them, and advances through groups with `animate()`, `animateNext()`, or `animateGroup(ids)`. Useful for sequencing property changes.
-- `CreateAnimation` is a thin extension of `Konva.Tween` for future specialization.
+ 
 
 ## Extending the System
 
@@ -104,7 +72,7 @@ Open the editor at <http://localhost:3000/edit>
 ## Notes & Limitations
 
 - Server-side rendering is disabled for the scene; Konva nodes are created client-side in [app/edit/scene.tsx](app/edit/scene.tsx).
-- `TrackerManager` exists as a placeholder in [core/classes/Tracker/TrackerManager.ts](core/classes/Tracker/TrackerManager.ts) for future features.
+- `TrackerManager` registers `ValueTracker`s and optional `Slider`s; see [core/classes/Tracker/TrackerManager.ts](core/classes/Tracker/TrackerManager.ts).
 - Parametric curves rely on `mathjs` expressions; invalid expressions will fail to render.
 
 ## Roadmap
@@ -113,3 +81,132 @@ Open the editor at <http://localhost:3000/edit>
 - Group transforms and nested hierarchies beyond the plane.
 - Export to MP4/GIF via headless frame rendering.
 - Snapping, rulers, and better selection handles.
+
+<!-- Core Details removed; content promoted to top-level sections below -->
+
+## Coordinates & Defaults
+
+- Defaults: see [core/config.ts](core/config.ts)
+  - `DEFAULT_WIDTH = 850`, `DEFAULT_HEIGHT = 480`, `DEFAULT_SCALE = 50`.
+- Conversions: see [core/utils/conversion.ts](core/utils/conversion.ts)
+  - Canvas → Math: $x_\text{math} = \frac{x - \text{DEFAULT\_WIDTH}/2}{\text{DEFAULT\_SCALE}}$, $y_\text{math} = \frac{y - \text{DEFAULT\_HEIGHT}/2}{\text{DEFAULT\_SCALE}}$.
+  - Math → Canvas: $x_\text{px} = x\cdot\text{DEFAULT\_SCALE} + \text{DEFAULT\_WIDTH}/2$, $y_\text{px} = y\cdot\text{DEFAULT\_SCALE} + \text{DEFAULT\_HEIGHT}/2$.
+
+## Scene
+
+- Class: [core/classes/scene.ts](core/classes/scene.ts)
+- Responsibilities:
+  - Owns a Konva `Stage` and primary `Layer`.
+  - Adds/removes mobjects via the registry [core/maps/MobjectMap.ts](core/maps/MobjectMap.ts).
+  - Tracks `activeMobject` and updates it on click (`UpdateFromKonvaProperties()`).
+  - Orchestrates animation playback through `AnimationManager`.
+  - Hosts `TrackerManager` for UI-bound numeric controls.
+- Key methods:
+  - `addMobject(type: string): Mobject` — instantiates, IDs, draggables, layers.
+  - `removeMobject(id: string)` — destroys and redraws.
+  - `getAnimationGroups(): AnimInfo[][]`, `playCurrentGroup()`, `resetAnimations()`, `moveAnimationGroup()`.
+
+## Mobjects
+
+All mobjects expose a typed `properties` object and keep Konva attributes in sync. They also implement `UpdateFromKonvaProperties()` to reflect manual edits back into `properties`.
+
+- Circle: [core/classes/mobjects/simple/circle.ts](core/classes/mobjects/simple/circle.ts)
+  - Properties: `radius`, `color`, `bordercolor`, `thickness`, `position`, `scale`, `rotation`, `opacity`, `zindex`.
+  - Sync: `radius` uses math units scaled by `DEFAULT_SCALE`.
+- Rect: [core/classes/mobjects/simple/rect.ts](core/classes/mobjects/simple/rect.ts)
+  - Properties: `width`, `height`, `cornerRadius`, plus base.
+  - Positioning centers by subtracting half width/height for visual middle alignment.
+- Line: [core/classes/mobjects/simple/line.ts](core/classes/mobjects/simple/line.ts)
+  - Properties: `start`, `end`, `thickness`, plus base.
+  - `points` are set using math→canvas conversion for endpoints.
+- Dot: [core/classes/mobjects/simple/dot.ts](core/classes/mobjects/simple/dot.ts)
+  - Properties: `radius` plus base; stroke width is zero.
+- Polygon: [core/classes/mobjects/simple/polygon.ts](core/classes/mobjects/simple/polygon.ts)
+  - Properties: `points[]`, `thickness`, `bordercolor`, plus base.
+  - Uses custom `sceneFunc` and `hitFunc` to draw in local coords; points are converted relative to node origin.
+- Text: [core/classes/mobjects/simple/text.ts](core/classes/mobjects/simple/text.ts)
+  - Properties: `content`, `fontsize`, `fontfamily`, `bold`, `italic`, plus base.
+  - Inline editing: double-click to open a DOM textarea overlay; includes a Konva `Transformer` for resizing.
+- Curve (Parametric): [core/classes/mobjects/simple/curve.ts](core/classes/mobjects/simple/curve.ts)
+  - Properties: `parameterRange`, `Xfunc`, `Yfunc`, `thickness`, `bordercolor`, plus base.
+  - Sampling: builds points by evaluating expressions with `mathjs`; converts to canvas and offsets by position.
+- Vector: [core/classes/mobjects/geometric/vector.ts](core/classes/mobjects/geometric/vector.ts)
+  - Based on `Konva.Arrow`; Properties inherit from `Line` and add `pointerSize`.
+- Plane: [core/classes/mobjects/group/plane.ts](core/classes/mobjects/group/plane.ts)
+  - Renders axes/grid/labels from `xrange`/`yrange`; configurable `labelsize`, `axiscolor`, `gridthickness`, etc.
+
+## Animation
+
+- Manager: [core/classes/animation/animationManager.ts](core/classes/animation/animationManager.ts)
+  - Stores tweens (`AnimInfo`), groups IDs into playback sets, cycles with `animate()`.
+  - Group control: `moveGroup(index, up|down)`, `removeAnimation(id)`, `resetAll()`.
+- Getter (per-node catalog): [core/classes/animation/animgetter.ts](core/classes/animation/animgetter.ts)
+  - Built-ins registered per node: `Create`, `Destroy`, `Move`.
+    - `Create`: scales from 0 and fades in to node’s current scale/opacity.
+    - `Destroy`: scales to 0 and fades out.
+    - `Move`: animates `x,y` with easing, converts math→canvas via `p2c`.
+  - Extend via `addAnimFunc(name, meta)` where `meta.func(args) => AnimInfo`.
+- Easing registry: [core/maps/easingMap.ts](core/maps/easingMap.ts)
+  - Keys: `Linear`, `EaseIn`, `EaseOut`, `EaseInOut`, `BackEaseIn`, `BackEaseOut`, `BackEaseInOut`, `BounceEaseIn`, `BounceEaseOut`, `BounceEaseInOut`, `StrongEaseIn`, `StrongEaseOut`, `StrongEaseInOut`.
+
+## Trackers & UI Controls
+
+- `ValueTracker`: [core/classes/Tracker/valuetracker.ts](core/classes/Tracker/valuetracker.ts)
+  - Holds a numeric value, notifies registered updaters each change.
+  - `animateTo(target, { duration, easing, onFinish })` returns a Konva tween that drives the value smoothly.
+- `Slider`: [core/classes/Tracker/slider.ts](core/classes/Tracker/slider.ts)
+  - Konva UI component bound to a `ValueTracker`; draggable thumb updates the tracker; tracker changes reposition the thumb.
+  - Configurable `min`, `max`, `width`, `height`, `trackColor`, `thumbColor`, `thumbRadius`.
+- `TrackerManager`: [core/classes/Tracker/TrackerManager.ts](core/classes/Tracker/TrackerManager.ts)
+  - Registers named `ValueTracker`s; optionally materializes a `Slider` and adds it to the layer.
+  - Helpers: `animateTrackerTo(name, target)`, `animateSliderIn(name)`, `animateSliderOut(name)`.
+- `TrackerConnector`: [core/classes/Tracker/TrackerConnector.ts](core/classes/Tracker/TrackerConnector.ts)
+  - Per-mobject public `trackerconnector` for binding trackers to node attributes.
+  - Built-in connectors: `x`, `y`, `rotation`, `scale` (uniform), `opacity`.
+  - API: `addConnectorFunc(name, (value) => void)`, `getConnectorFunc(name)`, `getConnectorFuncNames()`.
+
+## Typings
+
+- Animation types: [core/types/animation.ts](core/types/animation.ts)
+  - `AnimInfo`: `{ id, mobjId, type, label, anim: Konva.Tween }`.
+  - `AnimMeta`: per-catalog entry with `title`, `type`, `input` schema, and `func(args)` to produce `AnimInfo`.
+- Mobjects union: [core/types/mobjects.ts](core/types/mobjects.ts)
+  - `Mobject` union of all concrete classes; `MobjectMapType` for registry entries.
+- Properties: [core/types/properties.ts](core/types/properties.ts)
+  - `BaseProperties` plus specific `CircleProperties`, `RectangleProperties`, `TextProperties`, `PolygonProperties`, `DotProperties`, `LineProperties`, `VectorProperties`, `CurveProperties`, `PlaneProperties`.
+
+## Usage Examples
+
+Bind a slider to move a dot on X:
+
+```ts
+const scene = /* created stage */;
+const dot = scene.addMobject("dot");
+const tracker = scene["trackerManager"].addValueTracker("xTracker", { initial: 0, min: -5, max: 5, slider: { width: 240, position: { x: 20, y: 420 } } });
+
+// Connect tracker to dot's x
+const xConnector = dot.trackerconnector.getConnectorFunc("x");
+if (xConnector) tracker.addUpdater((v) => xConnector(v));
+
+// Animate slider appearance
+scene["trackerManager"].animateSliderIn("xTracker")?.play();
+```
+
+Create and play a move animation group:
+
+```ts
+// Build an animation via per-node catalog
+const moveMeta = dot.animgetter.getAnimMeta("Move");
+const move = moveMeta?.func({ duration: 1, easing: "EaseInOut", toX: 2, toY: 1 });
+
+if (move) {
+  const ids = scene.addAnimations(move);
+  scene.playCurrentGroup(); // plays the group containing `move`
+}
+```
+
+## Implementation Notes
+
+- Property setters use partial objects; only provided keys are synced to Konva, allowing fine-grained updates.
+- `UpdateFromKonvaProperties()` reads back Konva state to `properties` for manual drags/edits; not all visual attributes are mirrored to avoid noisy writes.
+- Many mobjects perform math→canvas conversions on assignment; sizes and positions are consistently expressed as math units.

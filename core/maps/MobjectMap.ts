@@ -19,26 +19,7 @@ import {
   RectangleHorizontal,
   Slash,
 } from "lucide-react";
-
-export type Mobject =
-  | MCircle
-  | ParametricCurve
-  | MRect
-  | Dot
-  | MLine
-  | MPolygon
-  | MText
-  | MVector
-  | MPlane;
-
-export type MobjectMapType = {
-  [key: string]: {
-    func: () => Mobject;
-    name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Icon: React.FC<any>;
-  };
-};
+import { MobjectMapType } from "../types/mobjects";
 
 const MobjectMap: MobjectMapType = {
   circle: { func: () => new MCircle(), name: "Circle", Icon: Circle },

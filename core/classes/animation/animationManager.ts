@@ -77,13 +77,6 @@ export class AnimationManager {
     this.activeIndex = (this.activeIndex + 1) % this.order.length;
   }
 
-  animateNext() {
-    if (this.order.length === 0) return;
-
-    this.activeIndex = (this.activeIndex + 1) % this.order.length;
-    this.animate();
-  }
-
   removeAnimation(id: string) {
     const animData = this.animations.get(id);
     if (!animData) {

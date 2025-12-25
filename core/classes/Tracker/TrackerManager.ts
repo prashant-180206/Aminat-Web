@@ -24,8 +24,6 @@ type AddTrackerOptions = {
     thumbRadius?: number;
     position?: { x: number; y: number };
   };
-
-  onValueChange?: (value: number) => void;
 };
 
 export class TrackerManager {
@@ -46,10 +44,6 @@ export class TrackerManager {
     }
 
     const tracker = new ValueTracker(options.initial);
-
-    if (options.onValueChange) {
-      tracker.addUpdater(options.onValueChange);
-    }
 
     let slider: Slider | undefined;
 
@@ -129,6 +123,32 @@ export class TrackerManager {
       node: slider,
       x: originalX,
       opacity: 1,
+      duration: config.duration ?? 0.4,
+      easing: config.easing ?? Konva.Easings.EaseOut,
+    });
+  }
+
+  animateSliderOut(
+    name: string,
+    config: {
+      duration?: number;
+      easing?: (t: number) => number;
+      fromX?: number;
+    } = {}
+  ): Konva.Tween | null {
+    const slider = this.getSlider(name);
+    if (!slider) return null;
+
+    const originalX = slider.x();
+    const fromX = config.fromX ?? originalX + 50;
+
+    slider.x(fromX);
+    // slider.opacity();
+
+    return new Konva.Tween({
+      node: slider,
+      x: originalX,
+      opacity: 0,
       duration: config.duration ?? 0.4,
       easing: config.easing ?? Konva.Easings.EaseOut,
     });

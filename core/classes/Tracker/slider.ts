@@ -87,7 +87,7 @@ export class Slider extends Konva.Group {
 
     /* ---------------- ValueTracker → Thumb ---------------- */
 
-    this.tracker.addUpdater((v) => {
+    this.tracker.addUpdater("Slider", (v) => {
       const t = (v - this.min) / (this.max - this.min);
       this.thumb.x(t * this.widthPx);
       this.getLayer()?.batchDraw();

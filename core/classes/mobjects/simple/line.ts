@@ -3,9 +3,11 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { LineProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
+import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
 
 export class MLine extends Konva.Line {
   public animgetter: AnimGetter;
+  public trackerconnector: TrackerConnector;
   private _properties: LineProperties;
 
   constructor(config: Partial<LineProperties> = {}) {
@@ -16,6 +18,7 @@ export class MLine extends Konva.Line {
     });
 
     this.animgetter = new AnimGetter(this);
+    this.trackerconnector = new TrackerConnector(this);
 
     this._properties = {
       position: { x: 0, y: 0 },

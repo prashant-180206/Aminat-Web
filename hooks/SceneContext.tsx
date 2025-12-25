@@ -3,7 +3,8 @@
 
 import { createContext, useContext, useState } from "react";
 import Scene from "@/core/classes/scene";
-import { Mobject } from "@/core/maps/MobjectMap";
+import { Mobject } from "@/core/types/mobjects";
+// import { Mobject } from "@/core/maps/MobjectMap";
 
 // context/SceneContext.tsx
 interface SceneContextType {
