@@ -27,25 +27,17 @@ const MoreTab: React.FC = () => {
   }, [scene]);
 
   return (
-    <div className="p-4 flex flex-col gap-3 w-[250px]">
-      <div className="flex gap-2">
+    <div className="p-4 flex flex-col gap-3 w-[250px] h-screen no-scrollbar overflow-y-auto">
+      <div className="gap-2 w-full flex flex-col">
         <Button
           onClick={() => {
             scene?.playCurrentGroup();
+            // refresh();
           }}
         >
           Play Group
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            scene?.playNextGroup();
-          }}
-        >
-          Next Group
-        </Button>
-      </div>
-      <div className="flex gap-2">
+
         <Button
           variant="secondary"
           onClick={() => {
@@ -58,6 +50,7 @@ const MoreTab: React.FC = () => {
           Refresh
         </Button>
       </div>
+
       <Separator />
       <div className="flex flex-col gap-2">
         {groups.length === 0 && (

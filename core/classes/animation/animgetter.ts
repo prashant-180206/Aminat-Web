@@ -93,6 +93,9 @@ export class AnimGetter {
         if (args.toX === undefined || args.toY === undefined) return null;
         const canvas = p2c(args.toX, args.toY);
 
+        console.log("Move Anim Func called ", canvas);
+        console.log("Current Pos ", this.node.x(), this.node.y());
+
         const tween = new Konva.Tween({
           node: this.node,
           duration: args.duration || 1,

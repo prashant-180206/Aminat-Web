@@ -12,9 +12,8 @@ export class AnimationManager {
     const ids: string[] = [];
 
     tweens.forEach((animData) => {
-      const id = `anim-${this.counter++}`;
-      this.animations.set(id, animData);
-      ids.push(id);
+      this.animations.set(animData.id, animData);
+      ids.push(animData.id);
     });
 
     this.order.push(ids);
@@ -25,8 +24,8 @@ export class AnimationManager {
     return this.animations.get(id) || null;
   }
 
-  getInfo(id: string): AnimInfo | undefined {
-    return this.animations.get(id);
+  activeindex(): number {
+    return this.activeIndex;
   }
 
   //  * Moves a whole animation group up or down in the playback order
@@ -87,7 +86,11 @@ export class AnimationManager {
 
   removeAnimation(id: string) {
     const animData = this.animations.get(id);
-    if (!animData) return;
+    if (!animData) {
+      console.warn(`Animation with id ${id} not found`);
+      return;
+    }
+    console.log("Removing animation:", id);
 
     animData.anim.destroy();
     this.animations.delete(id);
@@ -103,7 +106,19 @@ export class AnimationManager {
   }
 
   resetAll() {
+    // Reset playback pointer
     this.activeIndex = 0;
-    this.animations.forEach((animData) => animData.anim.reset());
+
+    // Traverse groups in reverse execution order
+    for (let g = this.order.length - 1; g >= 0; g--) {
+      const group = this.order[g];
+
+      // Reset animations inside the group in reverse order
+      for (let i = group.length - 1; i >= 0; i--) {
+        const id = group[i];
+        const animData = this.animations.get(id);
+        animData?.anim.reset();
+      }
+    }
   }
 }
