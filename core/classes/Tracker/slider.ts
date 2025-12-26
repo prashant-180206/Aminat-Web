@@ -37,7 +37,7 @@ export class Slider extends Konva.Group {
     this.max = config.max ?? 1;
     this.widthPx = config.width ?? 200;
 
-    const height = config.height ?? 6;
+    const height = config.height ?? 30;
     const thumbRadius = config.thumbRadius ?? 10;
 
     /* ---------------- Track ---------------- */
@@ -100,6 +100,41 @@ export class Slider extends Konva.Group {
     } else {
       this.tracker.value = tracker.value;
     }
+
+    this.opacity(0);
+    this.scale({ x: 0, y: 0 });
+  }
+
+  // Animation Functions
+
+  appearAnim(): Konva.Tween {
+    const tween = new Konva.Tween({
+      node: this,
+      opacity: 1,
+      scale: {
+        x: 1,
+        y: 1,
+      },
+      duration: 1,
+      easing: Konva.Easings.EaseInOut,
+    });
+
+    return tween;
+  }
+
+  disappearAnim(): Konva.Tween {
+    const tween = new Konva.Tween({
+      node: this,
+      opacity: 0,
+      scale: {
+        x: 0,
+        y: 0,
+      },
+      duration: 1,
+      easing: Konva.Easings.EaseInOut,
+    });
+
+    return tween;
   }
 
   /* ---------------- Public API ---------------- */

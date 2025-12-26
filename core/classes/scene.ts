@@ -8,12 +8,8 @@ import { AnimationManager } from "./animation/animationManager";
 // import { getAnim } from "./animation/animations";
 import { TrackerManager } from "./Tracker/TrackerManager";
 // import { ValueTracker } from "./Tracker/valuetracker";
-import { AnimInfo } from "../types/animation";
+// import { AnimInfo } from "../types/animation";
 import { Mobject } from "../types/mobjects";
-
-// import { TrackerManager } from "./animation/TrackerManager";
-// import { ValueTracker } from "./animation/ValueTracker";
-// import { Slider } from "@/ui/slider";
 
 /* ------------------------------------------------------------ */
 /* Scene                                                        */
@@ -28,8 +24,8 @@ class Scene extends Konva.Stage {
   /* ---------------- Private ---------------- */
 
   private totalObjects = 0;
-  private animManager = new AnimationManager();
-  private trackerManager: TrackerManager;
+  animManager = new AnimationManager();
+  trackerManager: TrackerManager;
 
   /* ------------------------------------------------------------ */
 
@@ -72,38 +68,6 @@ class Scene extends Konva.Stage {
 
   getMobjectById(id: string): Mobject | null {
     return this.layer.findOne(`#${id}`) as Mobject | null;
-  }
-
-  /* ============================================================ */
-  /* ANIMATION MANAGER                                           */
-  /* ============================================================ */
-
-  getAnimationGroups(): AnimInfo[][] {
-    return this.animManager.getGroupsWithMeta();
-  }
-
-  playCurrentGroup() {
-    this.animManager.animate();
-  }
-
-  resetAnimations() {
-    this.animManager.resetAll();
-  }
-
-  moveAnimationGroup(index: number, dir: "up" | "down") {
-    this.animManager.moveGroup(index, dir);
-  }
-
-  removeAnimation(id: string) {
-    this.animManager.removeAnimation(id);
-  }
-
-  /* ============================================================ */
-  /* HIGH-LEVEL ANIMATION CREATION                                */
-  /* ============================================================ */
-
-  addAnimations(...anims: AnimInfo[]): string[] {
-    return this.animManager.addAnimations(...anims);
   }
 }
 

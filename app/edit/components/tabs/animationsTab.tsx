@@ -58,7 +58,7 @@ const AnimationsTab: React.FC = () => {
 
   const addAnimGroup = () => {
     if (!scene || animGroup.length === 0) return;
-    scene.addAnimations(...animGroup);
+    scene.animManager.addAnimations(...animGroup);
     setAnimGroup([]);
     toast.success("Animation group added to timeline");
   };

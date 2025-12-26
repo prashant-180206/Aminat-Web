@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { usePropertyDescriptors } from "./input/propertyDescriptor";
-import { PropertyInput } from "./propertyCard";
+import { PropertyInput } from "./input/propertyCard";
 import { Button } from "@/components/ui/button";
 import { useScene } from "@/hooks/SceneContext";
 

@@ -2,11 +2,11 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ColorDisc } from "@/components/colordisc";
-import PointsDropdownEditor from "./input/pointsDropdownEditor";
+import PointsDropdownEditor from "./pointsDropdownEditor";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { PointInput } from "./input/pointInput";
-import { RangeInput } from "./input/rangeInput";
+import { PointInput } from "./pointInput";
+import { RangeInput } from "./rangeInput";
 
 type Props = {
   item: {

@@ -8,7 +8,7 @@ import {
   PropertiesSkeleton,
   SceneSkeleton,
   RightSidebarSkeleton,
-} from "./components/skeletons";
+} from "./components/tabs/skeletons";
 
 /* ---------------- Lazy imports ---------------- */
 

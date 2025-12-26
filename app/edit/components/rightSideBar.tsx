@@ -11,7 +11,7 @@ import { Settings, PlayCircle } from "lucide-react";
 import React from "react";
 // import Objects from "./mobjectsTab";
 // import AnimationsTab from "./animationsTab";
-import MoreTab from "./moreTab";
+import MoreTab from "./tabs/moreTab";
 
 const RightSideBar = () => {
   return (

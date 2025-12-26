@@ -13,7 +13,7 @@ const MoreTab: React.FC = () => {
 
   const refresh = () => {
     if (!scene) return;
-    const metas = scene.getAnimationGroups();
+    const metas = scene.animManager.getGroupsWithMeta();
     // map to serializable bits for UI
     const lite = metas.map((grp) =>
       grp.map((m) => ({ id: m.id, targetId: m.mobjId, type: m.type }))
@@ -31,7 +31,7 @@ const MoreTab: React.FC = () => {
       <div className="gap-2 w-full flex flex-col">
         <Button
           onClick={() => {
-            scene?.playCurrentGroup();
+            scene?.animManager?.animate();
             // refresh();
           }}
         >
@@ -41,7 +41,7 @@ const MoreTab: React.FC = () => {
         <Button
           variant="secondary"
           onClick={() => {
-            scene?.resetAnimations();
+            scene?.animManager?.resetAll();
           }}
         >
           Reset All
@@ -65,7 +65,7 @@ const MoreTab: React.FC = () => {
                   size="sm"
                   variant="ghost"
                   onClick={() => {
-                    scene?.moveAnimationGroup(gi, "up");
+                    scene?.animManager.moveGroup(gi, "up");
                     refresh();
                   }}
                 >
@@ -75,7 +75,7 @@ const MoreTab: React.FC = () => {
                   size="sm"
                   variant="ghost"
                   onClick={() => {
-                    scene?.moveAnimationGroup(gi, "down");
+                    scene?.animManager.moveGroup(gi, "down");
                     refresh();
                   }}
                 >
@@ -96,7 +96,7 @@ const MoreTab: React.FC = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => {
-                      scene?.removeAnimation(m.id);
+                      scene?.animManager.removeAnimation(m.id);
                       refresh();
                     }}
                   >

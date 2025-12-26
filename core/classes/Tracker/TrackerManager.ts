@@ -2,32 +2,12 @@
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 import Konva from "@/lib/konva";
 import { ValueTracker } from "./valuetracker";
+// import { Slider } from "./slider";
+import { TrackerMeta } from "@/core/types/tracker";
 import { Slider } from "./slider";
-// import { ValueTracker } from "./ValueTracker";
-// import { Slider } from "@/ui/slider";
-
-type TrackerEntry = {
-  tracker: ValueTracker;
-  slider?: Slider;
-};
-
-type AddTrackerOptions = {
-  initial: number;
-  min?: number;
-  max?: number;
-
-  slider?: {
-    width?: number;
-    height?: number;
-    trackColor?: string;
-    thumbColor?: string;
-    thumbRadius?: number;
-    position?: { x: number; y: number };
-  };
-};
 
 export class TrackerManager {
-  private trackers = new Map<string, TrackerEntry>();
+  private trackers = new Map<string, TrackerMeta>();
   private layer: Konva.Layer;
 
   constructor(layer: Konva.Layer) {
@@ -38,120 +18,42 @@ export class TrackerManager {
   /* Registration                                            */
   /* ------------------------------------------------------- */
 
-  addValueTracker(name: string, options: AddTrackerOptions): ValueTracker {
+  addValueTracker(
+    name: string,
+    value: number
+  ): { tracker: ValueTracker | null; success: boolean } {
     if (this.trackers.has(name)) {
-      throw new Error(`ValueTracker "${name}" already exists`);
+      return {
+        tracker: null,
+        success: false,
+      };
     }
+    const tracker = new ValueTracker(value);
 
-    const tracker = new ValueTracker(options.initial);
+    this.trackers.set(name, { tracker, slider: null });
+    return { tracker, success: true };
+  }
 
-    let slider: Slider | undefined;
-
-    if (options.slider) {
-      slider = new Slider(tracker, {
-        min: options.min,
-        max: options.max,
-        width: options.slider.width,
-        height: options.slider.height,
-        trackColor: options.slider.trackColor,
-        thumbColor: options.slider.thumbColor,
-        thumbRadius: options.slider.thumbRadius,
-        initial: options.initial,
-      });
-
-      slider.position(options.slider.position ?? { x: 0, y: 0 });
-      this.layer.add(slider);
+  addSlider(sliderName: string, options: { min: number; max: number }) {
+    const meta = this.trackers.get(sliderName);
+    if (!meta || meta.slider) {
+      return false;
     }
-
-    this.trackers.set(name, { tracker, slider });
-    return tracker;
+    const slider = new Slider(meta.tracker, options);
+    meta.slider = slider;
+    return true;
   }
 
   /* ------------------------------------------------------- */
   /* Lookup                                                  */
   /* ------------------------------------------------------- */
 
-  getTracker(name: string): ValueTracker | undefined {
-    return this.trackers.get(name)?.tracker;
-  }
-
-  getSlider(name: string): Slider | undefined {
-    return this.trackers.get(name)?.slider;
+  getTrackerMeta(name: string): TrackerMeta | null {
+    return this.trackers.get(name) ?? null;
   }
 
   getAllNames(): string[] {
     return Array.from(this.trackers.keys());
-  }
-
-  /* ------------------------------------------------------- */
-  /* Animation helpers                                       */
-  /* ------------------------------------------------------- */
-
-  animateTrackerTo(
-    name: string,
-    target: number,
-    config?: {
-      duration?: number;
-      easing?: (t: number) => number;
-      onFinish?: () => void;
-    }
-  ): Konva.Tween | null {
-    const tracker = this.getTracker(name);
-    if (!tracker) return null;
-
-    return tracker.animateTo(target, config);
-  }
-
-  animateSliderIn(
-    name: string,
-    config: {
-      duration?: number;
-      easing?: (t: number) => number;
-      fromX?: number;
-    } = {}
-  ): Konva.Tween | null {
-    const slider = this.getSlider(name);
-    if (!slider) return null;
-
-    const originalX = slider.x();
-    const fromX = config.fromX ?? originalX - 50;
-
-    slider.x(fromX);
-    slider.opacity(0);
-
-    return new Konva.Tween({
-      node: slider,
-      x: originalX,
-      opacity: 1,
-      duration: config.duration ?? 0.4,
-      easing: config.easing ?? Konva.Easings.EaseOut,
-    });
-  }
-
-  animateSliderOut(
-    name: string,
-    config: {
-      duration?: number;
-      easing?: (t: number) => number;
-      fromX?: number;
-    } = {}
-  ): Konva.Tween | null {
-    const slider = this.getSlider(name);
-    if (!slider) return null;
-
-    const originalX = slider.x();
-    const fromX = config.fromX ?? originalX + 50;
-
-    slider.x(fromX);
-    // slider.opacity();
-
-    return new Konva.Tween({
-      node: slider,
-      x: originalX,
-      opacity: 0,
-      duration: config.duration ?? 0.4,
-      easing: config.easing ?? Konva.Easings.EaseOut,
-    });
   }
 
   /* ------------------------------------------------------- */
@@ -171,34 +73,5 @@ export class TrackerManager {
       entry.slider?.destroy();
     });
     this.trackers.clear();
-  }
-
-  //   Extra Functions (if any) can be added here
-  // core/animation/TrackerManager.ts
-  addValueTrackerWithSlider(
-    name: string,
-    options: AddTrackerOptions
-  ): { tracker: ValueTracker; slider?: Slider } {
-    const tracker = this.addValueTracker(name, {
-      ...options,
-      slider: undefined, // prevent auto-adding to layer
-    });
-
-    let slider: Slider | undefined;
-
-    if (options.slider) {
-      slider = new Slider(tracker, {
-        min: options.min,
-        max: options.max,
-        width: options.slider.width,
-        height: options.slider.height,
-        trackColor: options.slider.trackColor,
-        thumbColor: options.slider.thumbColor,
-        thumbRadius: options.slider.thumbRadius,
-        initial: options.initial,
-      });
-    }
-
-    return { tracker, slider };
   }
 }

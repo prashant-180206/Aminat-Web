@@ -9,8 +9,8 @@ import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { DraftingCompass, Settings, PlayCircle } from "lucide-react";
 
 import React from "react";
-import Objects from "./mobjectsTab";
-import AnimationsTab from "./animationsTab";
+import Objects from "./tabs/mobjectsTab";
+import AnimationsTab from "./tabs/animationsTab";
 // import MoreTab from "./moreTab";
 
 const EditSidebar = () => {
