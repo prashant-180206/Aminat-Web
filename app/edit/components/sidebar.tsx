@@ -4,71 +4,71 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Tabs } from "@/components/ui/tabs";
-import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { DraftingCompass, Settings, PlayCircle, Videotape } from "lucide-react";
-
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
-import Objects from "./tabs/mobjectsTab";
-import AnimationsTab from "./tabs/animationsTab";
-import TrackersTab from "./tabs/trackersTab";
-// import MoreTab from "./moreTab";
 
-const EditSidebar = () => {
+type SidebarProps = {
+  children?: React.ReactNode;
+};
+
+const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
+  const pathname = usePathname();
+
+  const isActive = (route: string) => pathname?.startsWith(route);
+
   return (
     <Collapsible className="transition-all ease-in-out duration-300">
-      <Tabs
-        orientation="vertical"
-        defaultValue="mobjects"
-        className="h-full flex flex-row bg-bg-light"
-      >
-        <TabsList className="flex flex-col pl-2 py-2 gap-2">
+      <div className="h-full flex flex-row bg-bg-light">
+        <div className="flex flex-col pl-2 py-2 gap-2">
           <CollapsibleTrigger asChild>
             <Button>☰</Button>
           </CollapsibleTrigger>
-          <TabsTrigger value="mobjects" asChild>
-            <Button>
+
+          <Button
+            asChild
+            variant={isActive("/edit/mobjects") ? "secondary" : "ghost"}
+          >
+            <Link href="/edit/mobjects" aria-label="Mobjects">
               <DraftingCompass size={28} strokeWidth={1.75} />
-            </Button>
-          </TabsTrigger>
-          <TabsTrigger value="animations" asChild>
-            <Button>
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant={isActive("/edit/animations") ? "secondary" : "ghost"}
+          >
+            <Link href="/edit/animations" aria-label="Animations">
               <PlayCircle size={28} strokeWidth={1.75} />
-            </Button>
-          </TabsTrigger>
-          <TabsTrigger value="settings" asChild>
-            <Button>
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant={isActive("/edit/settings") ? "secondary" : "ghost"}
+          >
+            <Link href="/edit/settings" aria-label="Settings">
               <Settings size={28} strokeWidth={1.75} />
-            </Button>
-          </TabsTrigger>
-          <TabsTrigger value="trackers" asChild>
-            <Button>
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant={isActive("/edit/trackers") ? "secondary" : "ghost"}
+          >
+            <Link href="/edit/trackers" aria-label="Trackers">
               <Videotape size={28} strokeWidth={1.75} />
-            </Button>
-          </TabsTrigger>
-        </TabsList>
+            </Link>
+          </Button>
+        </div>
 
         <div className="bg-bg-dark">
           <CollapsibleContent className="w-[250px]">
-            <TabsContent value="mobjects">
-              {/* Mobjects content goes here */}
-              <Objects />
-            </TabsContent>
-            <TabsContent value="animations">
-              <AnimationsTab />
-              {/* <MoreTab /> */}
-            </TabsContent>
-            <TabsContent value="settings">
-              {/* Settings content goes here */}
-              <h1>Settings</h1>
-            </TabsContent>
-            <TabsContent value="trackers">
-              {/* Settings content goes here */}
-              <TrackersTab />
-            </TabsContent>
+            {children}
           </CollapsibleContent>
         </div>
-      </Tabs>
+      </div>
     </Collapsible>
   );
 };
