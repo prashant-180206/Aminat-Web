@@ -15,6 +15,7 @@ export class ValueTracker {
   }
 
   set value(v: number) {
+    if (Math.abs(this._value - v) < 0.1) return;
     this._value = v;
     this.UpdateFuncs.forEach((cb) => cb(v));
   }

@@ -30,18 +30,18 @@ export class TrackerManager {
     }
     const tracker = new ValueTracker(value);
 
-    this.trackers.set(name, { tracker, slider: null });
+    this.trackers.set(name, { tracker, slider: null, id: name });
     return { tracker, success: true };
   }
 
   addSlider(sliderName: string, options: { min: number; max: number }) {
     const meta = this.trackers.get(sliderName);
     if (!meta || meta.slider) {
-      return false;
+      return { success: false, slider: null };
     }
     const slider = new Slider(meta.tracker, options);
     meta.slider = slider;
-    return true;
+    return { success: true, slider };
   }
 
   /* ------------------------------------------------------- */
@@ -54,6 +54,10 @@ export class TrackerManager {
 
   getAllNames(): string[] {
     return Array.from(this.trackers.keys());
+  }
+
+  getAllTrackerMetas(): TrackerMeta[] {
+    return Array.from(this.trackers.values());
   }
 
   /* ------------------------------------------------------- */

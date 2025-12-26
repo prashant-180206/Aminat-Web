@@ -6,11 +6,12 @@ import {
 } from "@/components/ui/collapsible";
 import { Tabs } from "@/components/ui/tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { DraftingCompass, Settings, PlayCircle } from "lucide-react";
+import { DraftingCompass, Settings, PlayCircle, Videotape } from "lucide-react";
 
 import React from "react";
 import Objects from "./tabs/mobjectsTab";
 import AnimationsTab from "./tabs/animationsTab";
+import TrackersTab from "./tabs/trackersTab";
 // import MoreTab from "./moreTab";
 
 const EditSidebar = () => {
@@ -40,6 +41,11 @@ const EditSidebar = () => {
               <Settings size={28} strokeWidth={1.75} />
             </Button>
           </TabsTrigger>
+          <TabsTrigger value="trackers" asChild>
+            <Button>
+              <Videotape size={28} strokeWidth={1.75} />
+            </Button>
+          </TabsTrigger>
         </TabsList>
 
         <div className="bg-bg-dark">
@@ -55,6 +61,10 @@ const EditSidebar = () => {
             <TabsContent value="settings">
               {/* Settings content goes here */}
               <h1>Settings</h1>
+            </TabsContent>
+            <TabsContent value="trackers">
+              {/* Settings content goes here */}
+              <TrackersTab />
             </TabsContent>
           </CollapsibleContent>
         </div>

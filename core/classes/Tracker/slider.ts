@@ -1,8 +1,5 @@
-// ui/slider.ts
-// /* eslint-disable @typescript-eslint/no-explicit-any */
 import Konva from "@/lib/konva";
 import { ValueTracker } from "./valuetracker";
-// import { ValueTracker } from "@/core/animation/ValueTracker";
 
 type SliderConfig = {
   width?: number;
@@ -27,7 +24,7 @@ export class Slider extends Konva.Group {
 
   constructor(tracker: ValueTracker, config: SliderConfig = {}) {
     super({
-      draggable: true,
+      draggable: false,
       name: "slider",
     });
 
@@ -49,6 +46,7 @@ export class Slider extends Konva.Group {
       height,
       fill: config.trackColor ?? "#444",
       cornerRadius: height / 2,
+      listening: true,
     });
 
     /* ---------------- Thumb ---------------- */
@@ -68,7 +66,7 @@ export class Slider extends Konva.Group {
     this.add(this.track);
     this.add(this.thumb);
 
-    /* ---------------- Interaction → ValueTracker ---------------- */
+    /* ---------------- Thumb → ValueTracker ---------------- */
 
     const updateFromThumb = () => {
       const t = this.thumb.x() / this.widthPx;
@@ -78,63 +76,68 @@ export class Slider extends Konva.Group {
 
     this.thumb.on("dragmove", updateFromThumb);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.track.on("mousedown touchstart", (e) => {
-      const localX = this.getRelativePointerPosition()?.x ?? 0;
-      this.thumb.x(Math.max(0, Math.min(localX, this.widthPx)));
+    /* ---------------- Track Click ---------------- */
+
+    this.track.on("mousedown touchstart", () => {
+      const stage = this.getStage();
+      if (!stage) return;
+
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+
+      const transform = this.getAbsoluteTransform().copy().invert();
+      const localPos = transform.point(pointer);
+
+      const x = Math.max(0, Math.min(localPos.x, this.widthPx));
+      this.thumb.x(x);
       updateFromThumb();
     });
 
     /* ---------------- ValueTracker → Thumb ---------------- */
 
     this.tracker.addUpdater("Slider", (v) => {
-      const t = (v - this.min) / (this.max - this.min);
+      if (this.max === this.min) return;
+
+      const clamped = Math.max(this.min, Math.min(v, this.max));
+      const t = (clamped - this.min) / (this.max - this.min);
       this.thumb.x(t * this.widthPx);
-      this.getLayer()?.batchDraw();
     });
 
-    /* ---------------- Initial sync ---------------- */
+    /* ---------------- Initial Sync ---------------- */
 
-    if (config.initial !== undefined) {
-      this.tracker.value = config.initial;
-    } else {
-      this.tracker.value = tracker.value;
-    }
+    const initial =
+      config.initial !== undefined ? config.initial : tracker.value;
+
+    this.setValue(initial);
 
     this.opacity(0);
-    this.scale({ x: 0, y: 0 });
+    this.scaleX(0);
+    this.scaleY(0);
   }
 
-  // Animation Functions
+  /* ---------------- Animations ---------------- */
 
   appearAnim(): Konva.Tween {
-    const tween = new Konva.Tween({
+    // console.log("Creating appear anim");
+    return new Konva.Tween({
       node: this,
       opacity: 1,
-      scale: {
-        x: 1,
-        y: 1,
-      },
+      scaleX: 1,
+      scaleY: 1,
       duration: 1,
       easing: Konva.Easings.EaseInOut,
     });
-
-    return tween;
   }
 
   disappearAnim(): Konva.Tween {
-    const tween = new Konva.Tween({
+    return new Konva.Tween({
       node: this,
       opacity: 0,
-      scale: {
-        x: 0,
-        y: 0,
-      },
+      scaleX: 0,
+      scaleY: 0,
       duration: 1,
       easing: Konva.Easings.EaseInOut,
     });
-
-    return tween;
   }
 
   /* ---------------- Public API ---------------- */
@@ -142,11 +145,12 @@ export class Slider extends Konva.Group {
   setRange(min: number, max: number) {
     this.min = min;
     this.max = max;
-    this.tracker.value = this.tracker.value; // resync
+    this.setValue(this.tracker.value);
   }
 
   setValue(v: number) {
-    this.tracker.value = v;
+    const clamped = Math.max(this.min, Math.min(v, this.max));
+    this.tracker.value = clamped;
   }
 
   getValue() {
