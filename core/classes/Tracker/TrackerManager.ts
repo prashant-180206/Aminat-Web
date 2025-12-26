@@ -51,6 +51,10 @@ export class TrackerManager {
   getTrackerMeta(name: string): TrackerMeta | null {
     return this.trackers.get(name) ?? null;
   }
+  getTracker(name: string): ValueTracker | null {
+    const meta = this.trackers.get(name);
+    return meta ? meta.tracker : null;
+  }
 
   getAllNames(): string[] {
     return Array.from(this.trackers.keys());

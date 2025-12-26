@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Combobox } from "@/components/combobox";
 
 const TrackersTab = () => {
   const { scene, activeMobject } = useScene();
@@ -19,6 +20,10 @@ const TrackersTab = () => {
   const [selectedTracker, setSelectedTracker] = React.useState<string | null>(
     null
   );
+  const [selectedFunc, setSelectedFunc] = React.useState<string | null>(
+    activeMobject?.trackerconnector.getConnectorFuncNames()[0] ?? null
+  );
+  const [expression, setExpression] = React.useState("t");
 
   const fetchTrackers = React.useCallback(() => {
     if (!scene) return;
@@ -45,12 +50,35 @@ const TrackersTab = () => {
     fetchTrackers();
   };
 
+  const connectFuncs = () => {
+    if (!activeMobject || !selectedFunc || !expression) return;
+
+    const func = activeMobject.trackerconnector.getConnectorFunc(selectedFunc);
+    if (!func) return;
+    const tracker = scene?.trackerManager.getTracker(selectedTracker || "");
+    if (!tracker) return;
+
+    const success = tracker.addUpdater(
+      `${activeMobject.id}-${selectedFunc}`,
+      (t: number) => {
+        return func(t);
+      },
+      expression
+    );
+
+    if (success) {
+      toast.success("Function connected to tracker");
+    } else {
+      toast.error("Failed to connect function to tracker");
+    }
+  };
+
   const makeSlider = (trackerName: string) => {
     if (!scene) return;
 
     const { success, slider } = scene.trackerManager.addSlider(trackerName, {
       min: 0,
-      max: 10,
+      max: 1,
     });
 
     if (!success || !slider) {
@@ -99,18 +127,20 @@ const TrackersTab = () => {
 
       {/* Connector Functions */}
       <Card className="p-3 flex flex-col gap-2">
-        <Label>Available Connectors</Label>
-        {connectorNames.length === 0 ? (
-          <p className="text-xs text-muted-foreground">
-            No connector functions
-          </p>
-        ) : (
-          connectorNames.map((fn) => (
-            <div key={fn} className="px-2 py-1 text-xs rounded bg-muted">
-              {fn}
-            </div>
-          ))
-        )}
+        <Combobox
+          options={connectorNames.map((f) => ({
+            label: f,
+            value: f,
+          }))}
+          value={selectedFunc}
+          onChange={setSelectedFunc}
+        />
+        <Input
+          placeholder="Write an Exp in terms of t "
+          value={expression}
+          onChange={(e) => setExpression(e.target.value)}
+        />
+        <Button onClick={connectFuncs}>Apply to Connector</Button>
       </Card>
 
       {/* Trackers List */}
