@@ -1,10 +1,10 @@
 import { AnimInfo } from "@/core/types/animation";
+import { AnimManagerData } from "@/core/types/file";
 
 export class AnimationManager {
   private animations = new Map<string, AnimInfo>();
   private order: string[][] = [];
   private activeIndex = 0;
-  private counter = 0;
 
   //  * Adds a group of animations that should play together
 
@@ -113,5 +113,32 @@ export class AnimationManager {
         animData?.anim.reset();
       }
     }
+  }
+
+  storeAsObj(): AnimManagerData {
+    const animationsArray: AnimInfo[] = [];
+    this.animations.forEach((anim) => {
+      animationsArray.push(anim);
+    });
+    return {
+      animations: animationsArray,
+      order: this.order.map((group) => [...group]),
+    };
+  }
+
+  loadFromObj(obj: AnimManagerData) {
+    // Clear existing animations and state
+    this.animations.forEach((anim) => {
+      anim.anim.destroy();
+    });
+    this.animations.clear();
+    this.order = [];
+    this.activeIndex = 0;
+
+    // Load animations from saved data
+    obj.animations.forEach((anim) => {
+      this.animations.set(anim.id, anim);
+    });
+    this.order = obj.order.map((group) => [...group]);
   }
 }

@@ -5,7 +5,6 @@ import React from "react";
 import EditSidebar from "./components/sidebar";
 import PropertiesEditor from "./components/propertiesEditor";
 import SceneView from "./scene";
-import RightSideBar from "./components/rightSideBar";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -30,9 +29,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-
-        {/* Right Sidebar */}
-        <RightSideBar />
       </div>
     </SceneProvider>
   );

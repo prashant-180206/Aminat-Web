@@ -43,6 +43,13 @@ const Objects = () => {
           </div>
         );
       })}
+      <Button
+        onClick={() => {
+          console.log(scene?.storeAsObj());
+        }}
+      >
+        See Info
+      </Button>
     </div>
   );
 };

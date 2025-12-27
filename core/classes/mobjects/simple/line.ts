@@ -4,19 +4,22 @@ import { LineProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 
 export class MLine extends Konva.Line {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: LineProperties;
+  private _TYPE: string;
 
-  constructor(config: Partial<LineProperties> = {}) {
+  constructor(TYPE: string, config: Partial<LineProperties> = {}) {
     super({
       tension: 0,
       lineCap: "round",
       lineJoin: "round",
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -36,6 +39,10 @@ export class MLine extends Konva.Line {
 
     this.updateFromProperties();
     this.name("Line");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   // Getter/Setter for properties
@@ -92,5 +99,17 @@ export class MLine extends Konva.Line {
       y: endCanvas.y / this._properties.scale,
     };
     // this._properties.color = this.stroke() as string;
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as LineProperties;
+    this.UpdateFromKonvaProperties();
   }
 }

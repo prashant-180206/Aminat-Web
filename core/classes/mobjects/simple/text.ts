@@ -1,29 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// anim/classes/mobjects/simple/text.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
 import { TextProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 
 export class MText extends Konva.Text {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: TextProperties;
-  // editing state
+  private _TYPE: string;
   private _textarea?: HTMLTextAreaElement;
   private _transformer?: Konva.Transformer;
   private _originalText?: string;
   private _outsideClickHandler?: (e: Event) => void;
   cornerRadius: number = 4;
 
-  constructor(config: Partial<TextProperties> = {}) {
+  constructor(TYPE: string, config: Partial<TextProperties> = {}) {
     super({
       draggable: true,
       lineCap: "round",
       lineJoin: "round",
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -49,6 +50,10 @@ export class MText extends Konva.Text {
       this.startEditing();
     });
     this.name("Text");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   // Getter/Setter for properties
@@ -374,6 +379,18 @@ export class MText extends Konva.Text {
     this.text(text);
     const layer = this.getLayer();
     if (layer) layer.batchDraw();
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as TextProperties;
+    this.UpdateFromKonvaProperties();
   }
 }
 

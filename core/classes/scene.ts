@@ -10,10 +10,8 @@ import { TrackerManager } from "./Tracker/TrackerManager";
 // import { ValueTracker } from "./Tracker/valuetracker";
 // import { AnimInfo } from "../types/animation";
 import { Mobject } from "../types/mobjects";
-
-/* ------------------------------------------------------------ */
-/* Scene                                                        */
-/* ------------------------------------------------------------ */
+import { SceneData } from "../types/file";
+// import { MobjectData } from "../types/file";
 
 class Scene extends Konva.Stage {
   /* ---------------- Public ---------------- */
@@ -26,8 +24,11 @@ class Scene extends Konva.Stage {
   private totalObjects = 0;
   animManager = new AnimationManager();
   trackerManager: TrackerManager;
-
-  /* ------------------------------------------------------------ */
+  mobjectsMeta: {
+    id: string;
+    type: string;
+    mobject: Mobject;
+  }[] = [];
 
   constructor(config: Konva.StageConfig) {
     super(config);
@@ -42,25 +43,26 @@ class Scene extends Konva.Stage {
   /* MOBJECT LIFECYCLE                                            */
   /* ============================================================ */
 
-  addMobject(type: string): Mobject {
+  addMobject(type: string, id?: string): Mobject {
     const mobject = MobjectMap[type].func();
 
-    mobject.id(`${mobject.name() || "mobject"}-${this.totalObjects++}`);
+    mobject.id(id || `${mobject.name() || "mobject"}-${this.totalObjects++}`);
     mobject.setDraggable(true);
+    this.layer.add(mobject as Konva.Shape);
     mobject.properties = { zindex: this.totalObjects - 1 };
-
+    this.mobjectsMeta.push({ id: mobject.id(), type: mobject.type(), mobject });
     mobject.on("click", () => {
       this.activeMobject = mobject;
       mobject.UpdateFromKonvaProperties();
     });
 
-    this.layer.add(mobject as Konva.Shape);
     this.layer.draw();
 
     return mobject;
   }
 
   removeMobject(id: string) {
+    this.mobjectsMeta = this.mobjectsMeta.filter((meta) => meta.id !== id);
     this.layer.findOne(`#${id}`)?.destroy();
 
     // cleanup bindings
@@ -68,6 +70,32 @@ class Scene extends Konva.Stage {
 
   getMobjectById(id: string): Mobject | null {
     return this.layer.findOne(`#${id}`) as Mobject | null;
+  }
+
+  storeAsObj(): SceneData {
+    const mobjectsData: SceneData = {
+      mobjects: [],
+      animationsData: { animations: [], order: [] },
+    };
+
+    this.mobjectsMeta.forEach((meta) => {
+      mobjectsData.mobjects.push({
+        type: meta.type,
+        mobject: meta.mobject.storeAsObj(),
+      });
+    });
+
+    mobjectsData.animationsData = this.animManager.storeAsObj();
+    return mobjectsData;
+  }
+
+  loadFromObj(obj: SceneData) {
+    obj.mobjects.forEach((mobj) => {
+      const mobject = this.addMobject(mobj.type, mobj.mobject.id);
+      mobject.loadFromObj(mobj.mobject);
+    });
+
+    this.animManager.loadFromObj(obj.animationsData);
   }
 }
 

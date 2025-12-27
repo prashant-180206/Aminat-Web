@@ -5,6 +5,7 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import { CircleProperties } from "@/core/types/properties";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
 import { Konva } from "@/lib/konva";
+import { MobjectData } from "@/core/types/file";
 
 class MCircle extends Konva.Circle {
   public animgetter: AnimGetter;
@@ -20,9 +21,11 @@ class MCircle extends Konva.Circle {
     opacity: 1,
     zindex: 0,
   };
+  private _TYPE: string;
 
-  constructor(config?: Konva.CircleConfig) {
+  constructor(TYPE: string, config?: Konva.CircleConfig) {
     super(config);
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
     this.radius(this._properties.radius * DEFAULT_SCALE);
@@ -30,8 +33,11 @@ class MCircle extends Konva.Circle {
     this.stroke(this._properties.bordercolor);
     this.strokeWidth(this._properties.thickness);
     this.position(p2c(0, 0));
-    // this.rotation(this._properties.rotation);
     this.name("Circle");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   UpdateFromKonvaProperties() {
@@ -75,6 +81,18 @@ class MCircle extends Konva.Circle {
       this.scale({ x: value.scale, y: value.scale });
     if (value.rotation !== undefined) this.rotation(value.rotation);
     if (value.zindex !== undefined) this.zIndex(value.zindex);
+  }
+
+  storeAsObj(): MobjectData {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    };
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as CircleProperties;
+    this.UpdateFromKonvaProperties();
   }
 }
 

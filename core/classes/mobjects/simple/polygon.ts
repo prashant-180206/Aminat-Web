@@ -4,19 +4,22 @@ import { Point, PolygonProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 
 export class MPolygon extends Konva.Shape {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: PolygonProperties;
+  private _TYPE: string;
 
-  constructor(config: Partial<PolygonProperties> = {}) {
+  constructor(TYPE: string, config: Partial<PolygonProperties> = {}) {
     super({
       lineCap: "round",
       lineJoin: "round",
       draggable: true,
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -40,6 +43,10 @@ export class MPolygon extends Konva.Shape {
 
     this.updateFromProperties();
     this.name("Polygon");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   // Getter/Setter for properties
@@ -155,5 +162,17 @@ export class MPolygon extends Konva.Shape {
     this._properties.rotation = this.rotation();
     // this._properties.opacity = this.opacity();/
     // this._properties.zindex = this.zIndex();
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as PolygonProperties;
+    this.UpdateFromKonvaProperties();
   }
 }

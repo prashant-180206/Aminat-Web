@@ -6,13 +6,15 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { evaluate } from "mathjs";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 
 export class ParametricCurve extends Konva.Line {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: CurveProperties;
+  private _TYPE: string;
 
-  constructor(config: Partial<CurveProperties> = {}) {
+  constructor(TYPE: string, config: Partial<CurveProperties> = {}) {
     super({
       tension: 0.8,
       lineCap: "round",
@@ -20,6 +22,7 @@ export class ParametricCurve extends Konva.Line {
       strokeWidth: 3,
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -40,6 +43,10 @@ export class ParametricCurve extends Konva.Line {
 
     this.updateFromProperties();
     this.name("Curve");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   // Getter/Setter for properties
@@ -135,5 +142,17 @@ export class ParametricCurve extends Konva.Line {
   setParameterRange(range: [number, number]) {
     this._properties.parameterRange = range;
     this.generateCurve(this._properties.Xfunc, this._properties.Yfunc, range);
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as CurveProperties;
+    this.UpdateFromKonvaProperties();
   }
 }

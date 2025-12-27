@@ -46,6 +46,7 @@ export class AnimGetter {
           mobjId: this.node.id(),
           type: "Create",
           label: `Creating ${this.node.id()}`,
+          tweenMeta: args,
           anim: tween,
         };
       },
@@ -73,6 +74,7 @@ export class AnimGetter {
           mobjId: this.node.id(),
           type: "Destroy",
           label: `Destroying ${this.node.id()}`,
+          tweenMeta: args,
           anim: tween,
         };
       },
@@ -109,6 +111,7 @@ export class AnimGetter {
           mobjId: this.node.id(),
           type: "Move",
           label: `Moving ${this.node.id()}`,
+          tweenMeta: args,
           anim: tween,
         };
       },

@@ -82,4 +82,8 @@ export class TrackerManager {
     });
     this.trackers.clear();
   }
+
+  storeAsObj() {}
+
+  looadFromObj() {}
 }

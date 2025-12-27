@@ -6,19 +6,22 @@ import { DotProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 // import type { Point } from './parametricCurve';
 
 export class Dot extends Konva.Circle {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: DotProperties;
+  private _TYPE: string;
 
-  constructor(config: Partial<DotProperties> = {}) {
+  constructor(TYPE: string, config: Partial<DotProperties> = {}) {
     super({
       lineCap: "round",
       lineJoin: "round",
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -35,6 +38,10 @@ export class Dot extends Konva.Circle {
 
     this.updateFromProperties();
     this.name("Dot");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   // Getter/Setter for properties
@@ -69,5 +76,17 @@ export class Dot extends Konva.Circle {
     this._properties.rotation = this.rotation();
     // this._properties.opacity = this.opacity();
     // this._properties.zindex = this.zIndex();
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as DotProperties;
+    this.UpdateFromKonvaProperties();
   }
 }

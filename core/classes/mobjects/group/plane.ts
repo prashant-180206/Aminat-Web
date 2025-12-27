@@ -4,21 +4,24 @@ import { PlaneProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 
 export class MPlane extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: PlaneProperties;
+  private _TYPE: string;
 
   private axisLayer = new Konva.Group();
   private gridLayer = new Konva.Group();
   private labelLayer = new Konva.Group();
 
-  constructor(config: Partial<PlaneProperties> = {}) {
+  constructor(TYPE: string, config: Partial<PlaneProperties> = {}) {
     super({
       draggable: true, // enable drag
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -52,6 +55,10 @@ export class MPlane extends Konva.Group {
 
     this.updateFromProperties();
     this.name("Plane");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   get properties(): PlaneProperties {
@@ -207,5 +214,17 @@ export class MPlane extends Konva.Group {
     this._properties.rotation = this.rotation();
     // this._properties.opacity = this.opacity();
     // this._properties.zindex = this.zIndex();
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as PlaneProperties;
+    this.UpdateFromKonvaProperties();
   }
 }

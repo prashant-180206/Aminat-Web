@@ -4,13 +4,15 @@ import { VectorProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
 
 export class MVector extends Konva.Arrow {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: VectorProperties;
+  private _TYPE: string;
 
-  constructor(config: Partial<VectorProperties> = {}) {
+  constructor(TYPE: string, config: Partial<VectorProperties> = {}) {
     super({
       tension: 0,
       lineCap: "round",
@@ -18,6 +20,7 @@ export class MVector extends Konva.Arrow {
       points: [0, 0, 100, 100],
     });
 
+    this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
@@ -37,6 +40,10 @@ export class MVector extends Konva.Arrow {
 
     this.updateFromProperties();
     this.name("Vector");
+  }
+
+  type(): string {
+    return this._TYPE;
   }
 
   // Getter/Setter for properties
@@ -85,5 +92,17 @@ export class MVector extends Konva.Arrow {
     // this._properties.color = this.stroke() as string;
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
+  }
+
+  storeAsObj() {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    } as MobjectData;
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this._properties = obj.properties as VectorProperties;
+    this.UpdateFromKonvaProperties();
   }
 }
