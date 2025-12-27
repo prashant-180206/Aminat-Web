@@ -115,6 +115,13 @@ export class Slider extends Konva.Group {
     this.scaleY(0);
   }
 
+  getMin() {
+    return this.min;
+  }
+  getMax() {
+    return this.max;
+  }
+
   /* ---------------- Animations ---------------- */
 
   appearAnim(): Konva.Tween {

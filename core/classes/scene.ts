@@ -10,7 +10,7 @@ import { TrackerManager } from "./Tracker/TrackerManager";
 // import { ValueTracker } from "./Tracker/valuetracker";
 // import { AnimInfo } from "../types/animation";
 import { Mobject } from "../types/mobjects";
-import { SceneData } from "../types/file";
+import { SceneData, ValFuncRelations } from "../types/file";
 // import { MobjectData } from "../types/file";
 
 class Scene extends Konva.Stage {
@@ -22,6 +22,7 @@ class Scene extends Konva.Stage {
   /* ---------------- Private ---------------- */
 
   private totalObjects = 0;
+  private valFuncRelations: ValFuncRelations[] = [];
   animManager = new AnimationManager();
   trackerManager: TrackerManager;
   mobjectsMeta: {
@@ -72,10 +73,38 @@ class Scene extends Konva.Stage {
     return this.layer.findOne(`#${id}`) as Mobject | null;
   }
 
+  ConnectValueTrackerToMobject(
+    trackerName: string,
+    mobjectId: string,
+    functionName: string,
+    expression: string
+  ): boolean {
+    const mobject = this.getMobjectById(mobjectId);
+    const tracker = this.trackerManager.getTracker(trackerName);
+    if (!mobject || !tracker) return false;
+    const func = mobject.trackerconnector.getConnectorFunc(functionName);
+    if (!func) return false;
+
+    this.valFuncRelations.push({
+      trackerName,
+      mobjectId,
+      functionName,
+      expression,
+    });
+
+    return tracker.addUpdater(
+      `${mobject.id()}-${functionName}`,
+      func,
+      expression
+    );
+  }
+
   storeAsObj(): SceneData {
     const mobjectsData: SceneData = {
       mobjects: [],
       animationsData: { animations: [], order: [] },
+      trackerManagerData: this.trackerManager.storeAsObj(),
+      valFuncRelations: this.valFuncRelations,
     };
 
     this.mobjectsMeta.forEach((meta) => {
@@ -93,6 +122,16 @@ class Scene extends Konva.Stage {
     obj.mobjects.forEach((mobj) => {
       const mobject = this.addMobject(mobj.type, mobj.mobject.id);
       mobject.loadFromObj(mobj.mobject);
+    });
+
+    this.trackerManager.loadFromObj(obj.trackerManagerData);
+    obj.valFuncRelations.forEach((rel) => {
+      this.ConnectValueTrackerToMobject(
+        rel.trackerName,
+        rel.mobjectId,
+        rel.functionName,
+        rel.expression
+      );
     });
 
     this.animManager.loadFromObj(obj.animationsData);

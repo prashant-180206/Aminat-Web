@@ -27,8 +27,6 @@ Animat Web is an interactive, browser-based animation toolkit focused on mathema
 - **Edit properties:** [app/edit/components/propertiesEditor.tsx](app/edit/components/propertiesEditor.tsx) derives typed inputs from the active mobject via [app/edit/components/input/propertyDescriptor.tsx](app/edit/components/input/propertyDescriptor.tsx). Inputs in [app/edit/components/propertyCard.tsx](app/edit/components/propertyCard.tsx) update `mobj.properties` directly.
 - **Sidebar shell:** [app/edit/components/sidebar.tsx](app/edit/components/sidebar.tsx) uses Radix Tabs and a collapsible panel for tools.
 
- 
-
 ## Extending the System
 
 1. Create a class that extends a Konva node and exposes typed `properties`.
@@ -151,19 +149,161 @@ All mobjects expose a typed `properties` object and keep Konva attributes in syn
 
 ## Trackers & UI Controls
 
-- `ValueTracker`: [core/classes/Tracker/valuetracker.ts](core/classes/Tracker/valuetracker.ts)
-  - Holds a numeric value, notifies registered updaters each change.
-  - `animateTo(target, { duration, easing, onFinish })` returns a Konva tween that drives the value smoothly.
-- `Slider`: [core/classes/Tracker/slider.ts](core/classes/Tracker/slider.ts)
-  - Konva UI component bound to a `ValueTracker`; draggable thumb updates the tracker; tracker changes reposition the thumb.
-  - Configurable `min`, `max`, `width`, `height`, `trackColor`, `thumbColor`, `thumbRadius`.
-- `TrackerManager`: [core/classes/Tracker/TrackerManager.ts](core/classes/Tracker/TrackerManager.ts)
-  - Registers named `ValueTracker`s; optionally materializes a `Slider` and adds it to the layer.
-  - Helpers: `animateTrackerTo(name, target)`, `animateSliderIn(name)`, `animateSliderOut(name)`.
-- `TrackerConnector`: [core/classes/Tracker/TrackerConnector.ts](core/classes/Tracker/TrackerConnector.ts)
-  - Per-mobject public `trackerconnector` for binding trackers to node attributes.
-  - Built-in connectors: `x`, `y`, `rotation`, `scale` (uniform), `opacity`.
-  - API: `addConnectorFunc(name, (value) => void)`, `getConnectorFunc(name)`, `getConnectorFuncNames()`.
+The tracker system enables dynamic, interactive animations by binding numeric values to mobject properties. It consists of four main components working together:
+
+### ValueTracker
+
+- **Location**: [core/classes/Tracker/valuetracker.ts](core/classes/Tracker/valuetracker.ts)
+- **Purpose**: Core reactive value holder that notifies all registered updaters when its value changes.
+- **Key Features**:
+  - Holds a single numeric `_value` with getter/setter
+  - Maintains a `Map<string, UpdaterEntry>` of updaters, where each entry contains:
+    - `cb`: callback function `(value: number) => void`
+    - `expr`: compiled mathjs expression for value transformation
+  - When `value` is set, evaluates each expression with `{ t: newValue }` and calls the callback with the result
+  - Threshold check: only triggers updates if `Math.abs(oldValue - newValue) >= 0.001`
+- **API**:
+  - `addUpdater(id: string, cb: (value) => void, expression: string = "t")`: Registers an updater with optional mathjs expression (default is identity `"t"`). Returns `true` on success, `false` if expression is invalid. Immediately invokes callback with current value.
+  - `removeUpdater(id: string)`: Unregisters an updater by ID
+  - `getUpdaterIds()`: Returns array of all registered updater IDs
+  - `animateTo(target, { duration?, easing?, onFinish? })`: Creates a Konva tween that smoothly animates the tracker value over time
+
+### Slider
+
+- **Location**: [core/classes/Tracker/slider.ts](core/classes/Tracker/slider.ts)
+- **Purpose**: Visual UI control (Konva.Group) that provides bidirectional binding with a ValueTracker
+- **Structure**:
+  - Extends `Konva.Group` containing:
+    - `track`: Rounded rectangle for the slider rail
+    - `thumb`: Draggable circle for value control
+  - Stores reference to its `ValueTracker` and `min`/`max` range
+- **Bidirectional Binding**:
+  - **User → Tracker**: Dragging thumb or clicking track updates `thumb.x()`, which is converted to tracker value: `value = min + (thumb.x / width) * (max - min)`
+  - **Tracker → Thumb**: Tracker automatically registers itself as an updater (ID: `"Slider"`) to reposition thumb when value changes externally
+- **Configuration**: `width`, `height`, `min`, `max`, `initial`, `trackColor`, `thumbColor`, `thumbRadius`
+- **Animation**: Includes `appearAnim()` and `disappearAnim()` tweens for smooth UI transitions
+- **API**: `getMin()`, `getMax()`, `setRange(min, max)`, `setValue(v)`, `getValue()`
+
+### TrackerManager
+
+- **Location**: [core/classes/Tracker/TrackerManager.ts](core/classes/Tracker/TrackerManager.ts)
+- **Purpose**: Central registry for all ValueTrackers and their optional Sliders in a scene
+- **Data Structure**:
+  - `Map<string, TrackerMeta>` where `TrackerMeta = { id, tracker: ValueTracker, slider: Slider | null }`
+  - Holds reference to the scene's `Konva.Layer` for adding sliders
+- **Lifecycle**:
+  - `addValueTracker(name, value)`: Creates and registers a new ValueTracker with initial value
+  - `addSlider(sliderName, { min, max })`: Creates a Slider for an existing tracker. Returns `{ success, slider }`. **Note**: Slider is created but NOT automatically added to layer—caller must do `layer.add(slider)`
+  - `remove(name)`: Destroys slider (if exists) and removes tracker from registry
+  - `clear()`: Destroys all sliders and clears the registry
+- **Lookup**:
+  - `getTracker(name)`: Returns ValueTracker instance or null
+  - `getTrackerMeta(name)`: Returns full TrackerMeta or null
+  - `getAllNames()`: Returns array of all tracker names
+  - `getAllTrackerMetas()`: Returns array of all TrackerMeta objects
+- **Persistence**:
+  - `storeAsObj()`: Serializes to `TrackerManagerData` containing array of `{ id, value, sliders: { min, max } | null }`
+  - `loadFromObj(obj)`: Recreates trackers and sliders from saved data. **Critical**: Adds sliders to layer during restoration
+
+### TrackerConnector
+
+- **Location**: [core/classes/Tracker/TrackerConnector.ts](core/classes/Tracker/TrackerConnector.ts)
+- **Purpose**: Per-mobject registry of connector functions that allow trackers to control mobject properties
+- **Built-in Connectors**: Each mobject has a `trackerconnector` instance with predefined functions:
+  - `x`: Updates mobject's X position in math coordinates
+  - `y`: Updates mobject's Y position in math coordinates
+  - `rotation`: Updates rotation in degrees
+  - `scale`: Updates uniform scale factor
+  - `opacity`: Updates opacity (0-1)
+- **API**:
+  - `addConnectorFunc(name: string, func: (value: number) => void)`: Registers a custom connector function
+  - `getConnectorFunc(name: string)`: Retrieves connector function by name
+  - `getConnectorFuncNames()`: Returns array of all available connector names
+
+### Scene Integration & Data Flow
+
+The `Scene` class orchestrates tracker-mobject connections:
+
+1. **Connection Storage**: Scene maintains `valFuncRelations: ValFuncRelations[]` where each entry is:
+
+   ```ts
+   { trackerName: string, mobjectId: string, functionName: string, expression: string }
+   ```
+
+2. **Creating Connections**:
+
+   ```ts
+   ConnectValueTrackerToMobject(trackerName, mobjectId, functionName, expression): boolean
+   ```
+
+   - Retrieves tracker and mobject
+   - Gets connector function from mobject's `trackerconnector`
+   - Calls `tracker.addUpdater(uniqueId, connectorFunc, expression)`
+   - Stores relation in `valFuncRelations` for persistence
+   - Returns `true` on success
+
+3. **Persistence Flow**:
+   - **Save** (`scene.storeAsObj()`):
+     - Serializes all mobjects with their properties
+     - Calls `trackerManager.storeAsObj()` to save tracker values and slider configs
+     - Stores `valFuncRelations` array (updater connections)
+     - Packages into `SceneData` object
+   - **Load** (`scene.loadFromObj(obj)`):
+     - Recreates all mobjects via `addMobject()` and restores their properties
+     - Calls `trackerManager.loadFromObj()` which:
+       - Recreates ValueTrackers with saved values
+       - Recreates Sliders with saved ranges and **adds them to layer**
+     - Iterates `valFuncRelations` to reconnect trackers to mobject functions
+     - **Important**: Updaters are NOT stored in ValueTracker—they're regenerated from `valFuncRelations`
+
+### Complete Usage Example
+
+```ts
+// 1. Create scene and mobject
+const scene = new Scene({ container: "canvas", width: 850, height: 480 });
+const circle = scene.addMobject("circle");
+
+// 2. Create tracker with initial value
+const { tracker, success } = scene.trackerManager.addValueTracker("xPos", 0);
+
+// 3. (Optional) Add slider UI
+const { success: sliderSuccess, slider } = scene.trackerManager.addSlider("xPos", {
+  min: -5,
+  max: 5
+});
+if (sliderSuccess && slider) {
+  scene.layer.add(slider);
+  slider.position({ x: 50, y: 400 });
+  slider.appearAnim().play();
+}
+
+// 4. Connect tracker to mobject property with expression
+scene.ConnectValueTrackerToMobject(
+  "xPos",           // tracker name
+  circle.id(),      // mobject ID
+  "x",              // connector function name
+  "2 * sin(t)"      // mathjs expression: transforms tracker value
+);
+
+// 5. Animate tracker (slider and circle move together)
+tracker.animateTo(3, { duration: 2, easing: "EaseInOut" }).play();
+
+// 6. Save entire scene (includes all connections)
+const sceneData = scene.storeAsObj();
+localStorage.setItem("myScene", JSON.stringify(sceneData));
+
+// 7. Load scene later (everything reconnects automatically)
+const loaded = JSON.parse(localStorage.getItem("myScene"));
+scene.loadFromObj(loaded);
+```
+
+### Design Rationale
+
+- **Separation of Concerns**: ValueTracker handles reactive value propagation, Slider handles UI, TrackerManager handles registry
+- **Expression Flexibility**: Mathjs expressions allow non-linear mappings (e.g., `"sin(t * pi)"`, `"t^2"`) without code changes
+- **Updater Pattern**: Single tracker can drive multiple mobject properties simultaneously
+- **Persistence Strategy**: Storing `valFuncRelations` instead of updater state allows reconnection with fresh mobject instances after load
+- **Lazy Slider Creation**: Sliders are optional UI—trackers can exist and be animated without visual controls
 
 ## Typings
 

@@ -1,10 +1,8 @@
-// core/animation/TrackerManager.ts
-// /* eslint-disable @typescript-eslint/no-explicit-any */
 import Konva from "@/lib/konva";
 import { ValueTracker } from "./valuetracker";
-// import { Slider } from "./slider";
 import { TrackerMeta } from "@/core/types/tracker";
 import { Slider } from "./slider";
+import { TrackerManagerData } from "@/core/types/file";
 
 export class TrackerManager {
   private trackers = new Map<string, TrackerMeta>();
@@ -83,7 +81,43 @@ export class TrackerManager {
     this.trackers.clear();
   }
 
-  storeAsObj() {}
+  storeAsObj(): TrackerManagerData {
+    const data: TrackerManagerData = {
+      trackers: [],
+    };
+    this.trackers.forEach((meta, id) => {
+      data.trackers.push({
+        id,
+        value: meta.tracker.value,
+        sliders: meta.slider
+          ? { min: meta.slider.getMin(), max: meta.slider.getMax() }
+          : null,
+      });
+    });
+    return data;
+  }
 
-  looadFromObj() {}
+  loadFromObj(obj: TrackerManagerData) {
+    obj.trackers.forEach((trackerData) => {
+      const { tracker, success } = this.addValueTracker(
+        trackerData.id,
+        trackerData.value
+      );
+      if (!success || !tracker) return;
+
+      if (trackerData.sliders) {
+        const { success: sliderSuccess, slider } = this.addSlider(
+          trackerData.id,
+          {
+            min: trackerData.sliders.min,
+            max: trackerData.sliders.max,
+          }
+        );
+
+        if (sliderSuccess && slider) {
+          this.layer.add(slider);
+        }
+      }
+    });
+  }
 }

@@ -53,16 +53,10 @@ const TrackersTab = () => {
   const connectFuncs = () => {
     if (!activeMobject || !selectedFunc || !expression) return;
 
-    const func = activeMobject.trackerconnector.getConnectorFunc(selectedFunc);
-    if (!func) return;
-    const tracker = scene?.trackerManager.getTracker(selectedTracker || "");
-    if (!tracker) return;
-
-    const success = tracker.addUpdater(
-      `${activeMobject.id}-${selectedFunc}`,
-      (t: number) => {
-        return func(t);
-      },
+    const success = scene?.ConnectValueTrackerToMobject(
+      selectedTracker || "",
+      activeMobject.id(),
+      selectedFunc,
       expression
     );
 

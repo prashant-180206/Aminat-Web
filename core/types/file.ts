@@ -13,6 +13,8 @@ export interface SceneData {
   }[];
 
   animationsData: AnimManagerData;
+  trackerManagerData: TrackerManagerData;
+  valFuncRelations: ValFuncRelations[];
 }
 
 export interface AnimManagerData {
@@ -21,5 +23,16 @@ export interface AnimManagerData {
 }
 
 export interface TrackerManagerData {
-  trackers: MobjectData[];
+  trackers: {
+    id: string;
+    value: number;
+    sliders: { min: number; max: number } | null;
+  }[];
+}
+
+export interface ValFuncRelations {
+  mobjectId: string;
+  trackerName: string;
+  functionName: string;
+  expression: string;
 }
