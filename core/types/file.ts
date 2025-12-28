@@ -15,6 +15,7 @@ export interface SceneData {
   animationsData: AnimManagerData;
   trackerManagerData: TrackerManagerData;
   valFuncRelations: ValFuncRelations[];
+  ptValFuncRelations: PtValFuncRelations[];
 }
 
 export interface AnimManagerData {
@@ -28,6 +29,15 @@ export interface TrackerManagerData {
     value: number;
     sliders: { min: number; max: number } | null;
   }[];
+
+  pointtrackers: {
+    id: string;
+    value: { x: number; y: number };
+    sliders: {
+      x: { min: number; max: number } | null;
+      y: { min: number; max: number } | null;
+    };
+  }[];
 }
 
 export interface ValFuncRelations {
@@ -35,4 +45,13 @@ export interface ValFuncRelations {
   trackerName: string;
   functionName: string;
   expression: string;
+}
+
+export interface PtValFuncRelations {
+  mobjectId: string;
+  trackerName: string;
+  functionNameX: string;
+  functionNameY: string;
+  expressionX: string;
+  expressionY: string;
 }

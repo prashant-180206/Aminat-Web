@@ -3,7 +3,7 @@ import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
 import { PlaneProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
-import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 
 export class MPlane extends Konva.Group {

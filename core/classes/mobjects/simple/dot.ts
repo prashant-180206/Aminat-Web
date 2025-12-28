@@ -5,7 +5,7 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DotProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
-import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 // import type { Point } from './parametricCurve';
 

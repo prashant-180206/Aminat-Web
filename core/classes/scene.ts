@@ -6,11 +6,11 @@ import MobjectMap from "../maps/MobjectMap";
 
 import { AnimationManager } from "./animation/animationManager";
 // import { getAnim } from "./animation/animations";
-import { TrackerManager } from "./Tracker/TrackerManager";
+import { TrackerManager } from "./Tracker/helpers/TrackerManager";
 // import { ValueTracker } from "./Tracker/valuetracker";
 // import { AnimInfo } from "../types/animation";
 import { Mobject } from "../types/mobjects";
-import { SceneData, ValFuncRelations } from "../types/file";
+import { SceneData, ValFuncRelations, PtValFuncRelations } from "../types/file";
 // import { MobjectData } from "../types/file";
 
 class Scene extends Konva.Stage {
@@ -23,6 +23,7 @@ class Scene extends Konva.Stage {
 
   private totalObjects = 0;
   private valFuncRelations: ValFuncRelations[] = [];
+  private ptValFuncRelations: PtValFuncRelations[] = [];
   animManager = new AnimationManager();
   trackerManager: TrackerManager;
   mobjectsMeta: {
@@ -99,12 +100,69 @@ class Scene extends Konva.Stage {
     );
   }
 
+  addPointValueTracker(name: string, point: { x: number; y: number }): boolean {
+    const { success } = this.trackerManager.addPtValueTracker(name, point);
+    return success;
+  }
+
+  removePointValueTracker(name: string): boolean {
+    this.trackerManager.remove(name);
+    return true;
+  }
+
+  getValFuncRelations(): ValFuncRelations[] {
+    return this.valFuncRelations;
+  }
+
+  getPtValFuncRelations(): PtValFuncRelations[] {
+    return this.ptValFuncRelations;
+  }
+
+  ConnectPtValueTrackerToMobject(
+    trackerName: string,
+    mobjectId: string,
+    functionNameX: string,
+    functionNameY: string,
+    expressionX: string,
+    expressionY: string
+  ): boolean {
+    const mobject = this.getMobjectById(mobjectId);
+    const tracker = this.trackerManager.getPtValueTracker(trackerName);
+    if (!mobject || !tracker) return false;
+    const funcX = mobject.trackerconnector.getConnectorFunc(functionNameX);
+    const funcY = mobject.trackerconnector.getConnectorFunc(functionNameY);
+    if (!funcX || !funcY) return false;
+
+    this.ptValFuncRelations.push({
+      trackerName,
+      mobjectId,
+      functionNameX,
+      functionNameY,
+      expressionX,
+      expressionY,
+    });
+
+    const xSuccess = tracker.x.tracker.addUpdater(
+      `${mobject.id()}-${functionNameX}-X`,
+      funcX,
+      expressionX
+    );
+    const ySuccess = tracker.y.tracker.addUpdater(
+      `${mobject.id()}-${functionNameY}-Y`,
+      funcY,
+      expressionY
+    );
+
+    return xSuccess && ySuccess;
+  }
+
   storeAsObj(): SceneData {
     const mobjectsData: SceneData = {
       mobjects: [],
       animationsData: { animations: [], order: [] },
       trackerManagerData: this.trackerManager.storeAsObj(),
       valFuncRelations: this.valFuncRelations,
+      ptValFuncRelations: this.ptValFuncRelations,
     };
 
     this.mobjectsMeta.forEach((meta) => {
@@ -131,6 +189,17 @@ class Scene extends Konva.Stage {
         rel.mobjectId,
         rel.functionName,
         rel.expression
+      );
+    });
+
+    obj.ptValFuncRelations?.forEach((rel) => {
+      this.ConnectPtValueTrackerToMobject(
+        rel.trackerName,
+        rel.mobjectId,
+        rel.functionNameX,
+        rel.functionNameY,
+        rel.expressionX,
+        rel.expressionY
       );
     });
 

@@ -3,7 +3,7 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { VectorProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
-import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 
 export class MVector extends Konva.Arrow {

@@ -3,7 +3,7 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 // import Konva from "konva";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { CircleProperties } from "@/core/types/properties";
-import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { Konva } from "@/lib/konva";
 import { MobjectData } from "@/core/types/file";
 

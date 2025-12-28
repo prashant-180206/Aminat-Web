@@ -1,5 +1,6 @@
 import Konva from "@/lib/konva";
-import { ValueTracker } from "./valuetracker";
+import { ValueTracker } from ".././valuetracker";
+// import { re } from "mathjs";
 
 type SliderConfig = {
   width?: number;
@@ -10,13 +11,22 @@ type SliderConfig = {
   trackColor?: string;
   thumbColor?: string;
   thumbRadius?: number;
+
+  bgColor?: string;
+  labelColor?: string;
+  fontSize?: number;
+  padding?: number;
 };
 
 export class Slider extends Konva.Group {
   readonly tracker: ValueTracker;
 
+  private background: Konva.Rect;
   private track: Konva.Rect;
   private thumb: Konva.Circle;
+
+  private minLabel: Konva.Text;
+  private maxLabel: Konva.Text;
 
   private min: number;
   private max: number;
@@ -34,8 +44,24 @@ export class Slider extends Konva.Group {
     this.max = config.max ?? 1;
     this.widthPx = config.width ?? 200;
 
-    const height = config.height ?? 30;
+    const height = config.height ?? 6;
     const thumbRadius = config.thumbRadius ?? 10;
+    const padding = config.padding ?? 14;
+    const fontSize = config.fontSize ?? 12;
+
+    const totalHeight = height + thumbRadius * 2 + fontSize + padding * 2;
+
+    /* ---------------- Background ---------------- */
+
+    this.background = new Konva.Rect({
+      x: -padding,
+      y: -totalHeight / 2,
+      width: this.widthPx + padding * 2,
+      height: totalHeight,
+      fill: config.bgColor ?? "#1f1f1f",
+      cornerRadius: 12,
+      listening: false,
+    });
 
     /* ---------------- Track ---------------- */
 
@@ -44,9 +70,8 @@ export class Slider extends Konva.Group {
       y: -height / 2,
       width: this.widthPx,
       height,
-      fill: config.trackColor ?? "#444",
+      fill: config.trackColor ?? "#555",
       cornerRadius: height / 2,
-      listening: true,
     });
 
     /* ---------------- Thumb ---------------- */
@@ -57,14 +82,44 @@ export class Slider extends Konva.Group {
       radius: thumbRadius,
       fill: config.thumbColor ?? "#e5e5e5",
       draggable: true,
+      shadowBlur: 6,
+      shadowOpacity: 0.4,
       dragBoundFunc: (pos) => ({
         x: Math.max(0, Math.min(pos.x, this.widthPx)),
         y: 0,
       }),
     });
 
-    this.add(this.track);
-    this.add(this.thumb);
+    /* ---------------- Labels ---------------- */
+
+    this.minLabel = new Konva.Text({
+      text: this.min.toString(),
+      x: 0,
+      y: thumbRadius + 8,
+      fontSize,
+      fill: config.labelColor ?? "#bdbdbd",
+    });
+
+    this.maxLabel = new Konva.Text({
+      text: this.max.toString(),
+      x: this.widthPx,
+      y: thumbRadius + 8,
+      fontSize,
+      fill: config.labelColor ?? "#bdbdbd",
+      align: "right",
+    });
+
+    this.maxLabel.offsetX(this.maxLabel.width());
+
+    /* ---------------- Add Order ---------------- */
+
+    this.add(
+      this.background,
+      this.track,
+      this.thumb,
+      this.minLabel,
+      this.maxLabel
+    );
 
     /* ---------------- Thumb → ValueTracker ---------------- */
 
@@ -86,9 +141,9 @@ export class Slider extends Konva.Group {
       if (!pointer) return;
 
       const transform = this.getAbsoluteTransform().copy().invert();
-      const localPos = transform.point(pointer);
+      const local = transform.point(pointer);
 
-      const x = Math.max(0, Math.min(localPos.x, this.widthPx));
+      const x = Math.max(0, Math.min(local.x, this.widthPx));
       this.thumb.x(x);
       updateFromThumb();
     });
@@ -111,40 +166,15 @@ export class Slider extends Konva.Group {
     this.setValue(initial);
 
     this.opacity(0);
-    this.scaleX(0);
-    this.scaleY(0);
+    this.scale({ x: 0, y: 0 });
   }
 
   getMin() {
     return this.min;
   }
+
   getMax() {
     return this.max;
-  }
-
-  /* ---------------- Animations ---------------- */
-
-  appearAnim(): Konva.Tween {
-    // console.log("Creating appear anim");
-    return new Konva.Tween({
-      node: this,
-      opacity: 1,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 1,
-      easing: Konva.Easings.EaseInOut,
-    });
-  }
-
-  disappearAnim(): Konva.Tween {
-    return new Konva.Tween({
-      node: this,
-      opacity: 0,
-      scaleX: 0,
-      scaleY: 0,
-      duration: 1,
-      easing: Konva.Easings.EaseInOut,
-    });
   }
 
   /* ---------------- Public API ---------------- */
@@ -152,6 +182,11 @@ export class Slider extends Konva.Group {
   setRange(min: number, max: number) {
     this.min = min;
     this.max = max;
+
+    this.minLabel.text(min.toString());
+    this.maxLabel.text(max.toString());
+    this.maxLabel.offsetX(this.maxLabel.width());
+
     this.setValue(this.tracker.value);
   }
 
@@ -162,5 +197,29 @@ export class Slider extends Konva.Group {
 
   getValue() {
     return this.tracker.value;
+  }
+
+  /* ---------------- Animations ---------------- */
+
+  appearAnim(): Konva.Tween {
+    return new Konva.Tween({
+      node: this,
+      opacity: 1,
+      scaleX: 1,
+      scaleY: 1,
+      duration: 0.8,
+      easing: Konva.Easings.EaseInOut,
+    });
+  }
+
+  disappearAnim(): Konva.Tween {
+    return new Konva.Tween({
+      node: this,
+      opacity: 0,
+      scaleX: 0,
+      scaleY: 0,
+      duration: 0.6,
+      easing: Konva.Easings.EaseInOut,
+    });
   }
 }

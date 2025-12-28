@@ -3,7 +3,7 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
 import { TextProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
-import { TrackerConnector } from "@/core/classes/Tracker/TrackerConnector";
+import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 
 export class MText extends Konva.Text {
