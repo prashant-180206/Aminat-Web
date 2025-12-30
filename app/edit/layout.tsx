@@ -7,10 +7,17 @@ import PropertiesEditor from "./components/propertiesEditor";
 import SceneView from "./scene";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({
+  children,
+  panel,
+}: {
+  children: React.ReactNode;
+  panel?: React.ReactNode;
+}) {
+  // const { activeMobject } = useScene();
   return (
     <SceneProvider>
-      <div className="flex flex-row bg-bg min-h-screen w-full">
+      <div className="flex flex-row gap-4 bg-bg min-h-screen w-full">
         {/* Left Sidebar with route content */}
         <EditSidebar>{children}</EditSidebar>
 
@@ -29,6 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
+        {panel && <aside className="">{panel}</aside>}
       </div>
     </SceneProvider>
   );

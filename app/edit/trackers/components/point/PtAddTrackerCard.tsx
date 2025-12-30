@@ -21,7 +21,7 @@ const PtAddTrackerCard = ({ onTrackerAdded }: PtAddTrackerCardProps) => {
 
   const addTracker = () => {
     if (!scene || !trackerName.trim()) return;
-    scene.addPointValueTracker(trackerName, {
+    scene.trackerManager.addPtValueTracker(trackerName, {
       x: trackerPointX,
       y: trackerPointY,
     });

@@ -17,20 +17,26 @@ class Scene extends Konva.Stage {
   /* ---------------- Public ---------------- */
 
   layer: Konva.Layer;
-  activeMobject: Mobject | null = null;
+  private _activeMobject: Mobject | null = null;
+  get activeMobject(): Mobject | null {
+    return this._activeMobject;
+  }
+  set activeMobject(value: Mobject | null) {
+    this._activeMobject = value;
+  }
 
   /* ---------------- Private ---------------- */
 
   private totalObjects = 0;
   private valFuncRelations: ValFuncRelations[] = [];
   private ptValFuncRelations: PtValFuncRelations[] = [];
-  animManager = new AnimationManager();
-  trackerManager: TrackerManager;
-  mobjectsMeta: {
+  private mobjectsMeta: {
     id: string;
     type: string;
     mobject: Mobject;
   }[] = [];
+  animManager = new AnimationManager();
+  trackerManager: TrackerManager;
 
   constructor(config: Konva.StageConfig) {
     super(config);
@@ -74,6 +80,13 @@ class Scene extends Konva.Stage {
     return this.layer.findOne(`#${id}`) as Mobject | null;
   }
 
+  getMobjectsData(): { id: string; type: string }[] {
+    return this.mobjectsMeta.map((meta) => ({
+      id: meta.id,
+      type: meta.type,
+    }));
+  }
+
   ConnectValueTrackerToMobject(
     trackerName: string,
     mobjectId: string,
@@ -101,24 +114,6 @@ class Scene extends Konva.Stage {
       ),
       id: `${mobject.id()}-${functionName}`,
     };
-  }
-
-  addPointValueTracker(name: string, point: { x: number; y: number }): boolean {
-    const { success } = this.trackerManager.addPtValueTracker(name, point);
-    return success;
-  }
-
-  removePointValueTracker(name: string): boolean {
-    this.trackerManager.remove(name);
-    return true;
-  }
-
-  getValFuncRelations(): ValFuncRelations[] {
-    return this.valFuncRelations;
-  }
-
-  getPtValFuncRelations(): PtValFuncRelations[] {
-    return this.ptValFuncRelations;
   }
 
   ConnectPtValueTrackerToMobject(

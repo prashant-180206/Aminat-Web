@@ -25,7 +25,7 @@ const PtTrackersList = ({
 
   const handleRemoveTracker = (name: string) => {
     if (!scene) return;
-    scene.removePointValueTracker(name);
+    scene.trackerManager.remove(name);
     toast.info("Point tracker removed");
     onTrackerRemove(name);
   };
