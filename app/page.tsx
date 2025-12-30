@@ -1,9 +1,19 @@
-// import Image from "next/image";
+import Navigation from "./components/Navigation";
+import Hero from "./components/Hero";
+import Features from "./components/Features";
+import HowItWorks from "./components/HowItWorks";
+import Roadmap from "./components/Roadmap";
+import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <div className="bg-blue-100">
-      <h1>Hello World</h1>
-    </div>
+    <main className="min-h-screen bg-background">
+      <Navigation />
+      <Hero />
+      <Features />
+      <HowItWorks />
+      <Roadmap />
+      <Footer />
+    </main>
   );
 }

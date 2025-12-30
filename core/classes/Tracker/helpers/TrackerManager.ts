@@ -81,8 +81,12 @@ export class TrackerManager {
     options: { min: number; max: number }
   ): { success: boolean; slider: null | Slider } {
     const meta = this.trackers.get(sliderName);
-    if (!meta || meta.slider) {
+    if (!meta) {
       return { success: false, slider: null };
+    }
+    if (meta.slider) {
+      meta.slider.destroy();
+      meta.slider = null;
     }
     const slider = new Slider(meta.tracker, options);
     meta.slider = slider;
@@ -95,8 +99,12 @@ export class TrackerManager {
     yRange: { min: number; max: number }
   ): { success: boolean; slider: null | PtSlider } {
     const meta = this.pointTrackers.get(name);
-    if (!meta || meta.slider) {
+    if (!meta) {
       return { success: false, slider: null };
+    }
+    if (meta.slider) {
+      meta.slider.destroy();
+      meta.slider = null;
     }
     const slider = new PtSlider(xRange, yRange);
     meta.slider = slider;

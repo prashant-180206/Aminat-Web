@@ -57,6 +57,15 @@
 
   --color-txt: var(--txt);
   --color-txt-sec: var(--txt-sec);
+
+  /* General Purpose App-Wide Colors */
+  --color-brand-from: var(--brand-from);
+  --color-brand-to: var(--brand-to);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
 }
 
 :root {
@@ -107,6 +116,15 @@
 
   --txt: #0f172a; /* slate-900 */
   --txt-sec: #475569; /* slate-600 */
+
+  /* General Purpose App-Wide - Light Mode */
+  --brand-from: #2563eb; /* blue-600 */
+  --brand-to: #9333ea; /* purple-600 */
+  --success: #16a34a; /* green-600 */
+  --warning: #ea580c; /* orange-600 */
+  --info: #0891b2; /* cyan-600 */
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9; /* slate-100 */
 }
 
 .dark {
@@ -156,6 +174,15 @@
 
   --txt: #f1f5f9; /* slate-100 */
   --txt-sec: #cbd5e1; /* slate-300 */
+
+  /* General Purpose App-Wide - Dark Mode */
+  --brand-from: #3b82f6; /* blue-500 */
+  --brand-to: #a855f7; /* purple-500 */
+  --success: #22c55e; /* green-500 */
+  --warning: #f97316; /* orange-500 */
+  --info: #06b6d4; /* cyan-500 */
+  --surface: #1e293b; /* slate-800 */
+  --surface-hover: #334155; /* slate-700 */
 }
 
 @layer base {

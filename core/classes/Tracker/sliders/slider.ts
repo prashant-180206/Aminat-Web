@@ -32,7 +32,11 @@ export class Slider extends Konva.Group {
   private max: number;
   private widthPx: number;
 
-  constructor(tracker: ValueTracker, config: SliderConfig = {}) {
+  constructor(
+    tracker: ValueTracker,
+    config: SliderConfig = {},
+    rank: number = 0
+  ) {
     super({
       draggable: false,
       name: "slider",
@@ -42,14 +46,14 @@ export class Slider extends Konva.Group {
 
     this.min = config.min ?? 0;
     this.max = config.max ?? 1;
-    this.widthPx = config.width ?? 200;
+    this.widthPx = config.width ?? 150;
 
     const height = config.height ?? 6;
-    const thumbRadius = config.thumbRadius ?? 10;
+    const thumbRadius = config.thumbRadius ?? 6;
     const padding = config.padding ?? 14;
     const fontSize = config.fontSize ?? 12;
 
-    const totalHeight = height + thumbRadius * 2 + fontSize + padding * 2;
+    const totalHeight = height + thumbRadius + fontSize + padding * 2;
 
     /* ---------------- Background ---------------- */
 
@@ -85,8 +89,11 @@ export class Slider extends Konva.Group {
       shadowBlur: 6,
       shadowOpacity: 0.4,
       dragBoundFunc: (pos) => ({
-        x: Math.max(0, Math.min(pos.x, this.widthPx)),
-        y: 0,
+        x: Math.max(
+          0 + padding,
+          Math.min(pos.x, this.widthPx + thumbRadius * 2) + padding
+        ),
+        y: rank * (totalHeight + 10) + padding + totalHeight / 2,
       }),
     });
 
@@ -143,7 +150,10 @@ export class Slider extends Konva.Group {
       const transform = this.getAbsoluteTransform().copy().invert();
       const local = transform.point(pointer);
 
-      const x = Math.max(0, Math.min(local.x, this.widthPx));
+      const x = Math.max(
+        0,
+        Math.min(local.x + padding, this.widthPx + padding)
+      );
       this.thumb.x(x);
       updateFromThumb();
     });
@@ -167,6 +177,8 @@ export class Slider extends Konva.Group {
 
     this.opacity(0);
     this.scale({ x: 0, y: 0 });
+    this.x(padding * 2);
+    this.y(rank * (totalHeight + 10) + totalHeight / 2 + padding);
   }
 
   getMin() {

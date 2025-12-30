@@ -25,6 +25,7 @@ export class ValueTracker {
     if (Math.abs(this._value - v) < 0.001) return;
 
     this._value = v;
+    // console.log(`Tracker value set to ${v}`);
 
     this.updaters.forEach(({ cb, expr }) => {
       const evaluated = expr.evaluate({ t: v });
