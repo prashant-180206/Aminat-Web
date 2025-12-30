@@ -168,6 +168,14 @@ The tracker system enables dynamic, interactive animations by binding numeric va
   - `getUpdaterIds()`: Returns array of all registered updater IDs
   - `animateTo(target, { duration?, easing?, onFinish? })`: Creates a Konva tween that smoothly animates the tracker value over time
 
+### PointValueTracker
+
+- **Location**: [core/classes/Tracker/ptValuetracker.ts](core/classes/Tracker/ptValuetracker.ts)
+- **Purpose**: Couples two `ValueTracker`s (`x` and `y`) so 2D attributes (positions, endpoints, etc.) can be driven with independent expressions per axis.
+- **Structure**: Provides `.x` and `.y` getters exposing the underlying `ValueTracker` instances.
+- **Scene binding**: `Scene.ConnectPtValueTrackerToMobject(trackerName, mobjectId, functionNameX, functionNameY, expressionX, expressionY)` registers two updaters (one per axis) against separate connector functions.
+- **Persistence**: Saved in `ptValFuncRelations` with both function names and expressions for X and Y; reapplied during `scene.loadFromObj()`.
+
 ### Slider
 
 - **Location**: [core/classes/Tracker/slider.ts](core/classes/Tracker/slider.ts)
@@ -198,9 +206,11 @@ The tracker system enables dynamic, interactive animations by binding numeric va
   - `clear()`: Destroys all sliders and clears the registry
 - **Lookup**:
   - `getTracker(name)`: Returns ValueTracker instance or null
+  - `getPtValueTracker(name)`: Returns the point tracker wrapper (with `.x` and `.y`) or null
   - `getTrackerMeta(name)`: Returns full TrackerMeta or null
   - `getAllNames()`: Returns array of all tracker names
   - `getAllTrackerMetas()`: Returns array of all TrackerMeta objects
+  - `getAllPtTrackerMetas()`: Returns array of point tracker metas (`{ id, tracker: { x, y }, slider }`)
 - **Persistence**:
   - `storeAsObj()`: Serializes to `TrackerManagerData` containing array of `{ id, value, sliders: { min, max } | null }`
   - `loadFromObj(obj)`: Recreates trackers and sliders from saved data. **Critical**: Adds sliders to layer during restoration
@@ -242,18 +252,33 @@ The `Scene` class orchestrates tracker-mobject connections:
    - Stores relation in `valFuncRelations` for persistence
    - Returns `true` on success
 
+  Scene also maintains `ptValFuncRelations: PtValFuncRelations[]` where each entry is:
+
+  ```ts
+  { trackerName: string, mobjectId: string, functionNameX: string, functionNameY: string, expressionX: string, expressionY: string }
+  ```
+
+  Connections are created with:
+
+  ```ts
+  ConnectPtValueTrackerToMobject(trackerName, mobjectId, functionNameX, functionNameY, expressionX, expressionY)
+  ```
+  - Fetches point tracker (`x` and `y`), mobject, and two connector functions
+  - Registers two updaters (one per axis) with independent expressions
+  - Persists the relation in `ptValFuncRelations`
+
 3. **Persistence Flow**:
    - **Save** (`scene.storeAsObj()`):
      - Serializes all mobjects with their properties
      - Calls `trackerManager.storeAsObj()` to save tracker values and slider configs
-     - Stores `valFuncRelations` array (updater connections)
+     - Stores `valFuncRelations` and `ptValFuncRelations` arrays (updater connections)
      - Packages into `SceneData` object
    - **Load** (`scene.loadFromObj(obj)`):
      - Recreates all mobjects via `addMobject()` and restores their properties
      - Calls `trackerManager.loadFromObj()` which:
        - Recreates ValueTrackers with saved values
        - Recreates Sliders with saved ranges and **adds them to layer**
-     - Iterates `valFuncRelations` to reconnect trackers to mobject functions
+     - Iterates `valFuncRelations` and `ptValFuncRelations` to reconnect trackers to mobject functions (X and Y independently for point trackers)
      - **Important**: Updaters are NOT stored in ValueTracker—they're regenerated from `valFuncRelations`
 
 ### Complete Usage Example

@@ -79,12 +79,12 @@ class Scene extends Konva.Stage {
     mobjectId: string,
     functionName: string,
     expression: string
-  ): boolean {
+  ): { success: boolean; id: string | null } {
     const mobject = this.getMobjectById(mobjectId);
     const tracker = this.trackerManager.getTracker(trackerName);
-    if (!mobject || !tracker) return false;
+    if (!mobject || !tracker) return { success: false, id: null };
     const func = mobject.trackerconnector.getConnectorFunc(functionName);
-    if (!func) return false;
+    if (!func) return { success: false, id: null };
 
     this.valFuncRelations.push({
       trackerName,
@@ -93,11 +93,14 @@ class Scene extends Konva.Stage {
       expression,
     });
 
-    return tracker.addUpdater(
-      `${mobject.id()}-${functionName}`,
-      func,
-      expression
-    );
+    return {
+      success: tracker.addUpdater(
+        `${mobject.id()}-${functionName}`,
+        func,
+        expression
+      ),
+      id: `${mobject.id()}-${functionName}`,
+    };
   }
 
   addPointValueTracker(name: string, point: { x: number; y: number }): boolean {
