@@ -1,7 +1,7 @@
 // anim/classes/mobjects/vector.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { VectorProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
@@ -29,8 +29,10 @@ export class MVector extends Konva.Arrow {
       color: "red",
       scale: 1,
       rotation: 0,
-      start: { x: 0, y: 0 },
-      end: { x: 1, y: 1 },
+      lineEnds: {
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
+      },
       thickness: 3,
       opacity: 1,
       zindex: 0,
@@ -62,8 +64,7 @@ export class MVector extends Konva.Arrow {
       color,
       scale,
       rotation,
-      start,
-      end,
+      lineEnds: { start, end },
       thickness,
       pointerSize,
     } = this._properties;
@@ -87,11 +88,18 @@ export class MVector extends Konva.Arrow {
 
   UpdateFromKonvaProperties() {
     const pos = this.position();
-    this._properties.position = p2c(pos.x, pos.y);
-    // this._properties.thickness = this.strokeWidth();
-    // this._properties.color = this.stroke() as string;
-    this._properties.scale = this.scaleX();
-    this._properties.rotation = this.rotation();
+    this._properties.position = { x: pos.x, y: pos.y };
+    const pts = this.points();
+    const startCanvas = c2p(pts[0], pts[1]);
+    const endCanvas = c2p(pts[2], pts[3]);
+    this._properties.lineEnds.start = {
+      x: startCanvas.x / this._properties.scale,
+      y: startCanvas.y / this._properties.scale,
+    };
+    this._properties.lineEnds.end = {
+      x: endCanvas.x / this._properties.scale,
+      y: endCanvas.y / this._properties.scale,
+    };
   }
 
   storeAsObj() {
@@ -102,7 +110,7 @@ export class MVector extends Konva.Arrow {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as VectorProperties;
+    this.properties = obj.properties as VectorProperties;
     this.UpdateFromKonvaProperties();
   }
 }

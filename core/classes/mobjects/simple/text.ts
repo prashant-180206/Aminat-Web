@@ -30,14 +30,17 @@ export class MText extends Konva.Text {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "black",
       scale: 1,
       rotation: 0,
-      content: "Hello World",
-      fontsize: 24,
-      fontfamily: "Arial",
-      bold: false,
-      italic: false,
+      color: "#ffffff",
+      textData: {
+        color: "#ffffff",
+        content: "Hello World",
+        fontsize: 24,
+        fontfamily: "Arial",
+        bold: false,
+        italic: false,
+      },
       zindex: 0,
       opacity: 1,
       ...config,
@@ -72,11 +75,14 @@ export class MText extends Konva.Text {
       color,
       scale,
       rotation,
-      content,
-      fontsize,
-      fontfamily,
-      bold,
-      italic,
+      textData: {
+        content,
+        fontsize,
+        fontfamily,
+        bold,
+        italic,
+        color: textColor,
+      },
       zindex,
       opacity,
     } = this._properties;
@@ -85,7 +91,7 @@ export class MText extends Konva.Text {
     const fontStyle = italic ? "italic" : "normal";
 
     this.text(content);
-    this.fill(color);
+    this.fill(textColor);
     this.fontFamily(fontfamily);
     this.fontSize(fontsize);
     this.fontStyle(`${fontStyle} ${fontWeight}`.trim());
@@ -111,7 +117,7 @@ export class MText extends Konva.Text {
 
   // Convenience: Update text content
   setContent(content: string) {
-    this._properties.content = content;
+    this._properties.textData.content = content;
     this.text(content);
     const layer = this.getLayer();
     if (layer) layer.batchDraw();
@@ -389,7 +395,7 @@ export class MText extends Konva.Text {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as TextProperties;
+    this.properties = obj.properties as TextProperties;
     this.UpdateFromKonvaProperties();
   }
 }

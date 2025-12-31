@@ -91,7 +91,7 @@ class MCircle extends Konva.Circle {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as CircleProperties;
+    this.properties = obj.properties as CircleProperties;
     this.UpdateFromKonvaProperties();
   }
 }

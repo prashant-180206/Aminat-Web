@@ -30,6 +30,7 @@ class Scene extends Konva.Stage {
   private totalObjects = 0;
   private valFuncRelations: ValFuncRelations[] = [];
   private ptValFuncRelations: PtValFuncRelations[] = [];
+  private mobjectAddCallback: ((mobj: Mobject) => void) | null = null;
   private mobjectsMeta: {
     id: string;
     type: string;
@@ -45,6 +46,10 @@ class Scene extends Konva.Stage {
     this.add(this.layer);
 
     this.trackerManager = new TrackerManager(this.layer);
+  }
+
+  addMobjectFunction(func: (mobj: Mobject) => void) {
+    this.mobjectAddCallback = func;
   }
 
   /* ============================================================ */
@@ -68,6 +73,9 @@ class Scene extends Konva.Stage {
     });
 
     this.layer.draw();
+    if (this.mobjectAddCallback) {
+      this.mobjectAddCallback(mobject);
+    }
 
     return mobject;
   }

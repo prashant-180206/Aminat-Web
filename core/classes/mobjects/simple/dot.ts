@@ -86,7 +86,7 @@ export class Dot extends Konva.Circle {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as DotProperties;
+    this.properties = obj.properties as DotProperties;
     this.UpdateFromKonvaProperties();
   }
 }

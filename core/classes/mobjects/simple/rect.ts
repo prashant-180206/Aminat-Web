@@ -29,8 +29,10 @@ export class MRect extends Konva.Rect {
       color: "blue",
       scale: 1,
       rotation: 0,
-      width: 3,
-      height: 2,
+      dimensions: {
+        width: 3,
+        height: 2,
+      },
       bordercolor: "black",
       thickness: 2,
       cornerRadius: 0,
@@ -63,8 +65,7 @@ export class MRect extends Konva.Rect {
       color,
       scale,
       rotation,
-      width,
-      height,
+      dimensions: { width, height },
       bordercolor,
       thickness,
       cornerRadius,
@@ -93,17 +94,11 @@ export class MRect extends Konva.Rect {
       pos.x + this.width() / 2,
       pos.y + this.height() / 2
     );
-    this._properties.width =
+    this._properties.dimensions.width =
       this.width() / (this._properties.scale * DEFAULT_SCALE);
-    this._properties.height =
+    this._properties.dimensions.height =
       this.height() / (this._properties.scale * DEFAULT_SCALE);
-    // this._properties.color = this.fill() as string;
-    // this._properties.bordercolor = this.stroke() as string;
-    // this._properties.thickness = this.strokeWidth();
-    // this._properties.cornerRadius = this.cornerRadius() as number;
     this._properties.rotation = this.rotation();
-    // this._properties.opacity = this.opacity();/
-    // this._properties.zindex = this.zIndex();
   }
 
   storeAsObj() {
@@ -114,7 +109,7 @@ export class MRect extends Konva.Rect {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as RectangleProperties;
+    this.properties = obj.properties as RectangleProperties;
     this.UpdateFromKonvaProperties();
   }
 }

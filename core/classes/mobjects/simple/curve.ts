@@ -157,7 +157,7 @@ export class ParametricCurve extends Konva.Line {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as CurveProperties;
+    this.properties = obj.properties as CurveProperties;
     this.UpdateFromKonvaProperties();
   }
 }

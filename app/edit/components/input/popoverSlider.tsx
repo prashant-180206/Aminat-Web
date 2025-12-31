@@ -19,7 +19,6 @@ type PopoverSliderInputProps = {
   step?: number;
   icon?: React.ReactNode;
   unit?: string;
-  buttonWidth?: string;
 };
 
 export const PopoverSliderInput: React.FC<PopoverSliderInputProps> = ({
@@ -32,22 +31,19 @@ export const PopoverSliderInput: React.FC<PopoverSliderInputProps> = ({
   step = 1,
   icon,
   unit = "",
-  buttonWidth = "w-20",
 }) => {
   return (
     <div className="flex items-center justify-between gap-2 w-full">
-      <span className="text-sm font-medium">{label}</span>
+      {/* <span className="text-sm font-medium">{label}</span> */}
 
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className={`flex items-center gap-2 text-xs ${buttonWidth} justify-between`}
+            className={`flex items-center gap-2 text-xs  justify-between`}
           >
             {icon}
-            {value}
-            {unit}
           </Button>
         </PopoverTrigger>
 

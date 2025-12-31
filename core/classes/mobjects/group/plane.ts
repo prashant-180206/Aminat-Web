@@ -33,10 +33,14 @@ export class MPlane extends Konva.Group {
       color: "gray",
       scale: 1,
       rotation: 0,
-      width: DEFAULT_WIDTH,
-      height: DEFAULT_HEIGHT,
-      xrange: [-xrange, xrange],
-      yrange: [-yrange, yrange],
+      dimensions: {
+        width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
+      },
+      ranges: {
+        xrange: [-xrange, xrange],
+        yrange: [-yrange, yrange],
+      },
       labelsize: 16,
       opacity: 1,
       zindex: 0,
@@ -75,10 +79,8 @@ export class MPlane extends Konva.Group {
       position,
       scale,
       rotation,
-      width,
-      height,
-      xrange,
-      yrange,
+      dimensions: { width, height },
+      ranges: { xrange, yrange },
       gridthickness,
       showgrid,
       showlabels,
@@ -209,11 +211,8 @@ export class MPlane extends Konva.Group {
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = { x: pos.x, y: pos.y };
-    // this._properties.position = p2c(pos.x, pos.y);
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
-    // this._properties.opacity = this.opacity();
-    // this._properties.zindex = this.zIndex();
   }
 
   storeAsObj() {
@@ -224,7 +223,7 @@ export class MPlane extends Konva.Group {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as PlaneProperties;
+    this.properties = obj.properties as PlaneProperties;
     this.UpdateFromKonvaProperties();
   }
 }

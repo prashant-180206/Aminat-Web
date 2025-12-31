@@ -28,8 +28,10 @@ export class MLine extends Konva.Line {
       color: "red",
       scale: 1,
       rotation: 0,
-      start: { x: 0, y: 0 },
-      end: { x: 1, y: 1 },
+      lineEnds: {
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
+      },
       thickness: 3,
       opacity: 1,
       zindex: 0,
@@ -61,8 +63,7 @@ export class MLine extends Konva.Line {
       color,
       scale,
       rotation,
-      start,
-      end,
+      lineEnds: { start, end },
       thickness,
       opacity,
       zindex,
@@ -90,11 +91,11 @@ export class MLine extends Konva.Line {
     const pts = this.points();
     const startCanvas = c2p(pts[0], pts[1]);
     const endCanvas = c2p(pts[2], pts[3]);
-    this._properties.start = {
+    this._properties.lineEnds.start = {
       x: startCanvas.x / this._properties.scale,
       y: startCanvas.y / this._properties.scale,
     };
-    this._properties.end = {
+    this._properties.lineEnds.end = {
       x: endCanvas.x / this._properties.scale,
       y: endCanvas.y / this._properties.scale,
     };
@@ -109,7 +110,7 @@ export class MLine extends Konva.Line {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as LineProperties;
+    this.properties = obj.properties as LineProperties;
     this.UpdateFromKonvaProperties();
   }
 }

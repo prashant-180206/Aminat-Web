@@ -13,10 +13,10 @@ type NumberStepperInputProps = {
   step?: number;
 };
 
-export const ZIndexInput: React.FC<NumberStepperInputProps> = ({
+export const NumberStepperInput: React.FC<NumberStepperInputProps> = ({
   value,
   onChange,
-  min = 0,
+  min = -Infinity,
   max = Infinity,
   step = 1,
 }) => {
@@ -53,7 +53,7 @@ export const ZIndexInput: React.FC<NumberStepperInputProps> = ({
         value={local}
         onChange={(e) => {
           const v = Number(e.target.value);
-          if (!Number.isNaN(v)) commit(Math.floor(v));
+          if (!Number.isNaN(v)) commit(v);
         }}
         onBlur={() => commit(local)}
         className="h-8 w-12 text-center text-sm font-mono border-0 focus-visible:ring-0"

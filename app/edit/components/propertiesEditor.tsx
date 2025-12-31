@@ -1,12 +1,17 @@
 "use client";
+
 import React from "react";
-import { usePropertyDescriptors } from "./input/propertyDescriptor";
-import { PropertyInput } from "./input/propertyCard";
+import { usePropertyDescriptors } from "./propertyDescriptor";
+import { PropertyInput } from "./propertyCard";
 import { Button } from "@/components/ui/button";
 import { useScene } from "@/hooks/SceneContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Trash2 } from "lucide-react";
+// import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const PropertiesEditor = () => {
   const properties = usePropertyDescriptors();
@@ -15,57 +20,58 @@ const PropertiesEditor = () => {
 
   if (!activeMobject) {
     return (
-      <div className="w-full max-w-4xl px-4">
-        <Card className="bg-muted/50 border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <Info className="h-12 w-12 text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground text-center">
-              Select an object from the sidebar to edit its properties
-            </p>
-          </CardContent>
-        </Card>
+      <div>
+        {/* <div className="rounded-xl border border-dashed bg-muted/30 py-12 flex flex-col items-center justify-center">
+          <Info className="h-10 w-10 text-muted-foreground mb-3" />
+          <p className="text-sm text-muted-foreground text-center max-w-sm">
+            Select an object from the sidebar to edit its properties
+          </p>
+        </div> */}
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl px-4">
-      <Card>
-        <CardHeader className="">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <CardTitle className="text-lg">Properties</CardTitle>
-              <Badge variant="secondary">{activeMobject.getType()}</Badge>
-            </div>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="gap-2"
-              onClick={() => {
-                if (scene && scene.activeMobject) {
-                  scene.removeMobject(scene.activeMobject.id());
-                  setActiveMobject(null);
-                  setActiveMobjectId(null);
-                }
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-              Remove Object
-            </Button>
+    <div className="w-full max-w-5xl  px-6 py-6">
+      {/* Canvas-style container */}
+      <div className="rounded-xl bg-muted/20 border p-2">
+        <div className="flex flex-wrap items-center gap-4 justify-center">
+          <div className="flex bg-card rounded-lg h-8 border px-4 items-center">
+            ID : {activeMobject.id()}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-3">
-            {properties.properties.map((item, index) => (
-              <PropertyInput
-                key={index}
-                item={item}
-                refreshFunc={properties.refreshFunc}
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+          {properties.properties.map((item, index) => (
+            <Tooltip key={index}>
+              <TooltipTrigger asChild>
+                {/* Non-interactive wrapper (important) */}
+                <div className="flex">
+                  <PropertyInput
+                    item={item}
+                    refreshFunc={properties.refreshFunc}
+                  />
+                </div>
+              </TooltipTrigger>
+
+              <TooltipContent side="bottom">
+                {item.property.charAt(0).toUpperCase() + item.property.slice(1)}
+              </TooltipContent>
+            </Tooltip>
+          ))}
+          <Button
+            variant="destructive"
+            size="sm"
+            className="gap-2"
+            onClick={() => {
+              if (scene && scene.activeMobject) {
+                scene.removeMobject(scene.activeMobject.id());
+                setActiveMobject(null);
+                setActiveMobjectId(null);
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

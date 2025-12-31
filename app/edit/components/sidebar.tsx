@@ -43,7 +43,7 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
         defaultOpen
         className="transition-all ease-in-out duration-300"
       >
-        <div className=" flex flex-row bg-card border-r border-border">
+        <div className=" flex h-screen flex-row bg-card border-r border-border">
           {/* Icon Bar */}
           <div className="flex flex-col p-2 gap-2 bg-muted/30">
             <CollapsibleTrigger asChild>

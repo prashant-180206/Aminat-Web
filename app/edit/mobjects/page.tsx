@@ -31,21 +31,7 @@ const Objects = () => {
               className="group flex m-0 p-0 border-none hover:shadow-md hover:border-primary transition-all cursor-pointer overflow-hidden"
               onClick={() => {
                 if (scene) {
-                  const mobj = scene.addMobject(key);
-
-                  mobj.on("click", () => {
-                    scene.activeMobject = mobj;
-                    setActiveMobject(mobj);
-                    setActiveMobjectId(mobj.id());
-                    mobj.UpdateFromKonvaProperties();
-                  });
-                  scene.activeMobject = mobj;
-                  setActiveMobject(mobj);
-                  setActiveMobjectId(mobj.id());
-
-                  mobj.on("dragend", () => {
-                    mobj.UpdateFromKonvaProperties();
-                  });
+                  scene.addMobject(key);
                 }
               }}
             >

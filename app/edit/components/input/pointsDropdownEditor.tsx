@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -6,8 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-// import { on } from "events";
+import { NumberStepperInput } from "./numberInput";
+import { Plus, X } from "lucide-react";
 
 type Point = { x: number; y: number };
 
@@ -29,6 +30,28 @@ const PointsDropdownEditor = ({ points, onChange }: Props) => {
     onChange(localPoints);
   }, [localPoints, onChange]);
 
+  const updatePoint = (idx: number, partial: Partial<Point>) => {
+    setLocalPoints((prev) => {
+      const next = [...prev];
+      next[idx] = {
+        x: partial.x ?? prev[idx].x,
+        y: partial.y ?? prev[idx].y,
+      };
+      return next;
+    });
+  };
+
+  const removePoint = (idx: number) => {
+    setLocalPoints((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const addPoint = () => {
+    setLocalPoints((prev) => {
+      const last = prev[prev.length - 1];
+      return [...prev, last ? { ...last } : { x: 0, y: 0 }];
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,51 +60,45 @@ const PointsDropdownEditor = ({ points, onChange }: Props) => {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="p-3 flex flex-col gap-3 w-64">
-        {localPoints.map((pt, idx) => (
-          <div key={idx} className="flex gap-2 items-center">
-            <Input
-              type="number"
-              value={pt.x}
-              onChange={(e) => {
-                const next = [...localPoints];
-                next[idx] = { ...pt, x: Number(e.target.value) };
-                setLocalPoints(next);
-              }}
-            />
-            <Input
-              type="number"
-              value={pt.y}
-              onChange={(e) => {
-                const next = [...localPoints];
-                next[idx] = { ...pt, y: Number(e.target.value) };
-                setLocalPoints(next);
-              }}
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                setLocalPoints(localPoints.filter((_, i) => i !== idx))
-              }
-            >
-              ✕
-            </Button>
-          </div>
-        ))}
+      <DropdownMenuContent className="p-3 w-72 space-y-3">
+        {/* Points list */}
+        <div className="space-y-2">
+          {localPoints.map((pt, idx) => (
+            <div key={idx} className="flex items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground">#{idx}</span>
 
+              <div className="flex items-center gap-2">
+                <NumberStepperInput
+                  value={pt.x}
+                  onChange={(v) => updatePoint(idx, { x: v })}
+                />
+                <NumberStepperInput
+                  value={pt.y}
+                  onChange={(v) => updatePoint(idx, { y: v })}
+                />
+              </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-destructive"
+                onClick={() => removePoint(idx)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        {/* Add point */}
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => {
-            const last = localPoints[localPoints.length - 1];
-            setLocalPoints([
-              ...localPoints,
-              last ? { ...last } : { x: 0, y: 0 },
-            ]);
-          }}
+          className="w-full gap-2"
+          onClick={addPoint}
         >
-          + Add Point
+          <Plus className="h-4 w-4" />
+          Add Point
         </Button>
       </DropdownMenuContent>
     </DropdownMenu>

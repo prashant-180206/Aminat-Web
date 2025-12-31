@@ -172,7 +172,7 @@ export class MPolygon extends Konva.Shape {
   }
 
   loadFromObj(obj: MobjectData) {
-    this._properties = obj.properties as PolygonProperties;
+    this.properties = obj.properties as PolygonProperties;
     this.UpdateFromKonvaProperties();
   }
 }

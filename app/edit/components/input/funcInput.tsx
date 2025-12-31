@@ -72,7 +72,6 @@ export const FuncsInput: React.FC<FuncsInputProps> = ({
             className="flex items-center gap-2 text-xs"
           >
             <FunctionSquare className="h-4 w-4" />
-            {value.Xfunc || "x"} , {value.Yfunc || "y"}
           </Button>
         </PopoverTrigger>
 

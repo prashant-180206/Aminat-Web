@@ -11,9 +11,15 @@ type ColorDiscProps = {
   value: string;
   onChange: (val: string) => void;
   refreshFunc: () => void;
+  size?: number;
 };
 
-export const ColorDisc = ({ value, onChange, refreshFunc }: ColorDiscProps) => {
+export const ColorDisc = ({
+  value,
+  onChange,
+  refreshFunc,
+  size = 10,
+}: ColorDiscProps) => {
   const [open, setOpen] = useState(false);
   const PRESET_COLORS = [
     "#000000",
@@ -33,10 +39,12 @@ export const ColorDisc = ({ value, onChange, refreshFunc }: ColorDiscProps) => {
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="outline"
+          // variant="outline"
           size="icon"
-          className="h-10 w-10 rounded-full border"
-          style={{ backgroundColor: value }}
+          className={`h-${size} w-${size} rounded-full `}
+          style={{
+            backgroundColor: value,
+          }}
         />
       </PopoverTrigger>
 

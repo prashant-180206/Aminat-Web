@@ -2,20 +2,24 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ColorDisc } from "@/components/colordisc";
-import PointsDropdownEditor from "./pointsDropdownEditor";
-import { Slider } from "@/components/ui/slider";
+import PointsDropdownEditor from "./input/pointsDropdownEditor";
+// import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { PointInput } from "./pointInput";
-import { RangeInput } from "./rangeInput";
-import { FuncsInput } from "./funcInput";
-import { PopoverSliderInput } from "./thicknessInput";
-import { ZIndexInput } from "./zIndexInput";
+import { DimensionsInput, PointInput } from "./input/pairInput";
+import { RangeInput, RangesInput } from "./input/rangeInput";
+import { FuncsInput } from "./input/funcInput";
+import { PopoverSliderInput } from "./input/popoverSlider";
+import { ZIndexInput } from "./input/zIndexInput";
 import {
   Expand,
   RotateCw,
+  ScanEye,
   SquareDashedTopSolid,
   SquareRoundCorner,
 } from "lucide-react";
+import { NumberStepperInput } from "./input/numberInput";
+import { TextStyleInput } from "./input/textInput";
+import { LineEndsInput } from "./input/lineEndInput";
 // import { useScene } from "@/hooks/SceneContext";
 // import { usePropertyDescriptors } from "./propertyDescriptor";
 
@@ -56,12 +60,41 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
   if (property === "zindex") {
     return (
       <div className="flex">
-        <ZIndexInput
-          property={property}
+        <ZIndexInput value={value} onChange={onChange} />
+      </div>
+    );
+  }
+
+  if (property === "ranges") {
+    return (
+      <div className="flex">
+        <RangesInput
           value={value}
+          property={property}
           onChange={onChange}
           refreshFunc={refreshFunc}
         />
+      </div>
+    );
+  }
+
+  if (property === "dimensions") {
+    return (
+      <div className="flex">
+        <DimensionsInput
+          value={value}
+          property={property}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+        />
+      </div>
+    );
+  }
+
+  if (property === "textData") {
+    return (
+      <div className="flex ">
+        <TextStyleInput value={value} onChange={onChange} />
       </div>
     );
   }
@@ -91,6 +124,7 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
       </div>
     );
   }
+
   if (property === "cornerRadius") {
     return (
       <div className="flex">
@@ -108,6 +142,7 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
       </div>
     );
   }
+
   if (property === "rotation") {
     return (
       <div className="flex">
@@ -125,6 +160,7 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
       </div>
     );
   }
+
   if (property === "scale") {
     return (
       <div className="flex">
@@ -143,17 +179,33 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
     );
   }
 
+  if (property == "lineEnds") {
+    return (
+      <div className="flex">
+        <LineEndsInput
+          property={property}
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+          min={-999}
+          max={999}
+        />
+      </div>
+    );
+  }
+
   if (property == "opacity") {
     return (
-      <div className="flex flex-row gap-2">
-        <p>{property + " :"}</p>
-        <Slider
-          defaultValue={[value]}
-          onValueChange={(v) => onChange(v)}
-          step={0.05}
+      <div className="flex">
+        <PopoverSliderInput
+          label="Scale"
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
           min={0}
           max={1}
-          className="w-25 flex-1 h-7"
+          step={0.01}
+          icon={<ScanEye className="h-4 w-4" />}
         />
       </div>
     );
@@ -161,11 +213,12 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
 
   if (type === "color") {
     return (
-      <div className="w-10 h-10 p-0">
+      <div className="flex rounded-full border-2 border-foreground/40">
         <ColorDisc
           value={value}
           onChange={(val) => onChange(val)}
           refreshFunc={refreshFunc}
+          size={6}
         />
       </div>
     );
@@ -173,7 +226,7 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
 
   if (type === "point") {
     return (
-      <div>
+      <div className="flex">
         <PointInput
           property={property}
           value={value}
@@ -197,6 +250,14 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
           onChange={onChange}
           refreshFunc={refreshFunc}
         />
+      </div>
+    );
+  }
+
+  if (type === "number") {
+    return (
+      <div className="flex">
+        <NumberStepperInput value={value} onChange={onChange} />
       </div>
     );
   }
