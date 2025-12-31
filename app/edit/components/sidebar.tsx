@@ -4,7 +4,19 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { DraftingCompass, Settings, PlayCircle, Videotape } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  DraftingCompass,
+  Settings,
+  PlayCircle,
+  Videotape,
+  Menu,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -18,58 +30,60 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
 
   const isActive = (route: string) => pathname?.startsWith(route);
 
+  const navItems = [
+    { route: "/edit/mobjects", icon: DraftingCompass, label: "Mobjects" },
+    { route: "/edit/animations", icon: PlayCircle, label: "Animations" },
+    { route: "/edit/trackers", icon: Videotape, label: "Trackers" },
+    { route: "/edit/settings", icon: Settings, label: "Settings" },
+  ];
+
   return (
-    <Collapsible className="transition-all ease-in-out duration-300">
-      <div className="h-full flex flex-row bg-bg-light">
-        <div className="flex flex-col pl-2 py-2 gap-2">
-          <CollapsibleTrigger asChild>
-            <Button size={"icon"}>☰</Button>
-          </CollapsibleTrigger>
+    <TooltipProvider delayDuration={300}>
+      <Collapsible
+        defaultOpen
+        className="transition-all ease-in-out duration-300"
+      >
+        <div className=" flex flex-row bg-card border-r border-border">
+          {/* Icon Bar */}
+          <div className="flex flex-col p-2 gap-2 bg-muted/30">
+            <CollapsibleTrigger asChild>
+              <Button size="icon" variant="ghost" className="mb-2">
+                <Menu size={20} />
+              </Button>
+            </CollapsibleTrigger>
 
-          <Button
-            asChild
-            variant={isActive("/edit/mobjects") ? "secondary" : "ghost"}
-          >
-            <Link href="/edit/mobjects" aria-label="Mobjects">
-              <DraftingCompass size={28} strokeWidth={1.75} />
-            </Link>
-          </Button>
+            {navItems.map((item) => (
+              <Tooltip key={item.route}>
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    size="icon"
+                    variant={isActive(item.route) ? "default" : "ghost"}
+                    className={
+                      isActive(item.route)
+                        ? "bg-primary text-primary-foreground"
+                        : ""
+                    }
+                  >
+                    <Link href={item.route} aria-label={item.label}>
+                      <item.icon size={20} />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{item.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
 
-          <Button
-            asChild
-            variant={isActive("/edit/animations") ? "secondary" : "ghost"}
-          >
-            <Link href="/edit/animations" aria-label="Animations">
-              <PlayCircle size={28} strokeWidth={1.75} />
-            </Link>
-          </Button>
-
-          <Button
-            asChild
-            variant={isActive("/edit/settings") ? "secondary" : "ghost"}
-          >
-            <Link href="/edit/settings" aria-label="Settings">
-              <Settings size={28} strokeWidth={1.75} />
-            </Link>
-          </Button>
-
-          <Button
-            asChild
-            variant={isActive("/edit/trackers") ? "secondary" : "ghost"}
-          >
-            <Link href="/edit/trackers" aria-label="Trackers">
-              <Videotape size={28} strokeWidth={1.75} />
-            </Link>
-          </Button>
-        </div>
-
-        <div className="bg-bg-dark">
-          <CollapsibleContent className="w-[250px]">
+          {/* Collapsible Content Panel */}
+          <CollapsibleContent className="w-[280px] h-screen border-l border-border">
             {children}
           </CollapsibleContent>
         </div>
-      </div>
-    </Collapsible>
+      </Collapsible>
+    </TooltipProvider>
   );
 };
 
