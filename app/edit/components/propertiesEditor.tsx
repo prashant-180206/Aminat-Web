@@ -7,12 +7,23 @@ import { useScene } from "@/hooks/SceneContext";
 
 const PropertiesEditor = () => {
   const properties = usePropertyDescriptors();
-  const { scene, setActiveMobject } = useScene();
+  const { scene, setActiveMobject, setActiveMobjectId, activeMobject } =
+    useScene();
+
+  if (!activeMobject) {
+    return (
+      <div className="w-5/6 flex flex-row flex-wrap gap-4 mb-4 justify-center items-center"></div>
+    );
+  }
 
   return (
     <div className="w-5/6 flex flex-row flex-wrap gap-4 mb-4 justify-center items-center">
-      {properties.map((item, index) => (
-        <PropertyInput key={index} item={item} />
+      {properties.properties.map((item, index) => (
+        <PropertyInput
+          key={index}
+          item={item}
+          refreshFunc={properties.refreshFunc}
+        />
       ))}
 
       <Button
@@ -21,6 +32,7 @@ const PropertiesEditor = () => {
           if (scene && scene.activeMobject) {
             scene.removeMobject(scene.activeMobject.id());
             setActiveMobject(null);
+            setActiveMobjectId(null);
           }
         }}
       >

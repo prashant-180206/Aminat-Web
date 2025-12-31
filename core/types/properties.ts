@@ -11,8 +11,10 @@ export interface BaseProperties {
 
 export interface CurveProperties extends BaseProperties {
   parameterRange: [number, number];
-  Xfunc: string;
-  Yfunc: string;
+  funcs: {
+    Xfunc: string;
+    Yfunc: string;
+  };
   thickness: number;
   bordercolor: string;
 }

@@ -94,7 +94,7 @@ export class MPolygon extends Konva.Shape {
     // Option B: treat your points as already pixel-local. Below uses p2c to convert.
     const localPoints: number[] = [];
     for (let i = 0; i < points.length; ++i) {
-      const px = p2c(points[i].x, points[i].y);
+      const px = p2c(points[i].x + position.x, points[i].y + position.y);
       // since node position is already at pos, convert to local by subtracting pos
       localPoints.push(px.x - pos.x, px.y - pos.y);
     }

@@ -23,7 +23,7 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
       <div className="h-full flex flex-row bg-bg-light">
         <div className="flex flex-col pl-2 py-2 gap-2">
           <CollapsibleTrigger asChild>
-            <Button>☰</Button>
+            <Button size={"icon"}>☰</Button>
           </CollapsibleTrigger>
 
           <Button

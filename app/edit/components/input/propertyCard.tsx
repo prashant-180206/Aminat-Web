@@ -7,6 +7,17 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { PointInput } from "./pointInput";
 import { RangeInput } from "./rangeInput";
+import { FuncsInput } from "./funcInput";
+import { PopoverSliderInput } from "./thicknessInput";
+import { ZIndexInput } from "./zIndexInput";
+import {
+  Expand,
+  RotateCw,
+  SquareDashedTopSolid,
+  SquareRoundCorner,
+} from "lucide-react";
+// import { useScene } from "@/hooks/SceneContext";
+// import { usePropertyDescriptors } from "./propertyDescriptor";
 
 type Props = {
   item: {
@@ -15,9 +26,11 @@ type Props = {
     value: any;
     onChange: (val: any) => void;
   };
+
+  refreshFunc: () => void;
 };
 
-export const PropertyInput: React.FC<Props> = ({ item }) => {
+export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
   const { type, value, onChange, property } = item;
 
   if (type === "boolean") {
@@ -40,19 +53,96 @@ export const PropertyInput: React.FC<Props> = ({ item }) => {
     );
   }
 
-  if (type === "number" && property !== "opacity") {
+  if (property === "zindex") {
     return (
-      <div className="flex flex-row gap-2 items-center">
-        <p>{property + " :"}</p>
-        <Input
-          type="number"
-          defaultValue={value ? value?.toFixed?.(2) : 0}
-          onChange={(e) => onChange(Number(e.target.value) || 0)}
-          className="w-20 py-0"
+      <div className="flex">
+        <ZIndexInput
+          property={property}
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
         />
       </div>
     );
   }
+
+  if (type === "curvefuncs") {
+    return (
+      <div className="flex">
+        <FuncsInput property={property} value={value} onChange={onChange} />
+      </div>
+    );
+  }
+
+  if (property.endsWith("thickness")) {
+    return (
+      <div className="flex">
+        <PopoverSliderInput
+          label="Thickness"
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+          min={0}
+          max={30}
+          step={1}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          unit="px"
+        />
+      </div>
+    );
+  }
+  if (property === "cornerRadius") {
+    return (
+      <div className="flex">
+        <PopoverSliderInput
+          label="Corner Radius"
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+          min={0}
+          max={50}
+          step={1}
+          icon={<SquareRoundCorner className="h-4 w-4" />}
+          unit="px"
+        />
+      </div>
+    );
+  }
+  if (property === "rotation") {
+    return (
+      <div className="flex">
+        <PopoverSliderInput
+          label="Rotation"
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+          min={0}
+          max={360}
+          step={1}
+          icon={<RotateCw className="h-4 w-4" />}
+          unit="deg"
+        />
+      </div>
+    );
+  }
+  if (property === "scale") {
+    return (
+      <div className="flex">
+        <PopoverSliderInput
+          label="Scale"
+          value={value}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+          min={0}
+          max={5}
+          step={0.1}
+          icon={<Expand className="h-4 w-4" />}
+          unit="x"
+        />
+      </div>
+    );
+  }
+
   if (property == "opacity") {
     return (
       <div className="flex flex-row gap-2">
@@ -72,7 +162,11 @@ export const PropertyInput: React.FC<Props> = ({ item }) => {
   if (type === "color") {
     return (
       <div className="w-10 h-10 p-0">
-        <ColorDisc value={value} onChange={(val) => onChange(val)} />
+        <ColorDisc
+          value={value}
+          onChange={(val) => onChange(val)}
+          refreshFunc={refreshFunc}
+        />
       </div>
     );
   }
@@ -84,6 +178,7 @@ export const PropertyInput: React.FC<Props> = ({ item }) => {
           property={property}
           value={value}
           onChange={(val) => onChange(val)}
+          refreshFunc={refreshFunc}
         />
       </div>
     );
@@ -94,7 +189,16 @@ export const PropertyInput: React.FC<Props> = ({ item }) => {
   }
 
   if (type === "range") {
-    return <RangeInput value={value} property={property} onChange={onChange} />;
+    return (
+      <div className="flex">
+        <RangeInput
+          value={value}
+          property={property}
+          onChange={onChange}
+          refreshFunc={refreshFunc}
+        />
+      </div>
+    );
   }
 
   return (

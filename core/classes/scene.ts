@@ -63,6 +63,10 @@ class Scene extends Konva.Stage {
       this.activeMobject = mobject;
       mobject.UpdateFromKonvaProperties();
     });
+    // mobject.on("dragend", () => {
+    //   mobject.UpdateFromKonvaProperties();
+    //   // console.log("Mobject dragged:", mobject.id());
+    // });
 
     this.layer.draw();
 

@@ -31,6 +31,13 @@ const Objects = () => {
                     mobj.UpdateFromKonvaProperties();
                     console.log("Mobject clicked:", mobj.id());
                   });
+                  scene.activeMobject = mobj;
+                  setActiveMobject(mobj);
+                  setActiveMobjectId(mobj.id());
+
+                  mobj.on("dragend", () => {
+                    mobj.UpdateFromKonvaProperties();
+                  });
                 }
               }}
               className=" p-6"

@@ -1,50 +1,119 @@
 "use client";
 
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { SlidersHorizontal } from "lucide-react";
 
 type Range = [number, number];
 
 type RangeInputProps = {
   property: string;
-  value: Range; // initial value: [min, max]
+  value: Range;
   onChange: (val: Range) => void;
+  refreshFunc: () => void;
+  min?: number;
+  max?: number;
+  step?: number;
 };
 
 export const RangeInput: React.FC<RangeInputProps> = ({
   property,
   value,
   onChange,
+  refreshFunc,
+  min = -15,
+  max = 15,
+  step = 0.1,
 }) => {
-  // initialize once from props
-  const [range, setRange] = useState<Range>(() => [
-    value?.[0] ?? 0,
-    value?.[1] ?? 0,
-  ]);
+  const [range, setRange] = useState<Range>(value);
 
-  const updateRange = (partial: Partial<Range>) => {
-    const newRange: Range = [partial[0] ?? range[0], partial[1] ?? range[1]];
-    setRange(newRange);
-    onChange(newRange);
+  // keep local state in sync if parent updates externally
+  useEffect(() => {
+    setRange(value);
+  }, [value]);
+
+  const updateMin = (v: number) => {
+    const nextMin = Math.min(v, range[1]);
+    const next: Range = [nextMin, range[1]];
+    setRange(next);
+    onChange(next);
+  };
+
+  const updateMax = (v: number) => {
+    const nextMax = Math.max(v, range[0]);
+    const next: Range = [range[0], nextMax];
+    setRange(next);
+    onChange(next);
   };
 
   return (
-    <div className="flex flex-row gap-2 items-center ">
-      <p>{property + " :"}</p>
-      <Input
-        type="number"
-        defaultValue={range[0].toFixed(2)}
-        onChange={(e) => updateRange([Number(e.target.value), undefined])}
-        className="w-24"
-        id={`range-input-${property}-0`}
-      />
-      <Input
-        type="number"
-        defaultValue={range[1].toFixed(2)}
-        onChange={(e) => updateRange([undefined, Number(e.target.value)])}
-        className="w-24"
-        id={`range-input-${property}-1`}
-      />
+    <div className="flex items-center justify-between gap-2 w-full">
+      <span className="text-sm font-medium">{property}</span>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 text-xs font-mono w-30"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {range[0].toFixed(1)} – {range[1].toFixed(1)}
+          </Button>
+        </PopoverTrigger>
+
+        <PopoverContent className="w-72 space-y-5">
+          {/* Min slider */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Min</span>
+              <span className="font-mono">{range[0].toFixed(1)}</span>
+            </div>
+
+            <Slider
+              value={[range[0]]}
+              min={min}
+              max={max}
+              step={step}
+              onValueChange={(v) => {
+                updateMin(v[0]);
+                refreshFunc();
+              }}
+            />
+          </div>
+
+          {/* Max slider */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Max</span>
+              <span className="font-mono">{range[1].toFixed(1)}</span>
+            </div>
+
+            <Slider
+              value={[range[1]]}
+              min={min}
+              max={max}
+              step={step}
+              onValueChange={(v) => {
+                updateMax(v[0]);
+                refreshFunc();
+              }}
+            />
+          </div>
+
+          {/* Global bounds */}
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{min.toFixed(1)}</span>
+            <span>{max.toFixed(1)}</span>
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };

@@ -32,8 +32,10 @@ export class ParametricCurve extends Konva.Line {
       scale: 1,
       rotation: 0,
       parameterRange: [0, 2 * Math.PI],
-      Xfunc: "t",
-      Yfunc: "sin(t)",
+      funcs: {
+        Xfunc: "t",
+        Yfunc: "sin(t)",
+      },
       thickness: 3,
       bordercolor: "blue",
       opacity: 1,
@@ -79,8 +81,7 @@ export class ParametricCurve extends Konva.Line {
       thickness,
       bordercolor,
       parameterRange,
-      Xfunc,
-      Yfunc,
+      funcs,
       opacity,
       zindex,
     } = this._properties;
@@ -95,7 +96,7 @@ export class ParametricCurve extends Konva.Line {
     this.zIndex(zindex);
     // this.fill(color); // Lines don't have fill
     // Generate parametric curve
-    this.generateCurve(Xfunc, Yfunc, parameterRange);
+    this.generateCurve(funcs.Xfunc, funcs.Yfunc, parameterRange);
   }
 
   private generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
@@ -133,15 +134,19 @@ export class ParametricCurve extends Konva.Line {
     Yfunc: string,
     range: [number, number] = this._properties.parameterRange
   ) {
-    this._properties.Xfunc = Xfunc;
-    this._properties.Yfunc = Yfunc;
+    this._properties.funcs.Xfunc = Xfunc;
+    this._properties.funcs.Yfunc = Yfunc;
     this._properties.parameterRange = range;
     this.generateCurve(Xfunc, Yfunc, range);
   }
 
   setParameterRange(range: [number, number]) {
     this._properties.parameterRange = range;
-    this.generateCurve(this._properties.Xfunc, this._properties.Yfunc, range);
+    this.generateCurve(
+      this._properties.funcs.Xfunc,
+      this._properties.funcs.Yfunc,
+      range
+    );
   }
 
   storeAsObj() {
