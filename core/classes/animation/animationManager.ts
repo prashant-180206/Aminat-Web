@@ -2,9 +2,21 @@ import { AnimInfo } from "@/core/types/animation";
 import { AnimManagerData } from "@/core/types/file";
 
 export class AnimationManager {
-  private animations = new Map<string, AnimInfo>();
+  private _animations = new Map<string, AnimInfo>();
+  public get animations() {
+    return this._animations;
+  }
+  public set animations(value) {
+    this._animations = value;
+  }
   private order: string[][] = [];
-  private activeIndex = 0;
+  private _activeIndex = 0;
+  public get activeIndex() {
+    return this._activeIndex;
+  }
+  public set activeIndex(value) {
+    this._activeIndex = value;
+  }
 
   //  * Adds a group of animations that should play together
 
@@ -70,11 +82,44 @@ export class AnimationManager {
     if (this.order.length === 0) return;
 
     const group = this.order[this.activeIndex];
-    group.forEach((id) => {
-      this.animations.get(id)?.anim?.play();
-    });
 
+    // RESET FIRST
+    // group.forEach((id) => {
+    //   this.animations.get(id)?.anim.reset();
+    // });
     this.activeIndex = (this.activeIndex + 1) % this.order.length;
+
+    if (this.activeIndex === 1) {
+      // Completed a full cycle, reset all animations
+      this.resetAll();
+    }
+
+    // THEN PLAY
+    group.forEach((id) => {
+      this.animations.get(id)?.anim.play();
+    });
+  }
+
+  reverseAnimate() {
+    if (this.order.length === 0) return;
+
+    // RESET FIRST
+    // group.forEach((id) => {
+    //   this.animations.get(id)?.anim.finish();
+    // });
+    const group = this.order[this.activeIndex];
+
+    if (this.activeIndex === 0) {
+      // Completed a full reverse cycle, reset all animations
+      this.finishAll();
+    }
+
+    // THEN REVERSE
+    group.forEach((id) => {
+      this.animations.get(id)?.anim.reverse();
+    });
+    this.activeIndex =
+      (this.activeIndex - 1 + this.order.length) % this.order.length;
   }
 
   removeAnimation(id: string) {
@@ -99,18 +144,40 @@ export class AnimationManager {
   }
 
   resetAll() {
-    // Reset playback pointer
-    this.activeIndex = 0;
+    // this.activeIndex = 0;
 
-    // Traverse groups in reverse execution order
+    // REVERSE execution order (last group first)
     for (let g = this.order.length - 1; g >= 0; g--) {
       const group = this.order[g];
 
-      // Reset animations inside the group in reverse order
+      // REVERSE within group too
       for (let i = group.length - 1; i >= 0; i--) {
         const id = group[i];
         const animData = this.animations.get(id);
-        animData?.anim.reset();
+        const tween = animData?.anim;
+
+        if (tween) {
+          // tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
+          tween.reset(); // Reset timing to start
+        }
+      }
+    }
+  }
+
+  finishAll() {
+    for (let g = this.order.length - 1; g >= 0; g--) {
+      const group = this.order[g];
+
+      // REVERSE within group too
+      for (let i = group.length - 1; i >= 0; i--) {
+        const id = group[i];
+        const animData = this.animations.get(id);
+        const tween = animData?.anim;
+
+        if (tween) {
+          // tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
+          tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
+        }
       }
     }
   }

@@ -27,7 +27,7 @@ export interface TrackerManagerData {
   trackers: {
     id: string;
     value: number;
-    sliders: { min: number; max: number } | null;
+    sliders: { min: number; max: number; rank: number } | null;
   }[];
 
   pointtrackers: {

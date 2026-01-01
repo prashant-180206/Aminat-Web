@@ -13,6 +13,7 @@ interface AddTrackerCardProps {
 }
 
 const AddTrackerCard = ({ onTrackerAdded }: AddTrackerCardProps) => {
+  const { valRefresh } = useScene();
   const [trackerName, setTrackerName] = React.useState("");
   const [trackerValue, setTrackerValue] = React.useState(0);
 
@@ -26,6 +27,7 @@ const AddTrackerCard = ({ onTrackerAdded }: AddTrackerCardProps) => {
     setTrackerName("");
     setTrackerValue(0);
     onTrackerAdded();
+    valRefresh();
   };
 
   return (

@@ -1,0 +1,71 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+// import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+// import { Badge } from "@/components/ui/badge";
+// import { useScene } from "@/hooks/SceneContext";
+import { Menu, Layers } from "lucide-react";
+import React from "react";
+import { Tabs } from "@radix-ui/react-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ValueTrackersPanelTab from "./value";
+import PtValueTrackersPanelTab from "./point";
+
+const TrackerSidePanel = () => {
+  // const { scene, valRefresh } = useScene();
+
+  // const mobjects = scene?.getMobjectsData() || [];
+
+  return (
+    <Collapsible
+      defaultOpen
+      className="relative flex flex-row bg-card border-r overflow-auto h-screen no-scrollbar"
+    >
+      {/* Collapsed Toggle */}
+      <CollapsibleTrigger asChild className="absolute top-2 right-2 z-10">
+        <Button size="icon" variant="ghost" className="rounded-full shadow-sm">
+          <Menu className="h-4 w-4" />
+        </Button>
+      </CollapsibleTrigger>
+
+      {/* Sidebar Content */}
+      <CollapsibleContent className="w-[280px] h-full">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+            <div className="flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" />
+              <h1 className="font-semibold tracking-wide">Value Trackers</h1>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <Tabs defaultValue="value" className="w-full p-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="value">Value</TabsTrigger>
+              <TabsTrigger value="point">Point</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="value" className="mt-4">
+              <ValueTrackersPanelTab />
+            </TabsContent>
+
+            <TabsContent value="point" className="mt-4">
+              <PtValueTrackersPanelTab />
+            </TabsContent>
+          </Tabs>
+
+          <Separator />
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
+
+export default TrackerSidePanel;

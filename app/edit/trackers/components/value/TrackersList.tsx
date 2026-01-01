@@ -11,7 +11,7 @@ import { useScene } from "@/hooks/SceneContext";
 interface TrackersListProps {
   trackers: TrackerMeta[];
   selectedTracker: string | null;
-  updaterIds: string[];
+  // updaterIds: string[];
   onTrackerSelect: (id: string) => void;
   onTrackerRemove: (id: string) => void;
 }
@@ -19,11 +19,12 @@ interface TrackersListProps {
 const TrackersList = ({
   trackers,
   selectedTracker,
-  updaterIds,
+  // updaterIds,
   onTrackerSelect,
   onTrackerRemove,
 }: TrackersListProps) => {
-  const { scene } = useScene();
+  const { scene, valToggle } = useScene();
+  void valToggle;
 
   const handleRemoveTracker = (name: string) => {
     if (!scene) return;
@@ -45,7 +46,7 @@ const TrackersList = ({
           key={tracker.id}
           trackerId={tracker.id}
           isSelected={selectedTracker === tracker.id}
-          updaterIds={updaterIds}
+          // updaterIds={updaterIds}
           onSelect={onTrackerSelect}
           onRemove={handleRemoveTracker}
         />

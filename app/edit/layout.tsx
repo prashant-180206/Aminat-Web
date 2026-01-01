@@ -3,11 +3,12 @@
 import { SceneProvider } from "@/hooks/SceneContext";
 import React from "react";
 import EditSidebar from "./components/sidebar";
-import PropertiesEditor from "./components/propertiesEditor";
+import PropertiesEditor from "./components/propertyComponent/propertiesEditor";
 import SceneView from "./scene";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
 import EditorHeader from "./components/EditorHeader";
 import EditorFooter from "./components/EditorFooter";
+import Controller from "./components/controller";
 
 export default function Layout({
   children,
@@ -35,11 +36,13 @@ export default function Layout({
 
               {/* Scene Canvas */}
               <div
-                className="flex flex-row bg-card border-2 border-border rounded-lg shadow-xl "
+                className="flex flex-row bg-card border-2 border-border rounded-lg shadow-xl mx-4"
                 style={{ height: DEFAULT_HEIGHT, width: DEFAULT_WIDTH }}
               >
                 <SceneView />
               </div>
+
+              <Controller />
             </div>
           </div>
 

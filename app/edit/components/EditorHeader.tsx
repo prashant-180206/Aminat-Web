@@ -98,7 +98,7 @@ const EditorHeader = () => {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="outline" size="sm">
                 File
               </Button>
             </DropdownMenuTrigger>

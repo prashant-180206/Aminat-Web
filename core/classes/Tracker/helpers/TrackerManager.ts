@@ -78,7 +78,7 @@ export class TrackerManager {
 
   addSlider(
     sliderName: string,
-    options: { min: number; max: number }
+    options: { min: number; max: number; rank: number }
   ): { success: boolean; slider: null | Slider } {
     const meta = this.trackers.get(sliderName);
     if (!meta) {
@@ -180,7 +180,11 @@ export class TrackerManager {
         id,
         value: meta.tracker.value,
         sliders: meta.slider
-          ? { min: meta.slider.getMin(), max: meta.slider.getMax() }
+          ? {
+              min: meta.slider.getMin(),
+              max: meta.slider.getMax(),
+              rank: meta.slider.rank,
+            }
           : null,
       });
     });
@@ -219,6 +223,7 @@ export class TrackerManager {
           {
             min: trackerData.sliders.min,
             max: trackerData.sliders.max,
+            rank: trackerData.sliders.rank,
           }
         );
 

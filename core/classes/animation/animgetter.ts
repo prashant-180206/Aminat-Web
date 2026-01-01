@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { easingMap } from "@/core/maps/easingMap";
 import { AnimMeta } from "@/core/types/animation";
+import { Mobject } from "@/core/types/mobjects";
 import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 
 export class AnimGetter {
   private AnimGetterMap = new Map<string, AnimMeta>();
-  private node: Konva.Node;
+  private node: Mobject;
   private counter = 0;
+  private static HIDDEN_SCALE = 0.0001;
 
-  constructor(obj: Konva.Node) {
+  constructor(obj: Mobject) {
     this.node = obj;
 
     this.AnimGetterMap.set("Create", {
@@ -21,25 +23,29 @@ export class AnimGetter {
       mobjId: this.node.id(),
       type: "Create",
       func: (args: { [key: string]: any }) => {
-        const targetScaleX = this.node.scaleX() || 1;
-        const targetScaleY = this.node.scaleY() || 1;
-        const targetOpacity =
-          "opacity" in this.node ? (this.node as any).opacity() : 1;
-
-        this.node.scale({ x: 0, y: 0 });
-        (this.node as any).opacity?.(0);
+        this.node.opacity(0);
+        this.node.scaleX(0);
+        this.node.scaleY(0);
 
         const tween = new Konva.Tween({
           node: this.node,
           duration: args.duration || 1,
           easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-          scaleX: targetScaleX,
-          scaleY: targetScaleY,
-          opacity: targetOpacity,
-        });
+          scaleX: 1,
+          scaleY: 1,
 
-        console.log("Create Anim Func called", tween);
-        tween.play();
+          opacity: 1,
+          onFinish: () => {
+            this.node.opacity(1);
+            this.node.scaleX(1);
+            this.node.scaleY(1);
+          },
+          onReset: () => {
+            this.node.opacity(0);
+            this.node.scaleX(0);
+            this.node.scaleY(0);
+          },
+        });
 
         return {
           id: `${this.node.id()}-Create-${this.counter++}`,
@@ -68,6 +74,17 @@ export class AnimGetter {
           scaleX: 0,
           scaleY: 0,
           opacity: 0,
+
+          onFinish: () => {
+            this.node.opacity(0);
+            this.node.scaleX(0);
+            this.node.scaleY(0);
+          },
+          onReset: () => {
+            this.node.opacity(1);
+            this.node.scaleX(1);
+            this.node.scaleY(1);
+          },
         });
         return {
           id: `${this.node.id()}-Destroy-${this.counter++}`,

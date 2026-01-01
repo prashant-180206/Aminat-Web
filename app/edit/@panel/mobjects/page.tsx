@@ -40,7 +40,7 @@ const MobjectsSidePanel = () => {
               <Layers className="h-4 w-4 text-primary" />
               <h1 className="font-semibold tracking-wide">Objects</h1>
             </div>
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs mr-10">
               {mobjects.length}
             </Badge>
           </div>

@@ -2,14 +2,14 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ColorDisc } from "@/components/colordisc";
-import PointsDropdownEditor from "./input/pointsDropdownEditor";
+import PointsDropdownEditor from ".././input/pointsDropdownEditor";
 // import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { DimensionsInput, PointInput } from "./input/pairInput";
-import { RangeInput, RangesInput } from "./input/rangeInput";
-import { FuncsInput } from "./input/funcInput";
-import { PopoverSliderInput } from "./input/popoverSlider";
-import { ZIndexInput } from "./input/zIndexInput";
+import { DimensionsInput, PointInput } from ".././input/pairInput";
+import { RangeInput, RangesInput } from ".././input/rangeInput";
+import { FuncsInput } from ".././input/funcInput";
+import { PopoverSliderInput } from ".././input/popoverSlider";
+import { ZIndexInput } from ".././input/zIndexInput";
 import {
   Expand,
   RotateCw,
@@ -17,9 +17,9 @@ import {
   SquareDashedTopSolid,
   SquareRoundCorner,
 } from "lucide-react";
-import { NumberStepperInput } from "./input/numberInput";
-import { TextStyleInput } from "./input/textInput";
-import { LineEndsInput } from "./input/lineEndInput";
+import { NumberStepperInput } from ".././input/numberInput";
+import { TextStyleInput } from ".././input/textInput";
+import { LineEndsInput } from ".././input/lineEndInput";
 // import { useScene } from "@/hooks/SceneContext";
 // import { usePropertyDescriptors } from "./propertyDescriptor";
 

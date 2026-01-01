@@ -3,11 +3,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import SliderSettingsPopover from "./SliderSettingsPopover";
+// import { useScene } from "@/hooks/SceneContext";
 
 interface TrackerItemProps {
   trackerId: string;
   isSelected: boolean;
-  updaterIds: string[];
+  // updaterIds: string[];
   onSelect: (id: string) => void;
   onRemove: (id: string) => void;
 }
@@ -15,7 +16,7 @@ interface TrackerItemProps {
 const TrackerItem = ({
   trackerId,
   isSelected,
-  updaterIds,
+  // updaterIds,
   onSelect,
   onRemove,
 }: TrackerItemProps) => {
@@ -29,7 +30,7 @@ const TrackerItem = ({
       <span className="truncate text-xs">{trackerId}</span>
 
       <div className="flex gap-1">
-        <SliderSettingsPopover trackerId={trackerId} updaterIds={updaterIds} />
+        <SliderSettingsPopover trackerId={trackerId} />
 
         <Button
           size="icon"

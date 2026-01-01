@@ -12,14 +12,16 @@ import { useScene } from "@/hooks/SceneContext";
 interface ConnectorFunctionsCardProps {
   connectorNames: string[];
   selectedTracker: string | null;
-  onConnectionMade: (success: boolean, id: string | null) => void;
+  // onConnectionMade: (success: boolean, id: string | null) => void;
 }
 
 const ConnectorFunctionsCard = ({
   connectorNames,
   selectedTracker,
-  onConnectionMade,
-}: ConnectorFunctionsCardProps) => {
+}: // onConnectionMade,
+ConnectorFunctionsCardProps) => {
+  const { valRefresh, valToggle } = useScene();
+  void valToggle;
   const [selectedFunc, setSelectedFunc] = React.useState<string | null>(
     connectorNames[0] ?? null
   );
@@ -31,17 +33,18 @@ const ConnectorFunctionsCard = ({
   const connectFuncs = () => {
     if (!activeMobject || !selectedFunc || !expression || !scene) return;
 
-    const { success, id } = scene.ConnectValueTrackerToMobject(
+    const { success } = scene.ConnectValueTrackerToMobject(
       selectedTracker || "",
       activeMobject.id(),
       selectedFunc,
       expression
     );
 
-    onConnectionMade(success, id);
+    // onConnectionMade(success, id);
 
     if (success) {
       toast.success("Function connected to tracker");
+      valRefresh();
     } else {
       toast.error("Failed to connect function to tracker");
     }

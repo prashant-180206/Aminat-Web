@@ -8,7 +8,8 @@ import ConnectorFunctionsCard from "./components/value/ConnectorFunctionsCard";
 import TrackersList from "./components/value/TrackersList";
 
 const ValueTrackersTab = () => {
-  const { scene, activeMobject } = useScene();
+  const { scene, activeMobject, valRefresh, valToggle } = useScene();
+  void valToggle;
 
   const [trackers, setTrackers] = React.useState<TrackerMeta[]>([]);
   const [selectedTracker, setSelectedTracker] = React.useState<string | null>(
@@ -19,7 +20,8 @@ const ValueTrackersTab = () => {
   const fetchTrackers = React.useCallback(() => {
     if (!scene) return;
     setTrackers(scene.trackerManager.getAllTrackerMetas());
-  }, [scene]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene, valToggle]);
 
   React.useEffect(() => {
     fetchTrackers();
@@ -35,11 +37,13 @@ const ValueTrackersTab = () => {
   const handleConnectionMade = (success: boolean, id: string | null) => {
     if (success && id) {
       setUpdaterIds((prev) => [...prev, id]);
+      // valRefresh();
     }
   };
 
   const handleTrackerRemoved = () => {
     fetchTrackers();
+    valRefresh();
   };
 
   return (

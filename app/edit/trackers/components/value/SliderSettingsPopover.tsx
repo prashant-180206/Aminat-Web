@@ -2,32 +2,38 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
+import { NumberStepperInput } from "@/app/edit/components/input/numberInput";
 
 interface SliderSettingsPopoverProps {
   trackerId: string;
-  updaterIds: string[];
+  // updaterIds: string[];
   onSliderAdded?: () => void;
 }
 
 const SliderSettingsPopover = ({
   trackerId,
-  updaterIds,
+  // updaterIds,
   onSliderAdded,
 }: SliderSettingsPopoverProps) => {
   const [sliderInput, setSliderInput] = React.useState<{
     min: number;
     max: number;
-  }>({ min: 0, max: 1 });
+    rank: number;
+  }>({ min: 0, max: 1, rank: 0 });
 
   // Import scene inside component to avoid circular dependencies
-  const { scene } = useScene();
+  const { scene, valToggle, valRefresh } = useScene();
+  void valToggle;
+
+  const updaterIds =
+    scene?.trackerManager.getTracker(trackerId)?.getUpdaterIds() ?? [];
 
   const makeSlider = () => {
     if (!scene) return;
@@ -46,6 +52,7 @@ const SliderSettingsPopover = ({
     slider.appearAnim().play();
     toast.success("Slider created");
     onSliderAdded?.();
+    valRefresh();
   };
 
   return (
@@ -61,7 +68,7 @@ const SliderSettingsPopover = ({
       </PopoverTrigger>
 
       <PopoverContent className="w-64 p-0" onClick={(e) => e.stopPropagation()}>
-        <Card className="border-none shadow-none">
+        <Card className="border-none shadow-none gap-2 py-2">
           {/* Header */}
           <div className="px-4 py-3 border-b">
             <h4 className="text-sm font-semibold">Slider Settings</h4>
@@ -71,39 +78,47 @@ const SliderSettingsPopover = ({
           <div className="px-4 py-3 space-y-2">
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="text-xs">Min Value</Label>
-                <Input
-                  placeholder="Min"
-                  type="number"
+                <Label className="text-xs mb-2">Min Value</Label>
+                <NumberStepperInput
                   value={sliderInput.min}
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    if (!isNaN(val)) {
+                  onChange={(v) => {
+                    if (!isNaN(v)) {
                       setSliderInput((prev) => ({
                         ...prev,
-                        min: val,
+                        min: v,
                       }));
                     }
                   }}
                 />
               </div>
               <div>
-                <Label className="text-xs">Max Value</Label>{" "}
-                <Input
-                  placeholder="Max"
-                  type="number"
+                <Label className="text-xs mb-2">Max Value</Label>{" "}
+                <NumberStepperInput
                   value={sliderInput.max}
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    if (!isNaN(val)) {
+                  onChange={(v) => {
+                    if (!isNaN(v)) {
                       setSliderInput((prev) => ({
                         ...prev,
-                        max: val,
+                        max: v,
                       }));
                     }
                   }}
                 />
               </div>
+            </div>
+            <div className="flex flex-col mt-4 pt-4 items-start justify-center border-t ">
+              <Label className="text-xs mb-2">Rank</Label>
+              <NumberStepperInput
+                value={sliderInput.rank}
+                onChange={(v) => {
+                  if (!isNaN(v)) {
+                    setSliderInput((prev) => ({
+                      ...prev,
+                      rank: v,
+                    }));
+                  }
+                }}
+              />
             </div>
           </div>
 

@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Layers, Target } from "lucide-react";
 
 const AnimationsTab: React.FC = () => {
-  const { scene, activeMobjectId, activeMobject } = useScene();
+  const { scene, activeMobjectId, activeMobject, animRefresh } = useScene();
 
   const animNames = activeMobject?.animgetter.getAnimNames() || [];
 
@@ -65,10 +65,12 @@ const AnimationsTab: React.FC = () => {
     scene.animManager.addAnimations(...animGroup);
     setAnimGroup([]);
     toast.success("Animation group added to timeline");
+    scene.animManager.animate();
+    animRefresh();
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-card">
+    <div className="h-full overflow-auto no-scrollbar w-full flex flex-col bg-card">
       {/* Header */}
       <div className="px-4 py-3 border-b bg-muted/30">
         <h2 className="font-semibold text-sm">Add Animation</h2>
@@ -81,7 +83,7 @@ const AnimationsTab: React.FC = () => {
         <div className="p-4 flex flex-col gap-4">
           {/* Target Object */}
           {activeMobjectId ? (
-            <Card className="border-primary/50 bg-primary/5">
+            <Card className="border-primary/50 bg-primary/5 gap-2 py-0 px-4">
               <CardHeader className="p-3">
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-primary" />
