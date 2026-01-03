@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import PtSliderSettingsPopover from "./PtSliderSettingsPopover";
+import { useScene } from "@/hooks/SceneContext";
 
 interface PtTrackerItemProps {
   trackerId: string;
@@ -19,6 +20,8 @@ const PtTrackerItem = ({
   onSelect,
   onRemove,
 }: PtTrackerItemProps) => {
+  const { valRefresh, valToggle } = useScene();
+  void valToggle;
   return (
     <div
       className={`flex items-center justify-between rounded px-2 py-1 cursor-pointer ${
@@ -43,6 +46,7 @@ const PtTrackerItem = ({
           onClick={(e) => {
             e.stopPropagation();
             onRemove(trackerId);
+            valRefresh();
           }}
         >
           ×

@@ -1,5 +1,5 @@
-import { easingMap } from "@/core/maps/easingMap";
-import Konva from "@/lib/konva";
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { compile, EvalFunction } from "mathjs";
 
 type UpdateCallback = (value: number) => void;
@@ -25,7 +25,7 @@ export class ValueTracker {
     if (Math.abs(this._value - v) < 0.001) return;
 
     this._value = v;
-    // console.log(`Tracker value set to ${v}`);
+    console.log(`Tracker value set to ${v}`);
 
     this.updaters.forEach(({ cb, expr }) => {
       const evaluated = expr.evaluate({ t: v });
@@ -44,22 +44,15 @@ export class ValueTracker {
   ): boolean {
     try {
       const compiled = compile(expression);
-
-      // Validate once
       compiled.evaluate({ t: this._value });
-
       this.updaters.set(id, {
         cb,
         expr: compiled,
       });
-
-      // Run once immediately
       cb(compiled.evaluate({ t: this._value }));
-
       return true;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      // console.error(`Invalid expression for updater "${id}"`, e);
       return false;
     }
   }
@@ -75,27 +68,4 @@ export class ValueTracker {
   /**
    * Animate the tracker value
    */
-  animateTo(
-    target: number,
-    config: {
-      duration?: number;
-      easing?: string;
-      onFinish?: () => void;
-    } = {}
-  ): Konva.Tween {
-    const proxy = { v: this._value };
-
-    return new Konva.Tween({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      node: proxy as any,
-      v: target,
-      duration: config.duration ?? 1,
-      easing:
-        easingMap[config.easing ?? "EaseInOut"] ?? Konva.Easings.EaseInOut,
-      onUpdate: () => {
-        this.value = proxy.v;
-      },
-      onFinish: config.onFinish,
-    });
-  }
 }

@@ -21,7 +21,8 @@ const PtTrackersList = ({
   onTrackerSelect,
   onTrackerRemove,
 }: PtTrackersListProps) => {
-  const { scene } = useScene();
+  const { scene, valToggle } = useScene();
+  void valToggle;
 
   const handleRemoveTracker = (name: string) => {
     if (!scene) return;
@@ -45,8 +46,8 @@ const PtTrackersList = ({
           key={tracker.id}
           trackerId={tracker.id}
           trackerValue={{
-            x: tracker.tracker.x.tracker.value,
-            y: tracker.tracker.y.tracker.value,
+            x: tracker.tracker.x.value,
+            y: tracker.tracker.y.value,
           }}
           isSelected={selectedTracker === tracker.id}
           onSelect={onTrackerSelect}

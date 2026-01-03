@@ -6,9 +6,10 @@ import { useScene } from "@/hooks/SceneContext";
 import PtAddTrackerCard from "./components/point/PtAddTrackerCard";
 import PtConnectorFunctionsCard from "./components/point/PtConnectorFunctionsCard";
 import PtTrackersList from "./components/point/PtTrackersList";
+import { toast } from "sonner";
 
 const PointValueTrackersTab = () => {
-  const { scene, activeMobject } = useScene();
+  const { scene, activeMobject, valRefresh } = useScene();
 
   const [trackers, setTrackers] = React.useState<PtTrackerMeta[]>([]);
   const [selectedTracker, setSelectedTracker] = React.useState<string | null>(
@@ -33,6 +34,12 @@ const PointValueTrackersTab = () => {
 
   const handleConnectionMade = (success: boolean) => {
     // Connection made, can add additional logic here if needed
+    valRefresh();
+    if (success) {
+      toast.success("Tracker connected to mobject");
+    } else {
+      toast.error("Failed to connect tracker to mobject");
+    }
   };
 
   const handleTrackerRemoved = () => {

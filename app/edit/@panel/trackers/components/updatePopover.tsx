@@ -2,13 +2,14 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { NumberStepperInput } from "../../../components/input/numberInput";
+import { Settings2 } from "lucide-react";
 
 type Props = {
   initialMin: number;
@@ -30,37 +31,29 @@ const UpdateSliderPopover: React.FC<Props> = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm">
-          Update Slider
+        <Button
+          // variant="outline"
+          className=" flex-1 border text-primary border-primary bg-card hover:bg-accent"
+          size="sm"
+        >
+          <Settings2 />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-64 space-y-3">
+      <PopoverContent className="space-y-3 w-auto flex-1">
         <div className="space-y-1">
           <Label>Min</Label>
-          <Input
-            type="number"
-            value={min}
-            onChange={(e) => setMin(Number(e.target.value))}
-          />
+          <NumberStepperInput value={min} onChange={setMin} />
         </div>
 
         <div className="space-y-1">
           <Label>Max</Label>
-          <Input
-            type="number"
-            value={max}
-            onChange={(e) => setMax(Number(e.target.value))}
-          />
+          <NumberStepperInput value={max} onChange={setMax} />
         </div>
 
         <div className="space-y-1">
           <Label>Rank</Label>
-          <Input
-            type="number"
-            value={rank}
-            onChange={(e) => setRank(Number(e.target.value))}
-          />
+          <NumberStepperInput value={rank} onChange={setRank} />
         </div>
 
         <Button className="w-full" onClick={() => onApply({ min, max, rank })}>

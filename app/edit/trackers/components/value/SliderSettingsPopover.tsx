@@ -13,13 +13,11 @@ import { NumberStepperInput } from "@/app/edit/components/input/numberInput";
 
 interface SliderSettingsPopoverProps {
   trackerId: string;
-  // updaterIds: string[];
   onSliderAdded?: () => void;
 }
 
 const SliderSettingsPopover = ({
   trackerId,
-  // updaterIds,
   onSliderAdded,
 }: SliderSettingsPopoverProps) => {
   const [sliderInput, setSliderInput] = React.useState<{
@@ -49,7 +47,16 @@ const SliderSettingsPopover = ({
     }
 
     scene.layer.add(slider);
-    slider.appearAnim().play();
+    const anim = slider.appearAnim();
+    scene.animManager.addAnimations({
+      id: `slider_appear_${trackerId}`,
+      mobjId: trackerId,
+      anim,
+      type: "Slider Appear",
+      label: `Slider Appear Animation for ${trackerId}`,
+      tweenMeta: { duration: 1 },
+    });
+    scene.animManager.animate();
     toast.success("Slider created");
     onSliderAdded?.();
     valRefresh();

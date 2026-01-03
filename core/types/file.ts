@@ -50,8 +50,8 @@ export interface ValFuncRelations {
 export interface PtValFuncRelations {
   mobjectId: string;
   trackerName: string;
-  functionNameX: string;
-  functionNameY: string;
-  expressionX: string;
-  expressionY: string;
+  functionNameX?: string;
+  functionNameY?: string;
+  expressionX?: string;
+  expressionY?: string;
 }

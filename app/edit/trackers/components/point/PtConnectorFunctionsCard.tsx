@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/combobox";
-import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
 
 interface PtConnectorFunctionsCardProps {
@@ -31,42 +30,54 @@ const PtConnectorFunctionsCard = ({
 
   const { scene, activeMobject } = useScene();
 
-  const connectFuncs = () => {
+  const connectX = () => {
     if (
+      !scene ||
       !activeMobject ||
+      !selectedTracker ||
       !selectedFuncX ||
-      !selectedFuncY ||
-      !expressionX ||
-      !expressionY ||
-      !scene
+      !expressionX
     )
       return;
 
-    const success = scene.ConnectPtValueTrackerToMobject(
-      selectedTracker || "",
+    const success = scene.ConnectXPtValueTrackerToMobject(
+      selectedTracker,
       activeMobject.id(),
       selectedFuncX,
+      expressionX
+    );
+
+    onConnectionMade(success);
+  };
+
+  const connectY = () => {
+    if (
+      !scene ||
+      !activeMobject ||
+      !selectedTracker ||
+      !selectedFuncY ||
+      !expressionY
+    )
+      return;
+
+    const success = scene.ConnectYPtValueTrackerToMobject(
+      selectedTracker,
+      activeMobject.id(),
       selectedFuncY,
-      expressionX,
       expressionY
     );
 
     onConnectionMade(success);
-
-    if (success) {
-      toast.success("Point tracker function connected");
-    } else {
-      toast.error("Failed to connect point tracker function");
-    }
   };
 
   return (
-    <Card className="p-3 flex flex-col gap-2">
+    <Card className="p-3 flex flex-col gap-3">
       <Label className="text-xs text-muted-foreground">
         Connect to Mobject
       </Label>
+
       <div className="flex flex-col gap-2">
-        <div className="flex-1">
+        <div>
           <Label className="text-xs text-muted-foreground">Function X</Label>
           <Combobox
             options={connectorNames.map((f) => ({
@@ -75,10 +86,10 @@ const PtConnectorFunctionsCard = ({
             }))}
             value={selectedFuncX}
             onChange={setSelectedFuncX}
-            className=""
           />
         </div>
-        <div className="flex-1">
+
+        <div>
           <Label className="text-xs text-muted-foreground">Function Y</Label>
           <Combobox
             options={connectorNames.map((f) => ({
@@ -90,6 +101,7 @@ const PtConnectorFunctionsCard = ({
           />
         </div>
       </div>
+
       <div className="flex gap-2">
         <div className="flex-1">
           <Label className="text-xs text-muted-foreground">Expression X</Label>
@@ -99,6 +111,7 @@ const PtConnectorFunctionsCard = ({
             onChange={(e) => setExpressionX(e.target.value)}
           />
         </div>
+
         <div className="flex-1">
           <Label className="text-xs text-muted-foreground">Expression Y</Label>
           <Input
@@ -108,9 +121,15 @@ const PtConnectorFunctionsCard = ({
           />
         </div>
       </div>
-      <Button size="sm" onClick={connectFuncs}>
-        Apply to Connector
-      </Button>
+
+      <div className="flex gap-2">
+        <Button size="sm" className="flex-1" onClick={connectX}>
+          Apply X
+        </Button>
+        <Button size="sm" className="flex-1" onClick={connectY}>
+          Apply Y
+        </Button>
+      </div>
     </Card>
   );
 };

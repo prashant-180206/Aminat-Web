@@ -17,7 +17,7 @@ const PtAddTrackerCard = ({ onTrackerAdded }: PtAddTrackerCardProps) => {
   const [trackerPointX, setTrackerPointX] = React.useState(0);
   const [trackerPointY, setTrackerPointY] = React.useState(0);
 
-  const { scene } = useScene();
+  const { scene, valRefresh } = useScene();
 
   const addTracker = () => {
     if (!scene || !trackerName.trim()) return;
@@ -25,11 +25,13 @@ const PtAddTrackerCard = ({ onTrackerAdded }: PtAddTrackerCardProps) => {
       x: trackerPointX,
       y: trackerPointY,
     });
+
     toast.success("Point tracker created");
     setTrackerName("");
     setTrackerPointX(0);
     setTrackerPointY(0);
     onTrackerAdded();
+    valRefresh();
   };
 
   return (

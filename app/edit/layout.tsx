@@ -2,11 +2,19 @@
 
 import { SceneProvider } from "@/hooks/SceneContext";
 import React from "react";
-import EditSidebar from "./components/sidebar";
 import PropertiesEditor from "./components/propertyComponent/propertiesEditor";
 import SceneView from "./scene";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
-import EditorHeader from "./components/EditorHeader";
+import dynamic from "next/dynamic";
+
+// import EditSidebar from "./components/sidebar";
+const EditSidebar = dynamic(() => import("./components/sidebar"), {
+  ssr: false,
+});
+const EditorHeader = dynamic(() => import("./components/EditorHeader"), {
+  ssr: false,
+});
+// import EditorHeader from "./components/EditorHeader";
 import EditorFooter from "./components/EditorFooter";
 import Controller from "./components/controller";
 

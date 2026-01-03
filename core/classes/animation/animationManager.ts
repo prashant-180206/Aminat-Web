@@ -83,18 +83,8 @@ export class AnimationManager {
 
     const group = this.order[this.activeIndex];
 
-    // RESET FIRST
-    // group.forEach((id) => {
-    //   this.animations.get(id)?.anim.reset();
-    // });
     this.activeIndex = (this.activeIndex + 1) % this.order.length;
 
-    if (this.activeIndex === 1) {
-      // Completed a full cycle, reset all animations
-      this.resetAll();
-    }
-
-    // THEN PLAY
     group.forEach((id) => {
       this.animations.get(id)?.anim.play();
     });
@@ -103,10 +93,6 @@ export class AnimationManager {
   reverseAnimate() {
     if (this.order.length === 0) return;
 
-    // RESET FIRST
-    // group.forEach((id) => {
-    //   this.animations.get(id)?.anim.finish();
-    // });
     const group = this.order[this.activeIndex];
 
     if (this.activeIndex === 0) {
@@ -144,24 +130,26 @@ export class AnimationManager {
   }
 
   resetAll() {
-    // this.activeIndex = 0;
-
-    // REVERSE execution order (last group first)
+    // 1. REVERSE order of groups
     for (let g = this.order.length - 1; g >= 0; g--) {
       const group = this.order[g];
 
-      // REVERSE within group too
+      // 2. REVERSE order within the group
       for (let i = group.length - 1; i >= 0; i--) {
         const id = group[i];
         const animData = this.animations.get(id);
-        const tween = animData?.anim;
 
-        if (tween) {
-          // tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
-          tween.reset(); // Reset timing to start
+        if (animData?.anim) {
+          // IMPORTANT: Stop the engine from calculating new frames
+          // This prevents the "fighting" you are seeing.
+          animData.anim.pause();
+
+          // Now reset the properties safely
+          animData.anim.reset();
         }
       }
     }
+    this.activeIndex = 0;
   }
 
   finishAll() {

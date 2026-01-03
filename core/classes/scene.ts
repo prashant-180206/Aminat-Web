@@ -151,18 +151,73 @@ class Scene extends Konva.Stage {
       expressionY,
     });
 
-    const xSuccess = tracker.x.tracker.addUpdater(
+    const xSuccess = tracker.x.addUpdater(
       `${mobject.id()}-${functionNameX}-X`,
       funcX,
       expressionX
     );
-    const ySuccess = tracker.y.tracker.addUpdater(
+    const ySuccess = tracker.y.addUpdater(
       `${mobject.id()}-${functionNameY}-Y`,
       funcY,
       expressionY
     );
 
     return xSuccess && ySuccess;
+  }
+  ConnectYPtValueTrackerToMobject(
+    trackerName: string,
+    mobjectId: string,
+    functionNameY: string,
+    expressionY: string
+  ): boolean {
+    const mobject = this.getMobjectById(mobjectId);
+    const tracker = this.trackerManager.getPtValueTracker(trackerName);
+    if (!mobject || !tracker) return false;
+    const funcY = mobject.trackerconnector.getConnectorFunc(functionNameY);
+    if (!funcY) return false;
+
+    this.ptValFuncRelations.push({
+      trackerName,
+      mobjectId,
+      functionNameY,
+      expressionY,
+    });
+    const ySuccess = tracker.y.addUpdater(
+      `${mobject.id()}-${functionNameY}-Y`,
+      funcY,
+      expressionY
+    );
+
+    return ySuccess;
+  }
+
+  ConnectXPtValueTrackerToMobject(
+    trackerName: string,
+    mobjectId: string,
+    functionNameX: string,
+    expressionX: string
+  ): boolean {
+    const mobject = this.getMobjectById(mobjectId);
+    const tracker = this.trackerManager.getPtValueTracker(trackerName);
+    if (!mobject || !tracker) return false;
+    const funcX = mobject.trackerconnector.getConnectorFunc(functionNameX);
+    // const funcY = mobject.trackerconnector.getConnectorFunc(functionNameY);
+    if (!funcX) return false;
+
+    this.ptValFuncRelations.push({
+      trackerName,
+      mobjectId,
+      functionNameX,
+      expressionX,
+    });
+
+    const xSuccess = tracker.x.addUpdater(
+      `${mobject.id()}-${functionNameX}-X`,
+      funcX,
+      expressionX
+    );
+
+    return xSuccess;
   }
 
   storeAsObj(): SceneData {
@@ -202,14 +257,22 @@ class Scene extends Konva.Stage {
     });
 
     obj.ptValFuncRelations?.forEach((rel) => {
-      this.ConnectPtValueTrackerToMobject(
-        rel.trackerName,
-        rel.mobjectId,
-        rel.functionNameX,
-        rel.functionNameY,
-        rel.expressionX,
-        rel.expressionY
-      );
+      if (rel.functionNameX && rel.expressionX) {
+        this.ConnectXPtValueTrackerToMobject(
+          rel.trackerName,
+          rel.mobjectId,
+          rel.functionNameX,
+          rel.expressionX
+        );
+      }
+      if (rel.functionNameY && rel.expressionY) {
+        this.ConnectYPtValueTrackerToMobject(
+          rel.trackerName,
+          rel.mobjectId,
+          rel.functionNameY,
+          rel.expressionY
+        );
+      }
     });
 
     this.animManager.loadFromObj(obj.animationsData);

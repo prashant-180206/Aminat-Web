@@ -101,6 +101,7 @@ const EditorHeader = () => {
               <Button variant="outline" size="sm">
                 File
               </Button>
+              {/* <div>File</div> */}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={handleNew}>

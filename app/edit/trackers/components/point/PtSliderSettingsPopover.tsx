@@ -1,14 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
+import { NumberStepperInput } from "@/app/edit/components/input/numberInput";
 
 interface PtSliderSettingsPopoverProps {
   trackerId: string;
@@ -19,6 +20,8 @@ const PtSliderSettingsPopover = ({
   trackerId,
   onSliderAdded,
 }: PtSliderSettingsPopoverProps) => {
+  const { valToggle, valRefresh } = useScene();
+  void valToggle;
   const [sliderInputX, setSliderInputX] = React.useState<{
     min: number;
     max: number;
@@ -29,6 +32,7 @@ const PtSliderSettingsPopover = ({
     max: number;
   }>({ min: 0, max: 1 });
 
+  const [rank, setRank] = useState<number>(0);
   const { scene } = useScene();
 
   const makePtSlider = () => {
@@ -37,7 +41,8 @@ const PtSliderSettingsPopover = ({
     const { success, slider } = scene.trackerManager.addPtSlider(
       trackerId,
       sliderInputX,
-      sliderInputY
+      sliderInputY,
+      rank
     );
 
     if (!success || !slider) {
@@ -46,67 +51,71 @@ const PtSliderSettingsPopover = ({
     }
 
     scene.layer.add(slider);
-    slider.appearAnim().play();
+    const anim = slider.appearAnim();
+    scene.animManager.addAnimations({
+      id: `${trackerId}_slider_appear`,
+      anim,
+      label: "Slider Appear",
+      mobjId: trackerId,
+      type: "slider_appear",
+      tweenMeta: { duration: 1 },
+    });
+    scene.animManager.animate();
     toast.success("Point slider created");
     onSliderAdded?.();
+    valRefresh();
   };
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
-          className="flex h-6 w-6 items-center justify-center rounded-md 
-               hover:bg-muted transition text-sm"
+        <Button
+          variant="ghost"
+          className="h-7 items-center justify-center"
           onClick={(e) => e.stopPropagation()}
         >
           +
-        </button>
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-64 p-0" onClick={(e) => e.stopPropagation()}>
-        <Card className="border-none shadow-none">
+        <Card className="border-none shadow-none p-2">
           {/* Header */}
           <div className="px-4 py-3 border-b">
             <h4 className="text-sm font-semibold">Point Slider Settings</h4>
           </div>
 
           {/* Range Inputs */}
-          <div className="px-4 py-3 space-y-3">
+          <div className="px-4 py-0 space-y-3">
             {/* X Range */}
-            <div>
+            <div className="gap-2">
               <p className="text-xs font-medium text-muted-foreground mb-2">
                 X Range
               </p>
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label className="text-xs">Min</Label>
-                  <Input
-                    placeholder="Min"
-                    type="number"
+                <div className="">
+                  <Label className="text-xs mb-2">Min</Label>
+                  <NumberStepperInput
                     value={sliderInputX.min}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      if (!isNaN(val)) {
+                    onChange={(v) => {
+                      if (!isNaN(v)) {
                         setSliderInputX((prev) => ({
                           ...prev,
-                          min: val,
+                          min: v,
                         }));
                       }
                     }}
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Max</Label>
-                  <Input
-                    placeholder="Max"
-                    type="number"
+                  <Label className="text-xs mb-2">Max</Label>
+                  <NumberStepperInput
                     value={sliderInputX.max}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      if (!isNaN(val)) {
+                    onChange={(v) => {
+                      if (!isNaN(v)) {
                         setSliderInputX((prev) => ({
                           ...prev,
-                          max: val,
+                          max: v,
                         }));
                       }
                     }}
@@ -116,44 +125,52 @@ const PtSliderSettingsPopover = ({
             </div>
 
             {/* Y Range */}
-            <div>
+            <div className="gap-2">
               <p className="text-xs font-medium text-muted-foreground mb-2">
                 Y Range
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs">Min</Label>
-                  <Input
-                    placeholder="Min"
-                    type="number"
+                  <Label className="text-xs mb-2">Min</Label>
+                  <NumberStepperInput
                     value={sliderInputY.min}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      if (!isNaN(val)) {
+                    onChange={(v) => {
+                      if (!isNaN(v)) {
                         setSliderInputY((prev) => ({
                           ...prev,
-                          min: val,
+                          min: v,
                         }));
                       }
                     }}
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Max</Label>
-                  <Input
-                    placeholder="Max"
-                    type="number"
+                  <Label className="text-xs mb-2">Max</Label>
+                  <NumberStepperInput
                     value={sliderInputY.max}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      if (!isNaN(val)) {
+                    onChange={(v) => {
+                      if (!isNaN(v)) {
                         setSliderInputY((prev) => ({
                           ...prev,
-                          max: val,
+                          max: v,
                         }));
                       }
                     }}
                   />
+                </div>
+              </div>
+              <div className="gap-2 mt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs mb-2">Rank</Label>
+                    <NumberStepperInput
+                      value={sliderInputY.min}
+                      onChange={(v) => {
+                        setRank(v);
+                      }}
+                    />
+                  </div>
+                  {/* <div></div> */}
                 </div>
               </div>
             </div>

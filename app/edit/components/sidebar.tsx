@@ -14,8 +14,9 @@ import {
   DraftingCompass,
   Settings,
   PlayCircle,
-  Videotape,
+  // Videotape,
   Menu,
+  Sigma,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,7 +34,7 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
   const navItems = [
     { route: "/edit/mobjects", icon: DraftingCompass, label: "Mobjects" },
     { route: "/edit/animations", icon: PlayCircle, label: "Animations" },
-    { route: "/edit/trackers", icon: Videotape, label: "Trackers" },
+    { route: "/edit/trackers", icon: Sigma, label: "Trackers" },
     { route: "/edit/settings", icon: Settings, label: "Settings" },
   ];
 

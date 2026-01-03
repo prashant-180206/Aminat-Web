@@ -1,6 +1,6 @@
-import Konva from "@/lib/konva";
+import Konva from "konva";
 import { ValueTracker } from ".././valuetracker";
-// import { re } from "mathjs";
+// import { easingMap } from "@/core/maps/easingMap";
 
 type SliderConfig = {
   width?: number;
@@ -11,7 +11,6 @@ type SliderConfig = {
   trackColor?: string;
   thumbColor?: string;
   thumbRadius?: number;
-
   bgColor?: string;
   labelColor?: string;
   fontSize?: number;
@@ -21,246 +20,310 @@ type SliderConfig = {
 export class Slider extends Konva.Group {
   readonly tracker: ValueTracker;
 
-  private background: Konva.Rect;
-  private track: Konva.Rect;
-  private thumb: Konva.Circle;
+  private background!: Konva.Rect;
+  private track!: Konva.Rect;
+  private thumb!: Konva.Circle;
+  private titleText!: Konva.Text;
+  private minLabel!: Konva.Text;
+  private maxLabel!: Konva.Text;
 
-  private minLabel: Konva.Text;
-  private maxLabel: Konva.Text;
-
-  private config: SliderConfig;
-
+  private config: Required<SliderConfig>;
   private min: number;
   private max: number;
-  private widthPx: number;
-
   private _rank: number;
   public get rank(): number {
     return this._rank;
   }
 
-  constructor(
-    tracker: ValueTracker,
-    config: SliderConfig = {},
-    rank: number = 0
-  ) {
-    super({ draggable: false, name: "slider" });
+  // private dummyNode = new Konva.Group();
 
-    this.tracker = tracker;
-    this.config = config;
-    this._rank = rank;
-
-    this.min = config.min ?? 0;
-    this.max = config.max ?? 1;
-    this.widthPx = config.width ?? 150;
-
-    this.background = new Konva.Rect({ listening: false });
-    this.track = new Konva.Rect();
-    this.thumb = new Konva.Circle({ draggable: true });
-    this.minLabel = new Konva.Text();
-    this.maxLabel = new Konva.Text();
-
-    this.add(
-      this.background,
-      this.track,
-      this.thumb,
-      this.minLabel,
-      this.maxLabel
-    ); // one-time creation
-    this.bindLogic(); // one-time listeners
-    this.buildUI(); // initial layout
-    this.syncInitial();
-  }
-
-  private buildUI() {
-    const {
-      height = 6,
-      thumbRadius = 6,
-      padding = 14,
-      fontSize = 12,
-      bgColor = "#1f1f1f",
-      trackColor = "#555",
-      thumbColor = "#e5e5e5",
-      labelColor = "#bdbdbd",
-    } = this.config;
-
-    const totalHeight = height + thumbRadius + fontSize + padding * 2;
-
-    /* ---------- Background ---------- */
-
-    this.background.setAttrs({
-      x: -padding,
-      y: -totalHeight / 2,
-      width: this.widthPx + padding * 2,
-      height: totalHeight,
-      fill: bgColor,
-      cornerRadius: 12,
-    });
-
-    /* ---------- Track ---------- */
-
-    this.track.setAttrs({
-      x: 0,
-      y: -height / 2,
-      width: this.widthPx,
-      height,
-      fill: trackColor,
-      cornerRadius: height / 2,
-    });
-
-    /* ---------- Thumb ---------- */
-
-    this.thumb.setAttrs({
-      radius: thumbRadius,
-      fill: thumbColor,
-      y: 0,
-    });
-
-    this.thumb.dragBoundFunc((pos) => ({
-      x: Math.max(0 + padding * 2, Math.min(pos.x, this.widthPx) + padding * 2),
-      y: this.y(),
-    }));
-
-    /* ---------- Labels ---------- */
-
-    this.minLabel.setAttrs({
-      text: this.min.toString(),
-      x: 0,
-      y: thumbRadius + 8,
-      fontSize,
-      fill: labelColor,
-    });
-
-    this.maxLabel.setAttrs({
-      text: this.max.toString(),
-      x: this.widthPx,
-      y: thumbRadius + 8,
-      fontSize,
-      fill: labelColor,
-    });
-
-    this.maxLabel.offsetX(this.maxLabel.width());
-
-    /* ---------- Group Position ---------- */
-
-    this.position({
-      x: padding * 2,
-      y: this._rank * (totalHeight + 10) + totalHeight / 2 + padding,
-    });
-
-    /* ---------- Sync thumb to value ---------- */
-
-    this.syncThumbFromValue();
-  }
-
-  private syncThumbFromValue() {
-    if (this.max === this.min) return;
-
-    const clamped = Math.max(this.min, Math.min(this.tracker.value, this.max));
-    const t = (clamped - this.min) / (this.max - this.min);
-    this.thumb.x(t * this.widthPx);
-  }
-
-  private bindLogic() {
-    const updateFromThumb = () => {
-      const t = this.thumb.x() / this.widthPx;
-      this.tracker.value = this.min + t * (this.max - this.min);
-    };
-
-    this.thumb.on("dragmove", updateFromThumb);
-
-    this.track.on("mousedown touchstart", () => {
-      const stage = this.getStage();
-      if (!stage) return;
-
-      const pointer = stage.getPointerPosition();
-      if (!pointer) return;
-
-      const transform = this.getAbsoluteTransform().copy().invert();
-      const local = transform.point(pointer);
-
-      this.thumb.x(Math.max(0, Math.min(local.x, this.widthPx)));
-      updateFromThumb();
-    });
-
-    this.tracker.addUpdater("Slider", (v) => {
-      if (this.max === this.min) return;
-      const t = (v - this.min) / (this.max - this.min);
-      this.thumb.x(t * this.widthPx);
-    });
-  }
-
-  private syncInitial() {
-    const initial =
-      this.config.initial !== undefined
-        ? this.config.initial
-        : this.tracker.value;
-
-    this.setValue(initial);
-
-    this.opacity(0);
-    this.scale({ x: 0, y: 0 });
-  }
+  private _name: string;
 
   getMin() {
     return this.min;
   }
-
   getMax() {
     return this.max;
   }
 
-  update({ min, max, rank }: { min: number; max: number; rank: number }) {
-    this.min = min;
-    this.max = max;
-    this._rank = rank;
+  constructor(
+    tracker: ValueTracker,
+    config: SliderConfig = {},
+    rank: number,
+    name = "Slider"
+  ) {
+    super({ draggable: false, name: "slider" });
 
+    this.tracker = tracker;
+    this._rank = rank;
+    this._name = name;
+
+    // Default Configuration
+    this.config = {
+      width: config.width ?? 160,
+      height: config.height ?? 6,
+      min: config.min ?? 0,
+      max: config.max ?? 100,
+      initial: config.initial ?? 0,
+      trackColor: config.trackColor ?? "#333",
+      thumbColor: config.thumbColor ?? "#ffffff",
+      thumbRadius: config.thumbRadius ?? 8,
+      bgColor: config.bgColor ?? "#1f1f1f",
+      labelColor: config.labelColor ?? "#999",
+      fontSize: config.fontSize ?? 12,
+      padding: config.padding ?? 16,
+    };
+
+    this.min = this.config.min;
+    this.max = this.config.max;
+
+    this.createNodes();
     this.buildUI();
+    this.bindLogic();
+    this.syncInitial();
+  }
+
+  private createNodes() {
+    this.background = new Konva.Rect({ listening: false });
+    this.titleText = new Konva.Text({ listening: false, fontStyle: "bold" });
+    this.track = new Konva.Rect();
+    this.thumb = new Konva.Circle({
+      draggable: true,
+      shadowBlur: 4,
+      shadowOpacity: 0.3,
+    });
+    this.minLabel = new Konva.Text({ listening: false });
+    this.maxLabel = new Konva.Text({ listening: false });
+
+    this.add(
+      this.background,
+      this.titleText,
+      this.track,
+      this.thumb,
+      this.minLabel,
+      this.maxLabel
+    );
+
+    // this.add(this.dummyNode);
+  }
+
+  /* ---------------- Coordinate Mapping ---------------- */
+
+  private getRelativeX(val: number): number {
+    const range = this.max - this.min;
+    if (range === 0) return 0;
+    return ((val - this.min) / range) * this.config.width;
+  }
+
+  private getValueFromX(localX: number): number {
+    const ratio =
+      Math.max(0, Math.min(localX, this.config.width)) / this.config.width;
+    return this.min + ratio * (this.max - this.min);
+  }
+
+  /* ---------------- UI Layout ---------------- */
+
+  private buildUI() {
+    const c = this.config;
+
+    // Layout Constants
+    const titleAreaHeight = c.fontSize + 8;
+    const labelAreaHeight = c.fontSize + 4;
+    const totalHeight =
+      c.padding * 2 + titleAreaHeight + c.thumbRadius * 2 + labelAreaHeight;
+    const totalWidth = c.width + c.padding * 2;
+
+    this.background.setAttrs({
+      width: totalWidth,
+      height: totalHeight,
+      fill: c.bgColor,
+      cornerRadius: 10,
+    });
+
+    // 1. Title (Top)
+    this.titleText.setAttrs({
+      text: this._name.toUpperCase(),
+      fontSize: c.fontSize - 2,
+      fill: c.labelColor,
+      x: c.padding,
+      y: c.padding,
+      letterSpacing: 1,
+    });
+
+    // 2. Track (Middle)
+    const trackY = c.padding + titleAreaHeight + c.thumbRadius;
+    this.track.setAttrs({
+      x: c.padding,
+      y: trackY - c.height / 2,
+      width: c.width,
+      height: c.height,
+      fill: c.trackColor,
+      cornerRadius: c.height / 2,
+    });
+
+    // 3. Thumb
+    this.thumb.setAttrs({
+      y: trackY,
+      radius: c.thumbRadius,
+      fill: c.thumbColor,
+    });
+
+    // Correct Drag Bound Logic
+    this.thumb.dragBoundFunc((pos) => {
+      const transform = this.getAbsoluteTransform().copy().invert();
+      const localPos = transform.point(pos);
+      const clampedX = Math.max(
+        c.padding,
+        Math.min(localPos.x, c.padding + c.width)
+      );
+      return this.getAbsoluteTransform().point({ x: clampedX, y: trackY });
+    });
+
+    // 4. Labels (Bottom)
+    const labelY = trackY + c.thumbRadius + 6;
+    this.minLabel.setAttrs({
+      text: this.min.toString(),
+      x: c.padding,
+      y: labelY,
+      fontSize: c.fontSize,
+      fill: c.labelColor,
+    });
+
+    this.maxLabel.setAttrs({
+      text: this.max.toString(),
+      x: c.padding + c.width,
+      y: labelY,
+      fontSize: c.fontSize,
+      fill: c.labelColor,
+    });
+    this.maxLabel.offsetX(this.maxLabel.width());
+
+    // 5. Global Position based on Rank
+    this.position({
+      x: c.padding,
+      y: this._rank * (totalHeight + 12) + c.padding,
+    });
+
+    this.syncThumbFromValue();
+  }
+
+  /* ---------------- Logic ---------------- */
+
+  private bindLogic() {
+    const update = () => {
+      const localX = this.thumb.x() - this.config.padding;
+      this.tracker.value = this.getValueFromX(localX);
+    };
+
+    this.thumb.on("dragmove", update);
+
+    // Click track to jump
+    this.track.on("mousedown touchstart", () => {
+      const stage = this.getStage();
+      const pointer = stage?.getPointerPosition();
+      if (!pointer) return;
+
+      const localPos = this.getAbsoluteTransform()
+        .copy()
+        .invert()
+        .point(pointer);
+      this.thumb.x(
+        Math.max(
+          this.config.padding,
+          Math.min(localPos.x, this.config.padding + this.config.width)
+        )
+      );
+      update();
+    });
+  }
+
+  public syncThumbFromValue() {
+    const x = this.config.padding + this.getRelativeX(this.tracker.value);
+    this.thumb.x(x);
+  }
+
+  private syncInitial() {
+    const initial = this.config.initial ?? this.tracker.value;
+    this.setValue(initial);
+
+    this.opacity(0);
+    this.scale({ x: 0.9, y: 0.9 });
   }
 
   /* ---------------- Public API ---------------- */
 
-  setRange(min: number, max: number) {
+  public setValue(v: number) {
+    this.tracker.value = Math.max(this.min, Math.min(v, this.max));
+    this.syncThumbFromValue();
+  }
+
+  public setRange(min: number, max: number) {
     this.min = min;
     this.max = max;
-
     this.minLabel.text(min.toString());
     this.maxLabel.text(max.toString());
     this.maxLabel.offsetX(this.maxLabel.width());
-
-    this.setValue(this.tracker.value);
+    this.syncThumbFromValue();
   }
 
-  setValue(v: number) {
-    const clamped = Math.max(this.min, Math.min(v, this.max));
-    this.tracker.value = clamped;
-  }
-
-  getValue() {
-    return this.tracker.value;
+  public update({
+    min,
+    max,
+    rank,
+  }: {
+    min: number;
+    max: number;
+    rank: number;
+  }) {
+    this.min = min;
+    this.max = max;
+    this._rank = rank;
+    this.buildUI();
   }
 
   /* ---------------- Animations ---------------- */
 
-  appearAnim(): Konva.Tween {
+  appearAnim() {
+    this.opacity(0);
+    this.scaleX(0);
+    this.scaleY(0);
     return new Konva.Tween({
       node: this,
       opacity: 1,
       scaleX: 1,
       scaleY: 1,
-      duration: 0.8,
-      easing: Konva.Easings.EaseInOut,
+      duration: 0.5,
+      easing: Konva.Easings.BackEaseOut,
+      onFinish: () => {
+        this.scaleX(1);
+        this.scaleY(1);
+        this.opacity(1);
+      },
+      onReset: () => {
+        this.scale({ x: 0, y: 0 });
+        this.opacity(0);
+      },
     });
   }
 
-  disappearAnim(): Konva.Tween {
+  disappearAnim() {
     return new Konva.Tween({
       node: this,
       opacity: 0,
-      scaleX: 0,
-      scaleY: 0,
-      duration: 0.6,
-      easing: Konva.Easings.EaseInOut,
+      scaleX: 0.8,
+      scaleY: 0.8,
+      duration: 0.4,
+      easing: Konva.Easings.EaseIn,
+
+      onFinish: () => {
+        this.scale({ x: 0.8, y: 0.8 });
+        this.opacity(0);
+      },
+
+      onReset: () => {
+        this.scale({ x: 1, y: 1 });
+        this.opacity(1);
+      },
     });
   }
 }

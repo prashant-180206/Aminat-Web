@@ -32,6 +32,7 @@ type ComboboxProps = {
   searchPlaceholder?: string;
   emptyText?: string;
   className?: string;
+  searchAvailable?: boolean;
 };
 
 export function Combobox({
@@ -42,6 +43,7 @@ export function Combobox({
   searchPlaceholder = "Search...",
   emptyText = "No results found.",
   className,
+  searchAvailable = true,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -67,7 +69,7 @@ export function Combobox({
 
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
-          <CommandInput placeholder={searchPlaceholder} />
+          {searchAvailable && <CommandInput placeholder={searchPlaceholder} />}
           <CommandEmpty>{emptyText}</CommandEmpty>
 
           <CommandGroup>

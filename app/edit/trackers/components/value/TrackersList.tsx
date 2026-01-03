@@ -11,7 +11,6 @@ import { useScene } from "@/hooks/SceneContext";
 interface TrackersListProps {
   trackers: TrackerMeta[];
   selectedTracker: string | null;
-  // updaterIds: string[];
   onTrackerSelect: (id: string) => void;
   onTrackerRemove: (id: string) => void;
 }
@@ -19,7 +18,6 @@ interface TrackersListProps {
 const TrackersList = ({
   trackers,
   selectedTracker,
-  // updaterIds,
   onTrackerSelect,
   onTrackerRemove,
 }: TrackersListProps) => {
@@ -29,6 +27,7 @@ const TrackersList = ({
   const handleRemoveTracker = (name: string) => {
     if (!scene) return;
     scene.trackerManager.remove(name);
+    scene.animManager.removeAnimation(`slider_appear_${name}`);
     toast.info("Tracker removed");
     onTrackerRemove(name);
   };
@@ -46,7 +45,6 @@ const TrackersList = ({
           key={tracker.id}
           trackerId={tracker.id}
           isSelected={selectedTracker === tracker.id}
-          // updaterIds={updaterIds}
           onSelect={onTrackerSelect}
           onRemove={handleRemoveTracker}
         />

@@ -15,7 +15,6 @@ const ValueTrackersTab = () => {
   const [selectedTracker, setSelectedTracker] = React.useState<string | null>(
     null
   );
-  const [updaterIds, setUpdaterIds] = React.useState<string[]>([]);
 
   const fetchTrackers = React.useCallback(() => {
     if (!scene) return;
@@ -34,13 +33,6 @@ const ValueTrackersTab = () => {
     fetchTrackers();
   };
 
-  const handleConnectionMade = (success: boolean, id: string | null) => {
-    if (success && id) {
-      setUpdaterIds((prev) => [...prev, id]);
-      // valRefresh();
-    }
-  };
-
   const handleTrackerRemoved = () => {
     fetchTrackers();
     valRefresh();
@@ -53,13 +45,11 @@ const ValueTrackersTab = () => {
       <ConnectorFunctionsCard
         connectorNames={connectorNames}
         selectedTracker={selectedTracker}
-        onConnectionMade={handleConnectionMade}
       />
 
       <TrackersList
         trackers={trackers}
         selectedTracker={selectedTracker}
-        updaterIds={updaterIds}
         onTrackerSelect={setSelectedTracker}
         onTrackerRemove={handleTrackerRemoved}
       />

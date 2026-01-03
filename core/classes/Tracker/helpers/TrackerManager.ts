@@ -1,10 +1,11 @@
 import Konva from "@/lib/konva";
 import { ValueTracker } from "../valuetracker";
 import { PtTrackerMeta, TrackerMeta } from "@/core/types/tracker";
-import { Slider } from "../sliders/slider";
+// import { Slider } from "../sliders/slider";
 import { TrackerManagerData } from "@/core/types/file";
 import { PtValueTracker } from "../ptValuetracker";
 import { PtSlider } from "../sliders/PtSlider";
+import { Slider } from "../sliders/slider";
 
 export class TrackerManager {
   private trackers = new Map<string, TrackerMeta>();
@@ -50,23 +51,10 @@ export class TrackerManager {
     }
 
     const tracker = new PtValueTracker(point);
-    const xId = name + "-X";
-    const yId = name + "-Y";
 
     this.pointTrackers.set(name, {
       id: name,
-      tracker: {
-        x: {
-          tracker: tracker.x,
-          id: xId,
-          slider: null,
-        },
-        y: {
-          tracker: tracker.y,
-          id: yId,
-          slider: null,
-        },
-      },
+      tracker,
       slider: null,
     });
 
@@ -88,7 +76,12 @@ export class TrackerManager {
       meta.slider.destroy();
       meta.slider = null;
     }
-    const slider = new Slider(meta.tracker, options);
+    const slider = new Slider(
+      meta.tracker,
+      { min: options.min, max: options.max },
+      options.rank,
+      meta.id
+    );
     meta.slider = slider;
     return { success: true, slider };
   }
@@ -96,7 +89,8 @@ export class TrackerManager {
   addPtSlider(
     name: string,
     xRange: { min: number; max: number },
-    yRange: { min: number; max: number }
+    yRange: { min: number; max: number },
+    rank: number = 0
   ): { success: boolean; slider: null | PtSlider } {
     const meta = this.pointTrackers.get(name);
     if (!meta) {
@@ -106,7 +100,17 @@ export class TrackerManager {
       meta.slider.destroy();
       meta.slider = null;
     }
-    const slider = new PtSlider(xRange, yRange);
+    const slider = new PtSlider(
+      meta.tracker,
+      {
+        minX: xRange.min,
+        maxX: xRange.max,
+        minY: yRange.min,
+        maxY: yRange.max,
+      },
+      rank,
+      meta.id
+    );
     meta.slider = slider;
     return { success: true, slider };
   }
@@ -193,15 +197,15 @@ export class TrackerManager {
       data.pointtrackers.push({
         id,
         value: {
-          x: meta.tracker.x.tracker.value,
-          y: meta.tracker.y.tracker.value,
+          x: meta.tracker.x.value,
+          y: meta.tracker.y.value,
         },
         sliders: {
           x: meta.slider
-            ? { min: meta.slider.getminX(), max: meta.slider.getmaxX() }
+            ? { min: meta.slider.getMinX(), max: meta.slider.getMaxX() }
             : null,
           y: meta.slider
-            ? { min: meta.slider.getminY(), max: meta.slider.getmaxY() }
+            ? { min: meta.slider.getMinY(), max: meta.slider.getMaxY() }
             : null,
         },
       });

@@ -1,4 +1,5 @@
 // import Konva from "@/lib/konva";
+import { PtValueTracker } from "../classes/Tracker/ptValuetracker";
 import { PtSlider } from "../classes/Tracker/sliders/PtSlider";
 // import { PtValueTracker } from "../classes/Tracker/ptValuetracker";
 import { Slider } from "../classes/Tracker/sliders/slider";
@@ -12,9 +13,6 @@ export interface TrackerMeta {
 
 export interface PtTrackerMeta {
   id: string;
-  tracker: {
-    x: TrackerMeta;
-    y: TrackerMeta;
-  };
+  tracker: PtValueTracker;
   slider: PtSlider | null;
 }
