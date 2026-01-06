@@ -12,7 +12,6 @@ export class MobjectFactory {
     opts: {
       id?: string;
       zIndex: number;
-      onSelect: ((m: Mobject) => void) | null;
     }
   ): Mobject {
     const mobject = MobjectMap[type].func();
@@ -20,11 +19,6 @@ export class MobjectFactory {
     mobject.id(opts.id ?? `${mobject.name()}-${opts.zIndex}`);
     mobject.properties = { zindex: opts.zIndex };
     mobject.setDraggable(true);
-
-    mobject.on("click", () => {
-      if (opts.onSelect) opts.onSelect(mobject);
-      mobject.UpdateFromKonvaProperties();
-    });
 
     mobject.on("dragend", () => {
       mobject.UpdateFromKonvaProperties();

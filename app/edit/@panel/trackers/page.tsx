@@ -16,6 +16,7 @@ import { Tabs } from "@radix-ui/react-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ValueTrackersPanelTab from "./value";
 import PtValueTrackersPanelTab from "./point";
+import { ExpressionPopover } from "../../trackers/expressionPopover";
 
 const TrackerSidePanel = () => {
   // const { scene, valRefresh } = useScene();
@@ -44,9 +45,12 @@ const TrackerSidePanel = () => {
               <h1 className="font-semibold tracking-wide">Value Trackers</h1>
             </div>
           </div>
+          <div className="p-4 pb-0">
+            <ExpressionPopover />
+          </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="value" className="w-full p-4">
+          <Tabs defaultValue="value" className="w-full pt-0 p-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="value">Value</TabsTrigger>
               <TabsTrigger value="point">Point</TabsTrigger>

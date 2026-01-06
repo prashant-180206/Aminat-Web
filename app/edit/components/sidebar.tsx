@@ -17,6 +17,7 @@ import {
   // Videotape,
   Menu,
   Sigma,
+  // SquareCode,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -35,6 +36,7 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
     { route: "/edit/mobjects", icon: DraftingCompass, label: "Mobjects" },
     { route: "/edit/animations", icon: PlayCircle, label: "Animations" },
     { route: "/edit/trackers", icon: Sigma, label: "Trackers" },
+    // { route: "/edit/code", icon: SquareCode, label: "Code Editor" },
     { route: "/edit/settings", icon: Settings, label: "Settings" },
   ];
 
