@@ -278,6 +278,13 @@ export class PtSlider extends Konva.Group {
         handleDrag(axis, thumb, track);
       });
     });
+
+    this.tracker.x.addHiddenUpdater("ptslider-sync-x", () =>
+      this.syncThumbFromValue()
+    );
+    this.tracker.y.addHiddenUpdater("ptslider-sync-y", () =>
+      this.syncThumbFromValue()
+    );
   }
 
   public syncThumbFromValue() {
@@ -386,6 +393,25 @@ export class PtSlider extends Konva.Group {
       easing: Konva.Easings.EaseInOut,
       onFinish: () => this.setAttrs({ opacity: 1, scaleX: 1, scaleY: 1 }),
       onReset: () => this.setAttrs({ opacity: 0, scaleX: 0, scaleY: 0 }),
+    });
+  }
+
+  animateToValue(xValue: number, yValue: number, duration = 1) {
+    const currentX = this.tracker.x.value;
+    const currentY = this.tracker.y.value;
+    this.setAttr("v", 0);
+    new Konva.Tween({
+      node: this,
+      duration: duration,
+      easing: Konva.Easings.Linear,
+      v: 1,
+      onUpdate: () => {
+        const t = this.getAttr("v");
+        const newX = currentX + (xValue - currentX) * t;
+        const newY = currentY + (yValue - currentY) * t;
+        this.setXValue(newX);
+        this.setYValue(newY);
+      },
     });
   }
 

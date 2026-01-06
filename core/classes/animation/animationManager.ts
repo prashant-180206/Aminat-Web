@@ -129,26 +129,31 @@ export class AnimationManager {
     }
   }
 
-  resetAll() {
-    // 1. REVERSE order of groups
+  async resetAll(delayMs: number = 50) {
+    // Reverse order of groups
     for (let g = this.order.length - 1; g >= 0; g--) {
       const group = this.order[g];
 
-      // 2. REVERSE order within the group
+      // Reverse order within the group
       for (let i = group.length - 1; i >= 0; i--) {
         const id = group[i];
         const animData = this.animations.get(id);
 
         if (animData?.anim) {
-          // IMPORTANT: Stop the engine from calculating new frames
-          // This prevents the "fighting" you are seeing.
-          animData.anim.pause();
+          const tween = animData.anim;
 
-          // Now reset the properties safely
-          animData.anim.reset();
+          // Stop any running animation logic
+          tween.pause();
+
+          // Reset safely
+          tween.reset();
+
+          // Small delay to allow Konva to flush internal state
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
         }
       }
     }
+
     this.activeIndex = 0;
   }
 

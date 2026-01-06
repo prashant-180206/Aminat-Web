@@ -210,12 +210,13 @@ export class Slider extends Konva.Group {
   /* ---------------- Logic ---------------- */
 
   private bindLogic() {
-    const update = () => {
+    // 1. UI -> Tracker: When user drags the thumb
+    const updateTrackerFromUI = () => {
       const localX = this.thumb.x() - this.config.padding;
       this.tracker.value = this.getValueFromX(localX);
     };
 
-    this.thumb.on("dragmove", update);
+    this.thumb.on("dragmove", updateTrackerFromUI);
 
     // Click track to jump
     this.track.on("mousedown touchstart", () => {
@@ -227,14 +228,30 @@ export class Slider extends Konva.Group {
         .copy()
         .invert()
         .point(pointer);
+
       this.thumb.x(
         Math.max(
           this.config.padding,
           Math.min(localPos.x, this.config.padding + this.config.width)
         )
       );
-      update();
+      updateTrackerFromUI();
     });
+
+    // 2. Tracker -> UI: When value changes externally (e.g., via expressions)
+    // We use the slider's unique name or ID as the updater key
+    this.tracker.addHiddenUpdater(`slider-sync-${this._name}`, () =>
+      this.syncThumbFromValue()
+    );
+  }
+
+  /**
+   * Clean up the updater when the slider is destroyed to prevent ghost updates
+   */
+  public destroy() {
+    this.tracker.removeHiddenUpdater(`slider-sync-${this._name}`);
+    super.destroy();
+    return this;
   }
 
   public syncThumbFromValue() {
@@ -323,6 +340,26 @@ export class Slider extends Konva.Group {
       onReset: () => {
         this.scale({ x: 1, y: 1 });
         this.opacity(1);
+      },
+    });
+  }
+
+  animateToValue(
+    value: number,
+    duration = 1,
+    easing = Konva.Easings.EaseInOut
+  ) {
+    const currentval = this.tracker.value;
+    this.setAttr("v", 0); //dummy line to force a change
+    return new Konva.Tween({
+      node: this,
+      duration: duration,
+      v: 1,
+      easing: easing,
+      onUpdate: () => {
+        const t = this.getAttr("v");
+        const newValue = currentval + (value - currentval) * t;
+        this.setValue(newValue);
       },
     });
   }

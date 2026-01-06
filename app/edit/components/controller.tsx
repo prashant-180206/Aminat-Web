@@ -24,8 +24,8 @@ const Controller = () => {
     animRefresh();
   };
 
-  const reset = () => {
-    scene?.animManager.resetAll();
+  const reset = async () => {
+    await scene?.animManager.resetAll();
     animRefresh();
   };
 

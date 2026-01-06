@@ -13,6 +13,8 @@ export class ValueTracker {
   private _value: number;
   private updaters: Map<string, UpdaterEntry> = new Map();
 
+  private hiddenUpdaters: Map<string, UpdateCallback> = new Map();
+
   constructor(initialValue: number) {
     this._value = initialValue;
   }
@@ -29,6 +31,10 @@ export class ValueTracker {
     this.updaters.forEach(({ cb, expr }) => {
       const evaluated = expr.evaluate({ t: v });
       cb(evaluated);
+    });
+
+    this.hiddenUpdaters.forEach((cb) => {
+      cb(v);
     });
   }
 
@@ -58,6 +64,19 @@ export class ValueTracker {
     } catch (e) {
       return false;
     }
+  }
+
+  addHiddenUpdater(id: string, cb: (value: number) => void): boolean {
+    if (this.hiddenUpdaters.has(id)) {
+      return false;
+    }
+    this.hiddenUpdaters.set(id, cb);
+    cb(this._value);
+    return true;
+  }
+
+  removeHiddenUpdater(id: string): void {
+    this.hiddenUpdaters.delete(id);
   }
 
   getUpdaterIds(): string[] {
