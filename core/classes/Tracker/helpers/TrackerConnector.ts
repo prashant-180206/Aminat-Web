@@ -1,3 +1,4 @@
+import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
 import Konva from "@/lib/konva";
 
 export class TrackerConnector {
@@ -11,10 +12,10 @@ export class TrackerConnector {
 
   private initiateFuncs() {
     this.connectorFuncs.set("x", (value: number) => {
-      this.node.x(value);
+      this.node.x(DEFAULT_WIDTH / 2 + value * DEFAULT_SCALE);
     });
     this.connectorFuncs.set("y", (value: number) => {
-      this.node.y(value);
+      this.node.y(DEFAULT_HEIGHT / 2 - value * DEFAULT_SCALE);
     });
     // Built-in transforms
     this.connectorFuncs.set("rotation", (value: number) => {

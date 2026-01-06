@@ -3,7 +3,7 @@ import MCircle from "../classes/mobjects/simple/circle";
 import { ParametricCurve } from "../classes/mobjects/simple/curve";
 import { MRect } from "../classes/mobjects/simple/rect";
 import { Dot } from "../classes/mobjects/simple/dot";
-import { MLine } from "../classes/mobjects/simple/line";
+// import { MLine } from "../classes/mobjects/simple/MLine";
 import { MPolygon } from "../classes/mobjects/simple/polygon";
 import { MText } from "../classes/mobjects/simple/text";
 import { MVector } from "../classes/mobjects/geometric/vector";
@@ -20,6 +20,7 @@ import {
   Slash,
 } from "lucide-react";
 import { MobjectMapType } from "../types/mobjects";
+import { MLine } from "../classes/mobjects/simple/line";
 
 const MobjectMap: MobjectMapType = {
   Circle: { func: () => new MCircle("Circle"), name: "Circle", Icon: Circle },

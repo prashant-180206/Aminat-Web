@@ -86,7 +86,7 @@ export class MRect extends Konva.Rect {
     this.rotation(rotation);
     if (cornerRadius >= 0) this.cornerRadius(cornerRadius);
     this.opacity(opacity);
-    this.zIndex(zindex);
+    if (this.parent) this.zIndex(zindex);
   }
   UpdateFromKonvaProperties() {
     const pos = this.position();

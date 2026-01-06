@@ -34,8 +34,8 @@ export class MPlane extends Konva.Group {
       scale: 1,
       rotation: 0,
       dimensions: {
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT,
+        width: DEFAULT_WIDTH / DEFAULT_SCALE,
+        height: DEFAULT_HEIGHT / DEFAULT_SCALE,
       },
       ranges: {
         xrange: [-xrange, xrange],
@@ -93,16 +93,19 @@ export class MPlane extends Konva.Group {
       zindex,
     } = this._properties;
 
+    const pwidth = width * DEFAULT_SCALE;
+    const pheight = height * DEFAULT_SCALE;
+
     // group transform (dragging will change this position too)
     const p = p2c(position.x, position.y);
     this.position({
-      x: p.x - width / 2,
-      y: p.y - height / 2,
+      x: p.x - pwidth / 2,
+      y: p.y - pheight / 2,
     });
     this.scale({ x: scale, y: scale });
     this.rotation(rotation);
     this.opacity(opacity);
-    this.zIndex(zindex);
+    if (this.parent) this.zIndex(zindex);
 
     this.gridLayer.removeChildren();
     this.axisLayer.removeChildren();
@@ -113,15 +116,14 @@ export class MPlane extends Konva.Group {
     const xspan = xmax - xmin;
     const yspan = ymax - ymin;
 
-    const toCanvasX = (x: number) => ((x - xmin) / xspan) * width;
-    const toCanvasY = (y: number) => height - ((y - ymin) / yspan) * height;
-
+    const toCanvasX = (x: number) => ((x - xmin) / xspan) * pwidth;
+    const toCanvasY = (y: number) => pheight - ((y - ymin) / yspan) * pheight;
     // axes
     if (xmin < 0 && xmax > 0) {
       const x0 = toCanvasX(0);
       this.axisLayer.add(
         new Konva.Line({
-          points: [x0, 0, x0, height],
+          points: [x0, 0, x0, pheight],
           stroke: axiscolor,
           strokeWidth: axissthickness,
         })
@@ -132,7 +134,7 @@ export class MPlane extends Konva.Group {
       const y0 = toCanvasY(0);
       this.axisLayer.add(
         new Konva.Line({
-          points: [0, y0, width, y0],
+          points: [0, y0, pwidth, y0],
           stroke: axiscolor,
           strokeWidth: axissthickness,
         })
@@ -148,7 +150,7 @@ export class MPlane extends Konva.Group {
         const cx = toCanvasX(x);
         this.gridLayer.add(
           new Konva.Line({
-            points: [cx, 0, cx, height],
+            points: [cx, 0, cx, pheight],
             stroke: color,
             strokeWidth: gridthickness,
           })
@@ -162,7 +164,7 @@ export class MPlane extends Konva.Group {
         const cy = toCanvasY(y);
         this.gridLayer.add(
           new Konva.Line({
-            points: [0, cy, width, cy],
+            points: [0, cy, pwidth, cy],
             stroke: color,
             strokeWidth: gridthickness,
           })

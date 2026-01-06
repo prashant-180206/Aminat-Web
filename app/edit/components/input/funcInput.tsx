@@ -18,16 +18,11 @@ type Func = {
 };
 
 type FuncsInputProps = {
-  property: string;
   value: Func;
   onChange: (val: Func) => void;
 };
 
-export const FuncsInput: React.FC<FuncsInputProps> = ({
-  property,
-  value,
-  onChange,
-}) => {
+export const FuncsInput: React.FC<FuncsInputProps> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Func>(value);
 
@@ -62,8 +57,6 @@ export const FuncsInput: React.FC<FuncsInputProps> = ({
 
   return (
     <div className="flex items-center justify-between gap-2 w-full">
-      <span className="text-sm font-medium">{property}</span>
-
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

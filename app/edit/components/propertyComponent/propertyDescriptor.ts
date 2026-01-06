@@ -13,8 +13,6 @@ export type PropertyDescriptor = {
     | "color"
     | "point"
     | "range"
-    | "point_array"
-    | "curvefuncs"
     | "unknown";
   onChange: (newVal: any) => void;
   // refreshFunc: () => void;
@@ -80,30 +78,10 @@ export const usePropertyDescriptors = (): PropertyDescriptorData => {
 
         if (typeof val === "string" && key.endsWith("color")) {
           type = "color";
-        } else if (
-          typeof val === "object" &&
-          val &&
-          "Xfunc" in val &&
-          "Yfunc" in val
-        ) {
-          type = "curvefuncs";
         } else if (typeof val === "object" && val && "x" in val && "y" in val) {
           type = "point";
         } else if (Array.isArray(val)) {
           type = "range";
-          if (
-            val.every(
-              (p) =>
-                typeof p === "object" &&
-                p !== null &&
-                "x" in p &&
-                "y" in p &&
-                typeof p.x === "number" &&
-                typeof p.y === "number"
-            )
-          ) {
-            type = "point_array";
-          }
         } else if (
           type !== "string" &&
           type !== "number" &&

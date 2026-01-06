@@ -96,7 +96,7 @@ export class MText extends Konva.Text {
     this.fontSize(fontsize);
     this.fontStyle(`${fontStyle} ${fontWeight}`.trim());
     this.opacity(opacity);
-    this.zIndex(zindex);
+    if (this.parent) this.zIndex(zindex);
 
     const pt = p2c(position.x, position.y);
     // keep centering behavior as in your sample

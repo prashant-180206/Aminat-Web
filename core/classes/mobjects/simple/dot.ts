@@ -64,18 +64,14 @@ export class Dot extends Konva.Circle {
     this.position(p2c(position.x, position.y));
     this.rotation(rotation);
     this.opacity(opacity);
-    this.zIndex(zindex);
+    if (this.parent) this.zIndex(zindex);
   }
 
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = c2p(pos.x, pos.y);
-    // this._properties.radius = this.radius();
-    // this._properties.color = this.fill() as string;
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
-    // this._properties.opacity = this.opacity();
-    // this._properties.zindex = this.zIndex();
   }
 
   storeAsObj() {

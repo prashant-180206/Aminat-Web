@@ -1,15 +1,20 @@
 import Konva from "@/lib/konva";
 import { ValueTracker } from "../valuetracker";
 import { PtTrackerMeta, TrackerMeta } from "@/core/types/tracker";
-// import { Slider } from "../sliders/slider";
 import { TrackerManagerData } from "@/core/types/file";
 import { PtValueTracker } from "../ptValuetracker";
 import { PtSlider } from "../sliders/PtSlider";
 import { Slider } from "../sliders/slider";
+import { TrackerExpressionConnectorFactory } from "../../factories/tracker/connector";
 
 export class TrackerManager {
   private trackers = new Map<string, TrackerMeta>();
   private pointTrackers = new Map<string, PtTrackerMeta>();
+
+  /** * Dependency graph: maps a target tracker name to the set of tracker names it depends on.
+   * targetName -> Set(dependencyNames)
+   */
+  private dependencies = new Map<string, Set<string>>();
   private layer: Konva.Layer;
 
   constructor(layer: Konva.Layer) {
@@ -20,72 +25,57 @@ export class TrackerManager {
   /* Registration                                            */
   /* ------------------------------------------------------- */
 
+  /** Adds a scalar value tracker. Returns success false if name is taken. */
   addValueTracker(
     name: string,
     value: number
   ): { tracker: ValueTracker | null; success: boolean } {
     if (this.trackers.has(name) || this.pointTrackers.has(name)) {
-      return {
-        tracker: null,
-        success: false,
-      };
+      return { tracker: null, success: false };
     }
-    const tracker = new ValueTracker(value);
 
+    const tracker = new ValueTracker(value);
     this.trackers.set(name, { tracker, slider: null, id: name });
     return { tracker, success: true };
   }
 
+  /** Adds a 2D point value tracker. */
   addPtValueTracker(
     name: string,
-    point: {
-      x: number;
-      y: number;
-    }
+    point: { x: number; y: number }
   ): { tracker: PtValueTracker | null; success: boolean } {
     if (this.pointTrackers.has(name) || this.trackers.has(name)) {
-      return {
-        tracker: null,
-        success: false,
-      };
+      return { tracker: null, success: false };
     }
 
     const tracker = new PtValueTracker(point);
-
-    this.pointTrackers.set(name, {
-      id: name,
-      tracker,
-      slider: null,
-    });
-
-    return {
-      tracker,
-      success: true,
-    };
+    this.pointTrackers.set(name, { id: name, tracker, slider: null });
+    return { tracker, success: true };
   }
 
+  /** Links a Konva Slider to an existing scalar tracker. */
   addSlider(
     sliderName: string,
     options: { min: number; max: number; rank: number }
   ): { success: boolean; slider: null | Slider } {
     const meta = this.trackers.get(sliderName);
-    if (!meta) {
-      return { success: false, slider: null };
-    }
-    if (meta.slider) {
-      meta.slider.destroy();
-      meta.slider = null;
-    }
+    if (!meta) return { success: false, slider: null };
+
+    // Clean up existing slider if present before replacing
+    meta.slider?.destroy();
+
     const slider = new Slider(
       meta.tracker,
       { min: options.min, max: options.max },
       options.rank,
       meta.id
     );
+
     meta.slider = slider;
     return { success: true, slider };
   }
 
+  /** Links a 2D PtSlider to an existing point tracker. */
   addPtSlider(
     name: string,
     xRange: { min: number; max: number },
@@ -93,13 +83,10 @@ export class TrackerManager {
     rank: number = 0
   ): { success: boolean; slider: null | PtSlider } {
     const meta = this.pointTrackers.get(name);
-    if (!meta) {
-      return { success: false, slider: null };
-    }
-    if (meta.slider) {
-      meta.slider.destroy();
-      meta.slider = null;
-    }
+    if (!meta) return { success: false, slider: null };
+
+    meta.slider?.destroy();
+
     const slider = new PtSlider(
       meta.tracker,
       {
@@ -111,6 +98,7 @@ export class TrackerManager {
       rank,
       meta.id
     );
+
     meta.slider = slider;
     return { success: true, slider };
   }
@@ -120,10 +108,7 @@ export class TrackerManager {
   /* ------------------------------------------------------- */
 
   getAllNames(): string[] {
-    return [
-      ...Array.from(this.trackers.keys()),
-      ...Array.from(this.pointTrackers.keys()),
-    ];
+    return [...this.trackers.keys(), ...this.pointTrackers.keys()];
   }
 
   getAllTrackerMetas(): TrackerMeta[] {
@@ -135,26 +120,28 @@ export class TrackerManager {
   }
 
   getTracker(name: string): ValueTracker | null {
-    const entry = this.trackers.get(name);
-    return entry ? entry.tracker : null;
+    return this.trackers.get(name)?.tracker ?? null;
   }
 
-  getPtValueTracker(name: string) {
-    const entry = this.pointTrackers.get(name);
-    return entry ? entry.tracker : null;
+  getPtValueTracker(name: string): PtValueTracker | null {
+    return this.pointTrackers.get(name)?.tracker ?? null;
   }
 
   /* ------------------------------------------------------- */
-  /* Removal / cleanup                                       */
+  /* Removal / Cleanup                                       */
   /* ------------------------------------------------------- */
 
   remove(name: string) {
+    // Handle scalar tracker removal
     const entry = this.trackers.get(name);
     if (entry) {
       entry.slider?.destroy();
       this.trackers.delete(name);
+      this.dependencies.delete(name); // Cleanup dependency tracking
       return;
     }
+
+    // Handle point tracker removal
     const ptEntry = this.pointTrackers.get(name);
     if (ptEntry) {
       ptEntry.slider?.destroy();
@@ -163,22 +150,23 @@ export class TrackerManager {
   }
 
   clear() {
-    this.trackers.forEach((entry) => {
-      entry.slider?.destroy();
-    });
+    [...this.trackers.values(), ...this.pointTrackers.values()].forEach(
+      (meta) => {
+        meta.slider?.destroy();
+      }
+    );
     this.trackers.clear();
-
-    this.pointTrackers.forEach((entry) => {
-      entry.slider?.destroy();
-    });
     this.pointTrackers.clear();
+    this.dependencies.clear();
   }
 
+  /* ------------------------------------------------------- */
+  /* Persistence                                             */
+  /* ------------------------------------------------------- */
+
   storeAsObj(): TrackerManagerData {
-    const data: TrackerManagerData = {
-      trackers: [],
-      pointtrackers: [],
-    };
+    const data: TrackerManagerData = { trackers: [], pointtrackers: [] };
+
     this.trackers.forEach((meta, id) => {
       data.trackers.push({
         id,
@@ -196,10 +184,7 @@ export class TrackerManager {
     this.pointTrackers.forEach((meta, id) => {
       data.pointtrackers.push({
         id,
-        value: {
-          x: meta.tracker.x.value,
-          y: meta.tracker.y.value,
-        },
+        value: { x: meta.tracker.x.value, y: meta.tracker.y.value },
         sliders: {
           x: meta.slider
             ? { min: meta.slider.getMinX(), max: meta.slider.getMaxX() }
@@ -210,50 +195,48 @@ export class TrackerManager {
         },
       });
     });
+
     return data;
   }
 
   loadFromObj(obj: TrackerManagerData) {
-    obj.trackers.forEach((trackerData) => {
-      const { tracker, success } = this.addValueTracker(
-        trackerData.id,
-        trackerData.value
-      );
-      if (!success || !tracker) return;
-
-      if (trackerData.sliders) {
-        const { success: sliderSuccess, slider } = this.addSlider(
-          trackerData.id,
-          {
-            min: trackerData.sliders.min,
-            max: trackerData.sliders.max,
-            rank: trackerData.sliders.rank,
-          }
-        );
-
-        if (sliderSuccess && slider) {
-          this.layer.add(slider);
-        }
+    // Load scalar trackers
+    obj.trackers.forEach((t) => {
+      const { tracker, success } = this.addValueTracker(t.id, t.value);
+      if (success && tracker && t.sliders) {
+        const { success: sSuccess, slider } = this.addSlider(t.id, t.sliders);
+        if (sSuccess && slider) this.layer.add(slider);
       }
     });
 
-    obj.pointtrackers.forEach((ptTrackerData) => {
-      const { tracker, success } = this.addPtValueTracker(
-        ptTrackerData.id,
-        ptTrackerData.value
-      );
-      if (!success || !tracker) return;
-
-      if (ptTrackerData.sliders) {
-        const { success: sliderSuccess, slider } = this.addPtSlider(
-          ptTrackerData.id,
-          ptTrackerData.sliders.x || { min: 0, max: 0 },
-          ptTrackerData.sliders.y || { min: 0, max: 0 }
+    // Load point trackers
+    obj.pointtrackers.forEach((pt) => {
+      const { tracker, success } = this.addPtValueTracker(pt.id, pt.value);
+      if (success && tracker && pt.sliders) {
+        const { success: sSuccess, slider } = this.addPtSlider(
+          pt.id,
+          pt.sliders.x ?? { min: 0, max: 0 },
+          pt.sliders.y ?? { min: 0, max: 0 }
         );
-        if (sliderSuccess && slider) {
-          this.layer.add(slider);
-        }
+        if (sSuccess && slider) this.layer.add(slider);
       }
+    });
+  }
+
+  /* ------------------------------------------------------- */
+  /* Expression Linking                                      */
+  /* ------------------------------------------------------- */
+
+  /**
+   * Connects trackers via a string expression.
+   * Requirement: Expression must end with a semicolon (;)
+   * Example: "[y] = [x] * 2 + 3;"
+   */
+  connectTrackers(expression: string): { success: boolean; msg: string } {
+    return TrackerExpressionConnectorFactory.connect({
+      trackers: this.trackers,
+      dependencies: this.dependencies,
+      expression,
     });
   }
 }

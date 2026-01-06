@@ -5,6 +5,7 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { easingMap } from "@/core/maps/easingMap";
 
 export class MVector extends Konva.Arrow {
   public animgetter: AnimGetter;
@@ -40,7 +41,44 @@ export class MVector extends Konva.Arrow {
       ...config,
     };
 
+    this.trackerconnector.addConnectorFunc("startX", (value: number) => {
+      this.properties = {
+        lineEnds: {
+          ...this._properties.lineEnds,
+          start: { x: value, y: this._properties.lineEnds.start.y },
+        },
+      };
+    });
+
+    this.trackerconnector.addConnectorFunc("startY", (value: number) => {
+      this.properties = {
+        lineEnds: {
+          ...this._properties.lineEnds,
+          start: { x: this._properties.lineEnds.start.x, y: value },
+        },
+      };
+    });
+
+    this.trackerconnector.addConnectorFunc("endX", (value: number) => {
+      this.properties = {
+        lineEnds: {
+          ...this._properties.lineEnds,
+          end: { x: value, y: this._properties.lineEnds.end.y },
+        },
+      };
+    });
+
+    this.trackerconnector.addConnectorFunc("endY", (value: number) => {
+      this.properties = {
+        lineEnds: {
+          ...this._properties.lineEnds,
+          end: { x: this._properties.lineEnds.end.x, y: value },
+        },
+      };
+    });
+
     this.updateFromProperties();
+    this.setupAnimationFunctions();
     this.name("Vector");
   }
 
@@ -58,6 +96,99 @@ export class MVector extends Konva.Arrow {
     this.updateFromProperties();
   }
 
+  private setupAnimationFunctions() {
+    this.animgetter.addAnimFunc("LineStart", {
+      type: "PointChange",
+      mobjId: this.id(),
+      title: "Line Start",
+      input: {
+        X: "number",
+        Y: "number",
+        duration: "number",
+        easing: "string",
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      func: (args: { [key: string]: any }) => {
+        const targetX = args.X ?? 0;
+        const targetY = args.Y ?? 0;
+        const canvasPoint = p2c(targetX, targetY);
+
+        // Note: tween is created but not played here,
+        // as per original logic which returns null.
+        const tween = new Konva.Tween({
+          node: this,
+          duration: args.duration || 1,
+          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
+          points: [
+            canvasPoint.x,
+            canvasPoint.y,
+            this.points()[2],
+            this.points()[3],
+          ],
+          onFinish: () => {
+            this.UpdateFromKonvaProperties();
+          },
+        });
+
+        return {
+          id: `${this.id()}-ls-${targetX}-${targetY}-${
+            this.animgetter.getAnimNames().length
+          }`,
+          mobjId: this.id(),
+          type: "PointChange",
+          label: `Changing start of ${this.id()} to (${targetX}, ${targetY})`,
+          tweenMeta: args,
+          anim: tween,
+        };
+      },
+    });
+    this.animgetter.addAnimFunc("LineEnd", {
+      type: "PointChange",
+      mobjId: this.id(),
+      title: "Line Start",
+      input: {
+        X: "number",
+        Y: "number",
+        duration: "number",
+        easing: "string",
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      func: (args: { [key: string]: any }) => {
+        const targetX = args.X ?? 0;
+        const targetY = args.Y ?? 0;
+        const canvasPoint = p2c(targetX, targetY);
+
+        // Note: tween is created but not played here,
+        // as per original logic which returns null.
+        const tween = new Konva.Tween({
+          node: this,
+          duration: args.duration || 1,
+          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
+          points: [
+            this.points()[0],
+            this.points()[1],
+            canvasPoint.x,
+            canvasPoint.y,
+          ],
+          onFinish: () => {
+            this.UpdateFromKonvaProperties();
+          },
+        });
+
+        return {
+          id: `${this.id()}-le-${targetX}-${targetY}-${
+            this.animgetter.getAnimNames().length
+          }`,
+          mobjId: this.id(),
+          type: "PointChange",
+          label: `Changing End of ${this.id()} to (${targetX}, ${targetY})`,
+          tweenMeta: args,
+          anim: tween,
+        };
+      },
+    });
+  }
+
   private updateFromProperties() {
     const {
       position,
@@ -67,6 +198,7 @@ export class MVector extends Konva.Arrow {
       lineEnds: { start, end },
       thickness,
       pointerSize,
+      zindex,
     } = this._properties;
 
     // Convert points to canvas coordinates
@@ -84,6 +216,7 @@ export class MVector extends Konva.Arrow {
     this.pointerWidth(pointerSize * scale);
     this.position(position);
     this.rotation(rotation);
+    if (this.parent) this.zIndex(zindex);
   }
 
   UpdateFromKonvaProperties() {

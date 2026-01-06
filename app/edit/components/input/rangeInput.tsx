@@ -13,7 +13,7 @@ import { SlidersHorizontal } from "lucide-react";
 type Range = [number, number];
 
 type RangeInputProps = {
-  property: string;
+  // property: string;
   value: Range;
   onChange: (val: Range) => void;
   refreshFunc: () => void;
@@ -23,7 +23,7 @@ type RangeInputProps = {
 };
 
 export const RangeInput: React.FC<RangeInputProps> = ({
-  property,
+  // property,
   value,
   onChange,
   refreshFunc,
@@ -54,14 +54,14 @@ export const RangeInput: React.FC<RangeInputProps> = ({
 
   return (
     <div className="flex items-center justify-between gap-2 w-full">
-      <span className="text-sm font-medium">{property}</span>
+      {/* <span className="text-sm font-medium">{property}</span> */}
 
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 text-xs font-mono w-30"
+            className="flex items-center gap-2 text-xs font-mono "
           >
             <SlidersHorizontal className="h-4 w-4" />
           </Button>

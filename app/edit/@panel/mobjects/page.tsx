@@ -14,8 +14,15 @@ import { Menu, Trash2, Layers } from "lucide-react";
 import React from "react";
 
 const MobjectsSidePanel = () => {
-  const { scene, setActiveMobject, setActiveMobjectId, activeMobjectId } =
-    useScene();
+  const {
+    scene,
+    setActiveMobject,
+    setActiveMobjectId,
+    activeMobjectId,
+    mobjRefresh,
+    mobjToggle,
+  } = useScene();
+  void mobjToggle;
 
   const mobjects = scene?.getMobjectsData() || [];
 
@@ -106,6 +113,7 @@ const MobjectsSidePanel = () => {
                             setActiveMobject(null);
                             setActiveMobjectId(null);
                           }
+                          mobjRefresh();
                         }}
                       >
                         <Trash2 className="h-4 w-4" />

@@ -93,10 +93,17 @@ export class ParametricCurve extends Konva.Line {
     this.scale({ x: scale, y: scale });
     this.rotation(rotation);
     this.opacity(opacity);
-    this.zIndex(zindex);
-    // this.fill(color); // Lines don't have fill
-    // Generate parametric curve
+    if (this.parent) this.zIndex(zindex);
     this.generateCurve(funcs.Xfunc, funcs.Yfunc, parameterRange);
+
+    this.trackerconnector.addConnectorFunc("Range start", (value: number) => {
+      const range = this._properties.parameterRange;
+      this.setParameterRange([value, range[1]]);
+    });
+    this.trackerconnector.addConnectorFunc("Range end", (value: number) => {
+      const range = this._properties.parameterRange;
+      this.setParameterRange([range[0], value]);
+    });
   }
 
   private generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {

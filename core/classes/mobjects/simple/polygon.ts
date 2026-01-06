@@ -86,8 +86,8 @@ export class MPolygon extends Konva.Shape {
       fill: color,
       listening: true,
       opacity: opacity,
-      zIndex: zindex,
     });
+    if (this.parent) this.zIndex(zindex);
 
     // Build local points array in pixel coordinates relative to the node origin.
     // Option A: treat your points as normalized coordinates and convert with p2c.

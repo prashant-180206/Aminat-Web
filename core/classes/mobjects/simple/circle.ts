@@ -34,6 +34,10 @@ class MCircle extends Konva.Circle {
     this.strokeWidth(this._properties.thickness);
     this.position(p2c(0, 0));
     this.name("Circle");
+
+    this.trackerconnector.addConnectorFunc("radius", (value: number) => {
+      this.properties = { radius: value };
+    });
   }
 
   type(): string {
@@ -80,7 +84,7 @@ class MCircle extends Konva.Circle {
     if (value.scale !== undefined)
       this.scale({ x: value.scale, y: value.scale });
     if (value.rotation !== undefined) this.rotation(value.rotation);
-    if (value.zindex !== undefined) this.zIndex(value.zindex);
+    if (value.zindex !== undefined && this.parent) this.zIndex(value.zindex);
   }
 
   storeAsObj(): MobjectData {
