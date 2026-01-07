@@ -4,7 +4,7 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { easingMap } from "@/core/maps/easingMap";
+// import { easingMap } from "@/core/maps/easingMap";
 
 export class MLine extends Konva.Line {
   public animgetter: AnimGetter;
@@ -41,7 +41,7 @@ export class MLine extends Konva.Line {
 
     this.name("Line");
     this.setupTrackerConnectors();
-    this.setupAnimationFunctions();
+    // this.setupAnimationFunctions();
     this.updateFromProperties();
   }
 
@@ -69,98 +69,98 @@ export class MLine extends Konva.Line {
   /**
    * Defines standard animation behaviors available to this object.
    */
-  private setupAnimationFunctions() {
-    this.animgetter.addAnimFunc("LineStart", {
-      type: "PointChange",
-      mobjId: this.id(),
-      title: "Line Start",
-      input: {
-        X: "number",
-        Y: "number",
-        duration: "number",
-        easing: "string",
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      func: (args: { [key: string]: any }) => {
-        const targetX = args.X ?? 0;
-        const targetY = args.Y ?? 0;
-        const canvasPoint = p2c(targetX, targetY);
+  // private setupAnimationFunctions() {
+  //   this.animgetter.addAnimFunc("LineStart", {
+  //     type: "PointChange",
+  //     mobjId: this.id(),
+  //     title: "Line Start",
+  //     input: {
+  //       X: "number",
+  //       Y: "number",
+  //       duration: "number",
+  //       easing: "string",
+  //     },
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //     func: (args: { [key: string]: any }) => {
+  //       const targetX = args.X ?? 0;
+  //       const targetY = args.Y ?? 0;
+  //       const canvasPoint = p2c(targetX, targetY);
 
-        // Note: tween is created but not played here,
-        // as per original logic which returns null.
-        const tween = new Konva.Tween({
-          node: this,
-          duration: args.duration || 1,
-          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-          points: [
-            canvasPoint.x,
-            canvasPoint.y,
-            this.points()[2],
-            this.points()[3],
-          ],
-          onFinish: () => {
-            this.UpdateFromKonvaProperties();
-          },
-        });
+  //       // Note: tween is created but not played here,
+  //       // as per original logic which returns null.
+  //       const tween = new Konva.Tween({
+  //         node: this,
+  //         duration: args.duration || 1,
+  //         easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
+  //         points: [
+  //           canvasPoint.x,
+  //           canvasPoint.y,
+  //           this.points()[2],
+  //           this.points()[3],
+  //         ],
+  //         onFinish: () => {
+  //           this.UpdateFromKonvaProperties();
+  //         },
+  //       });
 
-        return {
-          id: `${this.id()}-ls-${targetX}-${targetY}-${
-            this.animgetter.getAnimNames().length
-          }`,
-          mobjId: this.id(),
-          type: "PointChange",
-          label: `Changing start of ${this.id()} to (${targetX}, ${targetY})`,
-          tweenMeta: args,
-          anim: tween,
-        };
-      },
-    });
-    this.animgetter.addAnimFunc("LineEnd", {
-      type: "PointChange",
-      mobjId: this.id(),
-      title: "Line Start",
-      input: {
-        X: "number",
-        Y: "number",
-        duration: "number",
-        easing: "string",
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      func: (args: { [key: string]: any }) => {
-        const targetX = args.X ?? 0;
-        const targetY = args.Y ?? 0;
-        const canvasPoint = p2c(targetX, targetY);
+  //       return {
+  //         id: `${this.id()}-ls-${targetX}-${targetY}-${
+  //           this.animgetter.getAnimNames().length
+  //         }`,
+  //         mobjId: this.id(),
+  //         type: "PointChange",
+  //         label: `Changing start of ${this.id()} to (${targetX}, ${targetY})`,
+  //         tweenMeta: args,
+  //         anim: tween,
+  //       };
+  //     },
+  //   });
+  //   this.animgetter.addAnimFunc("LineEnd", {
+  //     type: "PointChange",
+  //     mobjId: this.id(),
+  //     title: "Line Start",
+  //     input: {
+  //       X: "number",
+  //       Y: "number",
+  //       duration: "number",
+  //       easing: "string",
+  //     },
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //     func: (args: { [key: string]: any }) => {
+  //       const targetX = args.X ?? 0;
+  //       const targetY = args.Y ?? 0;
+  //       const canvasPoint = p2c(targetX, targetY);
 
-        // Note: tween is created but not played here,
-        // as per original logic which returns null.
-        const tween = new Konva.Tween({
-          node: this,
-          duration: args.duration || 1,
-          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-          points: [
-            this.points()[0],
-            this.points()[1],
-            canvasPoint.x,
-            canvasPoint.y,
-          ],
-          onFinish: () => {
-            this.UpdateFromKonvaProperties();
-          },
-        });
+  //       // Note: tween is created but not played here,
+  //       // as per original logic which returns null.
+  //       const tween = new Konva.Tween({
+  //         node: this,
+  //         duration: args.duration || 1,
+  //         easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
+  //         points: [
+  //           this.points()[0],
+  //           this.points()[1],
+  //           canvasPoint.x,
+  //           canvasPoint.y,
+  //         ],
+  //         onFinish: () => {
+  //           this.UpdateFromKonvaProperties();
+  //         },
+  //       });
 
-        return {
-          id: `${this.id()}-le-${targetX}-${targetY}-${
-            this.animgetter.getAnimNames().length
-          }`,
-          mobjId: this.id(),
-          type: "PointChange",
-          label: `Changing End of ${this.id()} to (${targetX}, ${targetY})`,
-          tweenMeta: args,
-          anim: tween,
-        };
-      },
-    });
-  }
+  //       return {
+  //         id: `${this.id()}-le-${targetX}-${targetY}-${
+  //           this.animgetter.getAnimNames().length
+  //         }`,
+  //         mobjId: this.id(),
+  //         type: "PointChange",
+  //         label: `Changing End of ${this.id()} to (${targetX}, ${targetY})`,
+  //         tweenMeta: args,
+  //         anim: tween,
+  //       };
+  //     },
+  //   });
+  // }
 
   /* ------------------------------------------------------- */
   /* Getters / Setters                                       */

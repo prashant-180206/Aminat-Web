@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// import { easingMap } from "@/core/maps/easingMap";
+// import { easingMap } from "@/core/maps/easingMap";
 import { easingMap } from "@/core/maps/easingMap";
 import { AnimMeta } from "@/core/types/animation";
 import { Mobject } from "@/core/types/mobjects";
-import { p2c } from "@/core/utils/conversion";
-import Konva from "@/lib/konva";
+// import { p2c } from "@/core/utils/conversion";
+// import Konva from "@/lib/konva";
+import { createTimer, easings } from "animejs";
+// import { arg } from "mathjs";
 
 export class AnimGetter {
   private AnimGetterMap = new Map<string, AnimMeta>();
@@ -23,27 +27,20 @@ export class AnimGetter {
       mobjId: this.node.id(),
       type: "Create",
       func: (args: { [key: string]: any }) => {
-        this.node.opacity(0);
-        this.node.scaleX(0);
-        this.node.scaleY(0);
-
-        const tween = new Konva.Tween({
-          node: this.node,
-          duration: args.duration || 1,
-          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-          scaleX: 1,
-          scaleY: 1,
-
-          opacity: 1,
-          onFinish: () => {
-            this.node.opacity(1);
-            this.node.scaleX(1);
-            this.node.scaleY(1);
-          },
-          onReset: () => {
-            this.node.opacity(0);
-            this.node.scaleX(0);
-            this.node.scaleY(0);
+        const easefunc = args.easing
+          ? easings.eases[
+              easingMap[args.easing] as keyof typeof easings.eases.in
+            ]
+          : easings.eases.inOutQuad;
+        const timer = createTimer({
+          duration: 1000,
+          autoplay: false,
+          onUpdate: (t) => {
+            const transformedProgress = easefunc(t.progress);
+            this.node.properties = {
+              scale: transformedProgress * 1.0,
+              opacity: transformedProgress * 1.0,
+            };
           },
         });
 
@@ -53,7 +50,7 @@ export class AnimGetter {
           type: "Create",
           label: `Creating ${this.node.id()}`,
           tweenMeta: args,
-          anim: tween,
+          anim: timer,
         };
       },
     });
@@ -67,23 +64,21 @@ export class AnimGetter {
       mobjId: this.node.id(),
       type: "Destroy",
       func: (args: { [key: string]: any }) => {
-        const tween = new Konva.Tween({
-          node: this.node,
-          duration: args.duration || 1,
-          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-          scaleX: 0,
-          scaleY: 0,
-          opacity: 0,
-
-          onFinish: () => {
-            this.node.opacity(0);
-            this.node.scaleX(0);
-            this.node.scaleY(0);
-          },
-          onReset: () => {
-            this.node.opacity(1);
-            this.node.scaleX(1);
-            this.node.scaleY(1);
+        const easefunc = args.easing
+          ? easings.eases[
+              easingMap[args.easing] as keyof typeof easings.eases.in
+            ]
+          : easings.eases.inOutQuad;
+        const timer = createTimer({
+          duration: 1000,
+          autoplay: false,
+          onUpdate: (t) => {
+            const progress = t.progress;
+            const transformedProgress = easefunc(progress);
+            this.node.properties = {
+              scale: 1.0 - transformedProgress * 1.0,
+              opacity: 1.0 - transformedProgress * 1.0,
+            };
           },
         });
         return {
@@ -92,7 +87,7 @@ export class AnimGetter {
           type: "Destroy",
           label: `Destroying ${this.node.id()}`,
           tweenMeta: args,
-          anim: tween,
+          anim: timer,
         };
       },
     });
@@ -110,23 +105,42 @@ export class AnimGetter {
 
       func: (args: { [key: string]: any }) => {
         if (args.toX === undefined || args.toY === undefined) return null;
-        const canvas = p2c(args.toX, args.toY);
+        // const canvas = p2c(args.toX, args.toY);
+        const currentval = this.node.properties.position;
+        const easefunc = args.easing
+          ? easings.eases[
+              easingMap[args.easing] as keyof typeof easings.eases.in
+            ]
+          : easings.eases.inOutQuad;
+        // const easefunc = easings.eases.inOutQuad;
 
-        const tween = new Konva.Tween({
-          node: this.node,
-          duration: args.duration || 1,
-          easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-          x: canvas.x,
-          y: canvas.y,
+        const timer = createTimer({
+          duration: args.duration ? args.duration * 1000 : 1000,
+          // easing : easingMap[args.easing] || 'easeInOutQuad',
+          autoplay: false,
+          onUpdate: (t) => {
+            const progress = t.progress;
+            const transformedProgress = easefunc(progress);
+            this.node.properties = {
+              position: {
+                x:
+                  currentval.x +
+                  (args.toX - currentval.x) * transformedProgress,
+                y:
+                  currentval.y +
+                  (args.toY - currentval.y) * transformedProgress,
+              },
+            };
+          },
         });
         return {
-          id: `${this.node.id()}-Move-${canvas.x}-${canvas.y}-${this
+          id: `${this.node.id()}-Move-${currentval.x}-${currentval.y}-${this
             .counter++}`,
           mobjId: this.node.id(),
           type: "Move",
           label: `Moving ${this.node.id()}`,
           tweenMeta: args,
-          anim: tween,
+          anim: timer,
         };
       },
     });

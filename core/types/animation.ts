@@ -1,4 +1,5 @@
-import Konva from "@/lib/konva";
+// import Konva from "@/lib/konva";
+import { Timer } from "animejs";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type InputType = "number" | "string";
@@ -13,7 +14,7 @@ export interface AnimInfo {
   type: string;
   label: string;
   tweenMeta: TargetValue;
-  anim: Konva.Tween;
+  anim: Timer;
 }
 
 export interface AnimMeta {

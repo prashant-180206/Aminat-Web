@@ -1,13 +1,11 @@
 import { AnimInfo } from "@/core/types/animation";
 import { AnimManagerData } from "@/core/types/file";
+// import anime from "animejs";
 
 export class AnimationManager {
   private _animations = new Map<string, AnimInfo>();
   public get animations() {
     return this._animations;
-  }
-  public set animations(value) {
-    this._animations = value;
   }
   private order: string[][] = [];
   private _activeIndex = 0;
@@ -86,7 +84,7 @@ export class AnimationManager {
     this.activeIndex = (this.activeIndex + 1) % this.order.length;
 
     group.forEach((id) => {
-      this.animations.get(id)?.anim.play();
+      this.animations.get(id)?.anim.restart();
     });
   }
 
@@ -116,7 +114,7 @@ export class AnimationManager {
     }
     console.log("Removing animation:", id);
 
-    animData.anim.destroy();
+    animData.anim.revert();
     this.animations.delete(id);
     // this.metas.delete(id);
 
@@ -129,7 +127,7 @@ export class AnimationManager {
     }
   }
 
-  async resetAll(delayMs: number = 50) {
+  resetAll() {
     // Reverse order of groups
     for (let g = this.order.length - 1; g >= 0; g--) {
       const group = this.order[g];
@@ -141,15 +139,10 @@ export class AnimationManager {
 
         if (animData?.anim) {
           const tween = animData.anim;
-
-          // Stop any running animation logic
           tween.pause();
-
-          // Reset safely
+          tween.seek(1);
           tween.reset();
-
-          // Small delay to allow Konva to flush internal state
-          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          // anime
         }
       }
     }
@@ -169,7 +162,7 @@ export class AnimationManager {
 
         if (tween) {
           // tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
-          tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
+          tween.complete(); // Jump to END state (scale=1, opacity=1 for Create)
         }
       }
     }
@@ -189,7 +182,8 @@ export class AnimationManager {
   loadFromObj(obj: AnimManagerData) {
     // Clear existing animations and state
     this.animations.forEach((anim) => {
-      anim.anim.destroy();
+      anim.anim.revert();
+      // AnimationEffect.
     });
     this.animations.clear();
     this.order = [];

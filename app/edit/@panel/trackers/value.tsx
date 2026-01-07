@@ -19,9 +19,8 @@ import {
 import UpdateSliderPopover from "./components/updatePopover";
 import { PencilOff, Trash2, Activity } from "lucide-react";
 import AnimateSliderPopover from "./components/animateSliderPopover";
-import { easingMap } from "@/core/maps/easingMap";
 import { toast } from "sonner";
-// import { to } from "mathjs";
+import { getAnimationforTracker } from "@/core/utils/valAnimation";
 
 const ValueTrackersPanelTab = () => {
   const { scene, valRefresh } = useScene();
@@ -106,7 +105,7 @@ const ValueTrackersPanelTab = () => {
               {/* ================= ACTIONS ================= */}
               <div
                 className={`grid ${
-                  tm.slider ? "grid-cols-4" : "grid-cols-2"
+                  tm.slider ? "grid-cols-4" : "grid-cols-3"
                 } gap-2`}
               >
                 {tm.slider && (
@@ -130,43 +129,39 @@ const ValueTrackersPanelTab = () => {
                   </Tooltip>
                 )}
 
-                {tm.slider && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      {/* <div> */}
-                      <AnimateSliderPopover
-                        onApply={({ duration, target, easing }) => {
-                          const anim = tm.slider?.animateToValue(
-                            target,
-                            duration,
-                            easingMap[easing]
-                          );
-                          if (!anim) {
-                            toast.error(
-                              "Failed to create animation for slider."
-                            );
-                            return;
-                          }
-                          scene?.animManager.addAnimations({
-                            id: `${tm.id}_animate_to_${target}`,
-                            anim,
-                            type: "Value Animation",
-                            mobjId: tm.id,
-                            label: `Animate ${tm.id} to ${target}`,
-                            tweenMeta: { duration, easing },
-                          });
-                          toast.success("Animation added to queue.");
-                          scene?.animManager.animate();
-                          valRefresh();
-                        }}
-                      />
-                      {/* </div> */}
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      Animate Slider / Tracker
-                    </TooltipContent>
-                  </Tooltip>
-                )}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {/* <div> */}
+                    <AnimateSliderPopover
+                      onApply={({ duration, target, easing }) => {
+                        const anim = getAnimationforTracker(
+                          tm.tracker,
+                          target,
+                          duration
+                        );
+                        if (!anim) {
+                          toast.error("Failed to create animation for slider.");
+                          return;
+                        }
+                        scene?.animManager.addAnimations({
+                          id: `${tm.id}_animate_to_${target}`,
+                          anim,
+                          type: "Value Animation",
+                          mobjId: tm.id,
+                          label: `Animate ${tm.id} to ${target}`,
+                          tweenMeta: { duration, easing },
+                        });
+                        toast.success("Animation added to queue.");
+                        scene?.animManager.animate();
+                        valRefresh();
+                      }}
+                    />
+                    {/* </div> */}
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Animate Slider / Tracker
+                  </TooltipContent>
+                </Tooltip>
 
                 {/* Hide Slider */}
                 <Tooltip>

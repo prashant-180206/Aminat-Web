@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { PtValueTracker } from "../ptValuetracker";
+import { createTimer, easings } from "animejs";
 
 export class PtSlider extends Konva.Group {
   readonly tracker: PtValueTracker;
@@ -368,52 +369,30 @@ export class PtSlider extends Konva.Group {
   /* ---------------- Animations ---------------- */
 
   disappearAnim() {
-    return new Konva.Tween({
-      node: this,
-      opacity: 0,
-      scaleX: 0,
-      scaleY: 0,
-      duration: 0.6,
-      easing: Konva.Easings.EaseInOut,
-      onFinish: () => this.setAttrs({ opacity: 0, scaleX: 0, scaleY: 0 }),
-      onReset: () => this.setAttrs({ opacity: 1, scaleX: 1, scaleY: 1 }),
-    });
-  }
-
-  appearAnim() {
-    this.opacity(0);
-    this.scaleX(0);
-    this.scaleY(0);
-    return new Konva.Tween({
-      node: this,
-      opacity: 1,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 0.8,
-      easing: Konva.Easings.EaseInOut,
-      onFinish: () => this.setAttrs({ opacity: 1, scaleX: 1, scaleY: 1 }),
-      onReset: () => this.setAttrs({ opacity: 0, scaleX: 0, scaleY: 0 }),
-    });
-  }
-
-  animateToValue(xValue: number, yValue: number, duration = 1) {
-    const currentX = this.tracker.x.value;
-    const currentY = this.tracker.y.value;
-    this.setAttr("v", 0);
-    new Konva.Tween({
-      node: this,
-      duration: duration,
-      easing: Konva.Easings.Linear,
-      v: 1,
-      onUpdate: () => {
-        const t = this.getAttr("v");
-        const newX = currentX + (xValue - currentX) * t;
-        const newY = currentY + (yValue - currentY) * t;
-        this.setXValue(newX);
-        this.setYValue(newY);
+    return createTimer({
+      duration: 500,
+      autoplay: false,
+      onUpdate: (t) => {
+        const progress = t.progress;
+        const transformedProgress = easings.eases.outInSine(progress);
+        this.opacity(1.0 - transformedProgress);
+        this.scaleX(1.0 - transformedProgress);
+        this.scaleY(1.0 - transformedProgress);
       },
     });
   }
 
-  // ... (Animations and update methods remain largely the same, just call buildUI)
+  appearAnim() {
+    return createTimer({
+      duration: 500,
+      autoplay: false,
+      onUpdate: (t) => {
+        const progress = t.progress;
+        const transformedProgress = easings.eases.outInSine(progress);
+        this.opacity(transformedProgress);
+        this.scaleX(transformedProgress);
+        this.scaleY(transformedProgress);
+      },
+    });
+  }
 }

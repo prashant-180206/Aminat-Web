@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { ValueTracker } from ".././valuetracker";
+import { createTimer, easings } from "animejs";
 // import { easingMap } from "@/core/maps/easingMap";
 
 type SliderConfig = {
@@ -301,66 +302,32 @@ export class Slider extends Konva.Group {
   /* ---------------- Animations ---------------- */
 
   appearAnim() {
-    this.opacity(0);
-    this.scaleX(0);
-    this.scaleY(0);
-    return new Konva.Tween({
-      node: this,
-      opacity: 1,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 0.5,
-      easing: Konva.Easings.BackEaseOut,
-      onFinish: () => {
-        this.scaleX(1);
-        this.scaleY(1);
-        this.opacity(1);
-      },
-      onReset: () => {
-        this.scale({ x: 0, y: 0 });
-        this.opacity(0);
+    const timer = createTimer({
+      duration: 500,
+      autoplay: false,
+      onUpdate: (t) => {
+        const progress = t.progress;
+        const transformedProgress = easings.eases.outInSine(progress);
+        this.opacity(transformedProgress);
+        this.scaleX(transformedProgress);
+        this.scaleY(transformedProgress);
       },
     });
+    return timer;
   }
 
   disappearAnim() {
-    return new Konva.Tween({
-      node: this,
-      opacity: 0,
-      scaleX: 0.8,
-      scaleY: 0.8,
-      duration: 0.4,
-      easing: Konva.Easings.EaseIn,
-
-      onFinish: () => {
-        this.scale({ x: 0.8, y: 0.8 });
-        this.opacity(0);
-      },
-
-      onReset: () => {
-        this.scale({ x: 1, y: 1 });
-        this.opacity(1);
+    const timer = createTimer({
+      duration: 500,
+      autoplay: false,
+      onUpdate: (t) => {
+        const progress = t.progress;
+        const transformedProgress = easings.eases.outInSine(progress);
+        this.opacity(1 - transformedProgress);
+        this.scaleX(1 - transformedProgress);
+        this.scaleY(1 - transformedProgress);
       },
     });
-  }
-
-  animateToValue(
-    value: number,
-    duration = 1,
-    easing = Konva.Easings.EaseInOut
-  ) {
-    const currentval = this.tracker.value;
-    this.setAttr("v", 0); //dummy line to force a change
-    return new Konva.Tween({
-      node: this,
-      duration: duration,
-      v: 1,
-      easing: easing,
-      onUpdate: () => {
-        const t = this.getAttr("v");
-        const newValue = currentval + (value - currentval) * t;
-        this.setValue(newValue);
-      },
-    });
+    return timer;
   }
 }

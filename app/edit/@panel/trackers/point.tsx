@@ -18,6 +18,9 @@ import {
 } from "@/components/ui/tooltip";
 import { PencilOff, Trash2, MoveHorizontal, MoveVertical } from "lucide-react";
 import PtUpdateSliderPopover from "./components/updatePtPopover";
+import AnimatePtSliderPopover from "./components/animatePtSlider";
+import { getAnimationforPtTracker } from "@/core/utils/valAnimation";
+import { toast } from "sonner";
 
 const PtValueTrackersPanelTab = () => {
   const { scene, valRefresh } = useScene();
@@ -147,7 +150,7 @@ const PtValueTrackersPanelTab = () => {
               {/* ================= ACTIONS ================= */}
               <div
                 className={`grid ${
-                  tm.slider ? "grid-cols-3" : "grid-cols-2"
+                  tm.slider ? "grid-cols-4" : "grid-cols-3"
                 } gap-2`}
               >
                 {tm.slider && (
@@ -180,6 +183,40 @@ const PtValueTrackersPanelTab = () => {
                     </TooltipContent>
                   </Tooltip>
                 )}
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {/* <div> */}
+                    <AnimatePtSliderPopover
+                      onApply={({ duration, targetX, targetY, easing }) => {
+                        const anim = getAnimationforPtTracker(
+                          tm.tracker,
+                          { x: targetX, y: targetY },
+                          duration
+                        );
+                        if (!anim) {
+                          toast.error("Failed to create animation for slider.");
+                          return;
+                        }
+                        scene?.animManager.addAnimations({
+                          id: `${tm.id}_animate_to_${targetX}_${targetY}`,
+                          anim,
+                          type: "PtValue Animation",
+                          mobjId: tm.id,
+                          label: `Animate ${tm.id} to ${targetX}, ${targetY}`,
+                          tweenMeta: { duration, easing },
+                        });
+                        toast.success("Animation added to queue.");
+                        scene?.animManager.animate();
+                        valRefresh();
+                      }}
+                    />
+                    {/* </div> */}
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Animate Slider / Tracker
+                  </TooltipContent>
+                </Tooltip>
 
                 {/* Hide Slider */}
                 <Tooltip>

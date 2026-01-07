@@ -9,24 +9,24 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { NumberStepperInput } from "../../../components/input/numberInput";
-import { Settings2 } from "lucide-react";
+import { CirclePlay } from "lucide-react";
+import { Combobox } from "@/components/combobox";
+import { easingMap } from "@/core/maps/easingMap";
 
 type Props = {
-  initialMin: number;
-  initialMax: number;
-  initialRank: number;
-  onApply: (data: { min: number; max: number; rank: number }) => void;
+  onApply: (data: {
+    duration: number;
+    targetX: number;
+    targetY: number;
+    easing: string;
+  }) => void;
 };
 
-const AnimatePtSliderPopover: React.FC<Props> = ({
-  initialMin,
-  initialMax,
-  initialRank,
-  onApply,
-}) => {
-  const [min, setMin] = React.useState(initialMin);
-  const [max, setMax] = React.useState(initialMax);
-  const [rank, setRank] = React.useState(initialRank);
+const AnimatePtSliderPopover: React.FC<Props> = ({ onApply }) => {
+  const [duration, setDuration] = React.useState(1);
+  const [targetX, setTargetX] = React.useState(1);
+  const [targetY, setTargetY] = React.useState(1);
+  const [easing, setEasing] = React.useState(Object.keys(easingMap)[3]);
 
   return (
     <Popover>
@@ -36,27 +36,40 @@ const AnimatePtSliderPopover: React.FC<Props> = ({
           className=" flex-1 border text-primary border-primary bg-card hover:bg-accent"
           size="sm"
         >
-          <Settings2 />
+          <CirclePlay />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="space-y-3 w-auto flex-1">
         <div className="space-y-1">
-          <Label>Min</Label>
-          <NumberStepperInput value={min} onChange={setMin} />
+          <Label>Duration</Label>
+          <NumberStepperInput value={duration} onChange={setDuration} />
         </div>
 
         <div className="space-y-1">
-          <Label>Max</Label>
-          <NumberStepperInput value={max} onChange={setMax} />
+          <Label>TargetX</Label>
+          <NumberStepperInput value={targetX} onChange={setTargetX} />
         </div>
 
         <div className="space-y-1">
-          <Label>Rank</Label>
-          <NumberStepperInput value={rank} onChange={setRank} />
+          <Label>TargetY</Label>
+          <NumberStepperInput value={targetY} onChange={setTargetY} />
         </div>
 
-        <Button className="w-full" onClick={() => onApply({ min, max, rank })}>
+        <Label className="text-xs">Easing</Label>
+        <Combobox
+          options={Object.keys(easingMap).map((val) => ({
+            label: val,
+            value: val,
+          }))}
+          value={easing}
+          onChange={(val) => setEasing(val)}
+        />
+
+        <Button
+          className="w-full"
+          onClick={() => onApply({ duration, targetX, targetY, easing })}
+        >
           Apply
         </Button>
       </PopoverContent>

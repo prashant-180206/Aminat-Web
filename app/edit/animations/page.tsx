@@ -234,7 +234,7 @@ const AnimationsTab: React.FC = () => {
                               variant="ghost"
                               className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
                               onClick={() => {
-                                anim.anim.destroy();
+                                // anim.anim.destroy();
                                 setAnimGroup((prev) =>
                                   prev.filter((a) => a.id !== anim.id)
                                 );
