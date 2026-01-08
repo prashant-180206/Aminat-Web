@@ -1,12 +1,10 @@
-import { AnimInfo } from "@/core/types/animation";
-import { AnimManagerData } from "@/core/types/file";
+import { AnimMeta, AnimStoreData } from "@/core/types/animation";
+// import { AnimManagerData } from "@/core/types/file";
 // import anime from "animejs";
 
 export class AnimationManager {
-  private _animations = new Map<string, AnimInfo>();
-  public get animations() {
-    return this._animations;
-  }
+  private animations = new Map<string, AnimMeta>();
+  animStore: AnimStoreData[][] = [];
   private order: string[][] = [];
   private _activeIndex = 0;
   public get activeIndex() {
@@ -18,19 +16,30 @@ export class AnimationManager {
 
   //  * Adds a group of animations that should play together
 
-  addAnimations(...tweens: AnimInfo[]): string[] {
+  addAnimations(...tweens: AnimMeta[]): string[] {
     const ids: string[] = [];
+
+    const storeData: AnimStoreData[] = [];
 
     tweens.forEach((animData) => {
       this.animations.set(animData.id, animData);
       ids.push(animData.id);
+      storeData.push({
+        id: animData.id,
+        targetId: animData.targetId,
+        type: animData.type,
+        category: animData.category,
+        label: animData.label,
+        animFuncInput: animData.tweenMeta,
+      });
     });
+    this.animStore.push(storeData);
 
     this.order.push(ids);
     return ids;
   }
 
-  getAnimationFromId(id: string): AnimInfo | null {
+  getAnimationFromId(id: string): AnimMeta | null {
     return this.animations.get(id) || null;
   }
 
@@ -56,6 +65,10 @@ export class AnimationManager {
       this.order[targetIndex],
       this.order[groupIndex],
     ];
+    [this.animStore[groupIndex], this.animStore[targetIndex]] = [
+      this.animStore[targetIndex],
+      this.animStore[groupIndex],
+    ];
 
     // Keep active index aligned
     if (this.activeIndex === groupIndex) {
@@ -70,7 +83,7 @@ export class AnimationManager {
   }
 
   // Returns groups with meta info for UI
-  getGroupsWithMeta(): AnimInfo[][] {
+  getGroupsWithMeta(): AnimMeta[][] {
     return this.order.map((group) =>
       group.map((id) => this.animations.get(id)!).filter(Boolean)
     );
@@ -121,6 +134,9 @@ export class AnimationManager {
     this.order = this.order
       .map((group) => group.filter((animId) => animId !== id))
       .filter((group) => group.length > 0);
+    this.animStore = this.animStore
+      .map((group) => group.filter((anim) => anim.id !== id))
+      .filter((group) => group.length > 0);
 
     if (this.activeIndex >= this.order.length) {
       this.activeIndex = 0;
@@ -166,33 +182,5 @@ export class AnimationManager {
         }
       }
     }
-  }
-
-  storeAsObj(): AnimManagerData {
-    const animationsArray: AnimInfo[] = [];
-    this.animations.forEach((anim) => {
-      animationsArray.push(anim);
-    });
-    return {
-      animations: animationsArray,
-      order: this.order.map((group) => [...group]),
-    };
-  }
-
-  loadFromObj(obj: AnimManagerData) {
-    // Clear existing animations and state
-    this.animations.forEach((anim) => {
-      anim.anim.revert();
-      // AnimationEffect.
-    });
-    this.animations.clear();
-    this.order = [];
-    this.activeIndex = 0;
-
-    // Load animations from saved data
-    obj.animations.forEach((anim) => {
-      this.animations.set(anim.id, anim);
-    });
-    this.order = obj.order.map((group) => [...group]);
   }
 }

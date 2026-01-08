@@ -1,4 +1,4 @@
-import { AnimInfo } from "./animation";
+import { AnimStoreData } from "./animation";
 import { BaseProperties } from "./properties";
 
 export interface MobjectData {
@@ -19,8 +19,7 @@ export interface SceneData {
 }
 
 export interface AnimManagerData {
-  animations: AnimInfo[];
-  order: string[][];
+  animations: AnimStoreData[][];
 }
 
 export interface TrackerManagerData {

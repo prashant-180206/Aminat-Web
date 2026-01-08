@@ -1,10 +1,10 @@
 import Konva from "@/lib/konva";
-import { ValueTracker } from "../valuetracker";
+import { ValueTracker } from "@/core/classes/Tracker/valuetracker";
 import { PtTrackerMeta, TrackerMeta } from "@/core/types/tracker";
 import { TrackerManagerData } from "@/core/types/file";
-import { PtValueTracker } from "../ptValuetracker";
-import { PtSlider } from "../sliders/PtSlider";
-import { Slider } from "../sliders/slider";
+import { PtValueTracker } from "@/core/classes/Tracker/ptValuetracker";
+import { PtSlider } from "@/core/classes/Tracker/sliders/PtSlider";
+import { Slider } from "@/core/classes/Tracker/sliders/slider";
 import { parse, evaluate } from "mathjs";
 
 export class TrackerManager {
@@ -124,12 +124,12 @@ export class TrackerManager {
     return Array.from(this.pointTrackers.values());
   }
 
-  getTracker(name: string): ValueTracker | null {
-    return this.trackers.get(name)?.tracker ?? null;
+  getTracker(name: string): TrackerMeta | null {
+    return this.trackers.get(name) ?? null;
   }
 
-  getPtValueTracker(name: string): PtValueTracker | null {
-    return this.pointTrackers.get(name)?.tracker ?? null;
+  getPtValueTracker(name: string): PtTrackerMeta | null {
+    return this.pointTrackers.get(name) ?? null;
   }
 
   /* ------------------------------------------------------- */

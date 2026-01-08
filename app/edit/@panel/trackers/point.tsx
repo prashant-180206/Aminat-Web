@@ -19,8 +19,9 @@ import {
 import { PencilOff, Trash2, MoveHorizontal, MoveVertical } from "lucide-react";
 import PtUpdateSliderPopover from "./components/updatePtPopover";
 import AnimatePtSliderPopover from "./components/animatePtSlider";
-import { getAnimationforPtTracker } from "@/core/utils/valAnimation";
+// import { getAnimationforPtTracker } from "@/core/utils/valAnimation";
 import { toast } from "sonner";
+import { TrackerAnimator } from "@/core/utils/valAnimation";
 
 const PtValueTrackersPanelTab = () => {
   const { scene, valRefresh } = useScene();
@@ -189,26 +190,18 @@ const PtValueTrackersPanelTab = () => {
                     {/* <div> */}
                     <AnimatePtSliderPopover
                       onApply={({ duration, targetX, targetY, easing }) => {
-                        const anim = getAnimationforPtTracker(
+                        const anim = TrackerAnimator.getAnimationforPtTracker(
                           tm.tracker,
                           { x: targetX, y: targetY },
-                          duration
+                          tm.id,
+                          duration,
+                          easing
                         );
                         if (!anim) {
                           toast.error("Failed to create animation for slider.");
                           return;
                         }
-                        scene?.animManager.addAnimations({
-                          id: `${tm.id}_animate_to_${targetX}_${targetY}`,
-                          anim,
-                          type: "PtValue Animation",
-                          mobjId: tm.id,
-                          label: `Animate ${tm.id} to ${targetX}, ${targetY}`,
-                          tweenMeta: { duration, easing },
-                        });
-                        toast.success("Animation added to queue.");
-                        scene?.animManager.animate();
-                        valRefresh();
+                        scene?.animManager.addAnimations(anim);
                       }}
                     />
                     {/* </div> */}
@@ -225,17 +218,18 @@ const PtValueTrackersPanelTab = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const anim = tm.slider?.disappearAnim();
-                        if (!anim) return;
+                        const { success, anim } =
+                          TrackerAnimator.getPtSliderDisappearAnimation(tm);
 
-                        scene?.animManager.addAnimations({
-                          id: `slider_disappear_${tm.id}`,
-                          anim,
-                          type: "Slider Disappear",
-                          mobjId: tm.id,
-                          label: `Slider Disappear Animation for ${tm.id}`,
-                          tweenMeta: { duration: 1 },
-                        });
+                        if (!success || !anim) {
+                          toast.error(
+                            "Failed to create hide slider animation."
+                          );
+                          return;
+                        }
+
+                        scene?.animManager.addAnimations(anim);
+                        toast.success("Hide slider animation added to queue.");
 
                         scene?.animManager.animate();
                         valRefresh();

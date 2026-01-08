@@ -40,7 +40,7 @@ const PtConnectorFunctionsCard = ({
     )
       return;
 
-    const success = scene.ConnectXPtValueTrackerToMobject(
+    const success = scene.connManager.ConnectXPtValueTrackerToMobject(
       selectedTracker,
       activeMobject.id(),
       selectedFuncX,
@@ -60,7 +60,7 @@ const PtConnectorFunctionsCard = ({
     )
       return;
 
-    const success = scene.ConnectYPtValueTrackerToMobject(
+    const success = scene.connManager.ConnectYPtValueTrackerToMobject(
       selectedTracker,
       activeMobject.id(),
       selectedFuncY,

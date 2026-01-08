@@ -20,7 +20,8 @@ import UpdateSliderPopover from "./components/updatePopover";
 import { PencilOff, Trash2, Activity } from "lucide-react";
 import AnimateSliderPopover from "./components/animateSliderPopover";
 import { toast } from "sonner";
-import { getAnimationforTracker } from "@/core/utils/valAnimation";
+import { TrackerAnimator } from "@/core/utils/valAnimation";
+// import { getAnimationforTracker } from "@/core/utils/valAnimation";
 
 const ValueTrackersPanelTab = () => {
   const { scene, valRefresh } = useScene();
@@ -134,23 +135,18 @@ const ValueTrackersPanelTab = () => {
                     {/* <div> */}
                     <AnimateSliderPopover
                       onApply={({ duration, target, easing }) => {
-                        const anim = getAnimationforTracker(
+                        const anim = TrackerAnimator.getAnimationforTracker(
                           tm.tracker,
                           target,
-                          duration
+                          tm.id,
+                          duration,
+                          easing
                         );
                         if (!anim) {
                           toast.error("Failed to create animation for slider.");
                           return;
                         }
-                        scene?.animManager.addAnimations({
-                          id: `${tm.id}_animate_to_${target}`,
-                          anim,
-                          type: "Value Animation",
-                          mobjId: tm.id,
-                          label: `Animate ${tm.id} to ${target}`,
-                          tweenMeta: { duration, easing },
-                        });
+                        scene?.animManager.addAnimations(anim);
                         toast.success("Animation added to queue.");
                         scene?.animManager.animate();
                         valRefresh();
@@ -170,18 +166,17 @@ const ValueTrackersPanelTab = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const anim = tm.slider?.disappearAnim();
-                        if (!anim) return;
+                        const { success, anim } =
+                          TrackerAnimator.getSliderDisappearAnimation(tm);
+                        if (!success || !anim) {
+                          toast.error(
+                            "Failed to create hide slider animation."
+                          );
+                          return;
+                        }
 
-                        scene?.animManager.addAnimations({
-                          id: `slider_disappear_${tm.id}`,
-                          anim,
-                          type: "Slider Disappear",
-                          mobjId: tm.id,
-                          label: `Slider Disappear Animation for ${tm.id}`,
-                          tweenMeta: { duration: 1 },
-                        });
-
+                        scene?.animManager.addAnimations(anim);
+                        toast.success("Hide slider animation added to queue.");
                         scene?.animManager.animate();
                         valRefresh();
                       }}

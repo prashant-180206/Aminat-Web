@@ -1,5 +1,6 @@
 import { Mobject } from "@/core/types/mobjects";
-import { TrackerManager } from "@/core/classes/Tracker/helpers/TrackerManager";
+import { TrackerManager } from "../managers/TrackerManager";
+// import { TrackerManager } from "@/core/classes/Tracker/helpers/TrackerManager";
 // import { TrackerManager } from "@/core/Tracker/helpers/TrackerManager";
 
 export class TrackerMobjectConnectorFactory {
@@ -24,7 +25,11 @@ export class TrackerMobjectConnectorFactory {
 
     const updaterId = `${args.mobject.id()}-${args.functionName}`;
 
-    const success = tracker.addUpdater(updaterId, func, args.expression);
+    const success = tracker.tracker.addUpdater(
+      updaterId,
+      func,
+      args.expression
+    );
 
     return { success, updaterId: success ? updaterId : null };
   }
@@ -48,7 +53,7 @@ export class TrackerMobjectConnectorFactory {
     );
     if (!funcX) return false;
 
-    return tracker.x.addUpdater(
+    return tracker.tracker.x.addUpdater(
       `${args.mobject.id()}-${args.functionNameX}-X`,
       funcX,
       args.expressionX
@@ -70,7 +75,7 @@ export class TrackerMobjectConnectorFactory {
     );
     if (!funcY) return false;
 
-    return tracker.y.addUpdater(
+    return tracker.tracker.y.addUpdater(
       `${args.mobject.id()}-${args.functionNameY}-Y`,
       funcY,
       args.expressionY

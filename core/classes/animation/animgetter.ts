@@ -1,16 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { easingMap } from "@/core/maps/easingMap";
-// import { easingMap } from "@/core/maps/easingMap";
 import { easingMap } from "@/core/maps/easingMap";
-import { AnimMeta } from "@/core/types/animation";
+import { AnimFuncMeta } from "@/core/types/animation";
 import { Mobject } from "@/core/types/mobjects";
-// import { p2c } from "@/core/utils/conversion";
-// import Konva from "@/lib/konva";
 import { createTimer, easings } from "animejs";
-// import { arg } from "mathjs";
 
 export class AnimGetter {
-  private AnimGetterMap = new Map<string, AnimMeta>();
+  private AnimGetterMap = new Map<string, AnimFuncMeta>();
   private node: Mobject;
   private counter = 0;
   private static HIDDEN_SCALE = 0.0001;
@@ -24,8 +19,9 @@ export class AnimGetter {
         duration: "number",
         easing: "string",
       },
-      mobjId: this.node.id(),
+      targetId: this.node.id(),
       type: "Create",
+      // category: "Mobject",
       func: (args: { [key: string]: any }) => {
         const easefunc = args.easing
           ? easings.eases[
@@ -46,11 +42,12 @@ export class AnimGetter {
 
         return {
           id: `${this.node.id()}-Create-${this.counter++}`,
-          mobjId: this.node.id(),
+          targetId: this.node.id(),
           type: "Create",
           label: `Creating ${this.node.id()}`,
           tweenMeta: args,
           anim: timer,
+          category: "Mobject",
         };
       },
     });
@@ -61,7 +58,7 @@ export class AnimGetter {
         duration: "number",
         easing: "string",
       },
-      mobjId: this.node.id(),
+      targetId: this.node.id(),
       type: "Destroy",
       func: (args: { [key: string]: any }) => {
         const easefunc = args.easing
@@ -83,11 +80,12 @@ export class AnimGetter {
         });
         return {
           id: `${this.node.id()}-Destroy-${this.counter++}`,
-          mobjId: this.node.id(),
+          targetId: this.node.id(),
           type: "Destroy",
           label: `Destroying ${this.node.id()}`,
           tweenMeta: args,
           anim: timer,
+          category: "Mobject",
         };
       },
     });
@@ -100,7 +98,7 @@ export class AnimGetter {
         toX: "number",
         toY: "number",
       },
-      mobjId: this.node.id(),
+      targetId: this.node.id(),
       type: "Move",
 
       func: (args: { [key: string]: any }) => {
@@ -136,22 +134,23 @@ export class AnimGetter {
         return {
           id: `${this.node.id()}-Move-${currentval.x}-${currentval.y}-${this
             .counter++}`,
-          mobjId: this.node.id(),
+          targetId: this.node.id(),
           type: "Move",
           label: `Moving ${this.node.id()}`,
           tweenMeta: args,
+          category: "Mobject",
           anim: timer,
         };
       },
     });
   }
 
-  addAnimFunc(name: string, meta: AnimMeta) {
+  addAnimFunc(name: string, meta: AnimFuncMeta) {
     this.AnimGetterMap.set(name, meta);
     this.counter++;
   }
 
-  getAnimMeta(name: string): AnimMeta | null {
+  getAnimMeta(name: string): AnimFuncMeta | null {
     return this.AnimGetterMap.get(name) || null;
   }
 

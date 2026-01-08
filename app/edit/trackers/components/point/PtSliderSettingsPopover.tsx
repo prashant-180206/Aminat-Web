@@ -10,6 +10,7 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
 import { NumberStepperInput } from "@/app/edit/components/input/numberInput";
+import { TrackerAnimator } from "@/core/utils/valAnimation";
 
 interface PtSliderSettingsPopoverProps {
   trackerId: string;
@@ -38,28 +39,23 @@ const PtSliderSettingsPopover = ({
   const makePtSlider = () => {
     if (!scene) return;
 
-    const { success, slider } = scene.trackerManager.addPtSlider(
+    const { success, anim } = TrackerAnimator.getPtSliderAppearAnimation(
+      scene.trackerManager,
       trackerId,
-      sliderInputX,
-      sliderInputY,
-      rank
+      scene.layer,
+      {
+        x: sliderInputX,
+        y: sliderInputY,
+        rank,
+      }
     );
 
-    if (!success || !slider) {
+    if (!success || !anim) {
       toast.error("Failed to create point slider");
       return;
     }
-
-    scene.layer.add(slider);
-    const anim = slider.appearAnim();
-    scene.animManager.addAnimations({
-      id: `${trackerId}_slider_appear`,
-      anim,
-      label: "Slider Appear",
-      mobjId: trackerId,
-      type: "slider_appear",
-      tweenMeta: { duration: 1 },
-    });
+    // const anim = slider.appearAnim();
+    scene.animManager.addAnimations(anim);
     scene.animManager.animate();
     toast.success("Point slider created");
     onSliderAdded?.();

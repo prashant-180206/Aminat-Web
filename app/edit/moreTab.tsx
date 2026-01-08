@@ -16,7 +16,7 @@ const MoreTab: React.FC = () => {
     const metas = scene.animManager.getGroupsWithMeta();
     // map to serializable bits for UI
     const lite = metas.map((grp) =>
-      grp.map((m) => ({ id: m.id, targetId: m.mobjId, type: m.type }))
+      grp.map((m) => ({ id: m.id, targetId: m.targetId, type: m.type }))
     );
     setGroups(lite);
   };

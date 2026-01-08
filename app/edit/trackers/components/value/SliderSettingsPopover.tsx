@@ -10,6 +10,7 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
 import { NumberStepperInput } from "@/app/edit/components/input/numberInput";
+import { TrackerAnimator } from "@/core/utils/valAnimation";
 
 interface SliderSettingsPopoverProps {
   trackerId: string;
@@ -31,31 +32,24 @@ const SliderSettingsPopover = ({
   void valToggle;
 
   const updaterIds =
-    scene?.trackerManager.getTracker(trackerId)?.getUpdaterIds() ?? [];
+    scene?.trackerManager.getTracker(trackerId)?.tracker.getUpdaterIds() ?? [];
 
   const makeSlider = () => {
     if (!scene) return;
 
-    const { success, slider } = scene.trackerManager.addSlider(
+    const { success, anim } = TrackerAnimator.getSliderAppearAnimation(
+      scene.trackerManager,
       trackerId,
+      scene.layer,
       sliderInput
     );
 
-    if (!success || !slider) {
+    if (!success || !anim) {
       toast.error("Failed to create slider");
       return;
     }
-
-    scene.layer.add(slider);
-    const anim = slider.appearAnim();
-    scene.animManager.addAnimations({
-      id: `slider_appear_${trackerId}`,
-      mobjId: trackerId,
-      anim,
-      type: "Slider Appear",
-      label: `Slider Appear Animation for ${trackerId}`,
-      tweenMeta: { duration: 1 },
-    });
+    // const anim = slider.appearAnim();
+    scene.animManager.addAnimations(anim);
     scene.animManager.animate();
     toast.success("Slider created");
     onSliderAdded?.();

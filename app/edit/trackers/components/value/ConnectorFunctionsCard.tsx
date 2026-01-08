@@ -33,7 +33,7 @@ ConnectorFunctionsCardProps) => {
   const connectFuncs = () => {
     if (!activeMobject || !selectedFunc || !expression || !scene) return;
 
-    const { success } = scene.ConnectValueTrackerToMobject(
+    const { success } = scene.connManager.ConnectValueTrackerToMobject(
       selectedTracker || "",
       activeMobject.id(),
       selectedFunc,
