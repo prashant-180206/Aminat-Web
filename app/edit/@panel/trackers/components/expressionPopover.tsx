@@ -35,7 +35,7 @@ export const ExpressionPopover: React.FC = () => {
   if (!scene) return null;
   void valToggle;
 
-  const manager = scene.trackerManager;
+  const manager = scene.trackerManager.connectionManager;
   const expressions = manager.getAllExpressions();
 
   const handleAdd = () => {
@@ -88,7 +88,7 @@ export const ExpressionPopover: React.FC = () => {
                   setNewExpr(v);
                   if (message) setMessage(null); // clear old message on edit
                 }}
-                trackers={manager.getAllNames()}
+                trackers={scene.trackerManager.getAllNames()}
                 className="border rounded-md"
               />
 

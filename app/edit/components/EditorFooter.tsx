@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 const EditorFooter = () => {
   const { scene, activeMobject } = useScene();
 
-  const mobjectCount = scene?.getMobjectsData().length || 0;
+  const mobjectCount = scene?.mobjManager.mobjectsMeta.length || 0;
   const animationGroups = scene?.animManager.getOrder().length || 0;
 
   return (

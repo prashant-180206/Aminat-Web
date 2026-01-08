@@ -78,10 +78,10 @@ export class MRect extends Konva.Rect {
     this.strokeWidth(thickness);
     this.width(width * scale * DEFAULT_SCALE);
     this.height(height * scale * DEFAULT_SCALE);
-    const pos = p2c(position.x, position.y);
+    const pos = p2c(position.x - width / 2, position.y + height / 2);
     this.position({
-      x: pos.x - this.width() / 2,
-      y: pos.y - this.height() / 2,
+      x: pos.x,
+      y: pos.y,
     });
     this.rotation(rotation);
     if (cornerRadius >= 0) this.cornerRadius(cornerRadius);

@@ -33,10 +33,15 @@ export interface TrackerManagerData {
     id: string;
     value: { x: number; y: number };
     sliders: {
-      x: { min: number; max: number } | null;
-      y: { min: number; max: number } | null;
-    };
+      minX: number;
+      maxX: number;
+      minY: number;
+      maxY: number;
+      rank: number;
+    } | null;
   }[];
+
+  connections: string[];
 }
 
 export interface ValFuncRelations {

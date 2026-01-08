@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// anim/classes/mobjects/simple/parametricCurve.ts
+// /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { CurveProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
@@ -7,6 +6,7 @@ import { Konva } from "@/lib/konva";
 import { evaluate } from "mathjs";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 
 export class ParametricCurve extends Konva.Line {
   public animgetter: AnimGetter;
@@ -28,7 +28,7 @@ export class ParametricCurve extends Konva.Line {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "red",
+      color: Colors.PRIMARY,
       scale: 1,
       rotation: 0,
       parameterRange: [0, 2 * Math.PI],
@@ -37,7 +37,6 @@ export class ParametricCurve extends Konva.Line {
         Yfunc: "sin(t)",
       },
       thickness: 3,
-      bordercolor: "blue",
       opacity: 1,
       zindex: 0,
       ...config,
@@ -79,7 +78,7 @@ export class ParametricCurve extends Konva.Line {
       scale,
       rotation,
       thickness,
-      bordercolor,
+      // bordercolor,
       parameterRange,
       funcs,
       opacity,
@@ -88,7 +87,7 @@ export class ParametricCurve extends Konva.Line {
 
     // Apply base properties
     this.position(p2c(position.x, position.y));
-    this.stroke(bordercolor || color);
+    this.stroke(color);
     this.strokeWidth(thickness);
     this.scale({ x: scale, y: scale });
     this.rotation(rotation);
@@ -119,6 +118,7 @@ export class ParametricCurve extends Konva.Line {
       try {
         x = evaluate(Xfunc, { t }) as number;
         y = evaluate(Yfunc, { t }) as number;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         x = t;
         y = t;

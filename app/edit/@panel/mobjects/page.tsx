@@ -24,8 +24,7 @@ const MobjectsSidePanel = () => {
   } = useScene();
   void mobjToggle;
 
-  const mobjects = scene?.getMobjectsData() || [];
-
+  const mobjects = scene?.mobjManager.mobjectsMeta || [];
   return (
     <Collapsible
       defaultOpen

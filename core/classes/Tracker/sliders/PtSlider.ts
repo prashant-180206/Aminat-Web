@@ -395,4 +395,29 @@ export class PtSlider extends Konva.Group {
       },
     });
   }
+
+  storeAsObj() {
+    return {
+      minX: this.minX,
+      maxX: this.maxX,
+      minY: this.minY,
+      maxY: this.maxY,
+      rank: this._rank,
+    };
+  }
+
+  loadFromObj(obj: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+    rank: number;
+  }) {
+    this.minX = obj.minX;
+    this.maxX = obj.maxX;
+    this.minY = obj.minY;
+    this.maxY = obj.maxY;
+    this._rank = obj.rank;
+    this.buildUI();
+  }
 }

@@ -330,4 +330,19 @@ export class Slider extends Konva.Group {
     });
     return timer;
   }
+
+  storeAsObj() {
+    return {
+      min: this.min,
+      max: this.max,
+      rank: this._rank,
+    };
+  }
+
+  loadFromObj(obj: { min: number; max: number; rank: number }) {
+    this.min = obj.min;
+    this.max = obj.max;
+    this._rank = obj.rank;
+    this.buildUI();
+  }
 }

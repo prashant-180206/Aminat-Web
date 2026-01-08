@@ -6,14 +6,15 @@ import { CircleProperties } from "@/core/types/properties";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { Konva } from "@/lib/konva";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 
 class MCircle extends Konva.Circle {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: CircleProperties = {
     radius: 2,
-    color: "blue",
-    bordercolor: "black",
+    color: Colors.FILL,
+    bordercolor: Colors.BORDER,
     thickness: 4,
     position: { x: 0, y: 0 },
     scale: 1,

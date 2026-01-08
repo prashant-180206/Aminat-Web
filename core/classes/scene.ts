@@ -54,6 +54,7 @@ class Scene extends Konva.Stage {
 
   removeMobject(id: string) {
     this.mobjManager.removeMobject(id);
+    // this.trackerManager.
   }
 
   getMobjectById(id: string): Mobject | null {

@@ -1,12 +1,10 @@
-// anim/classes/mobjects/simple/dot.ts
-// import { DEFAULT_SCALE } from "@/core/config";
-// import { DEFAULT_SCALE } from "@/core/config";
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DotProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 // import type { Point } from './parametricCurve';
 
 export class Dot extends Konva.Circle {
@@ -27,7 +25,7 @@ export class Dot extends Konva.Circle {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "red",
+      color: Colors.PRIMARY,
       scale: 1,
       rotation: 0,
       radius: 6,

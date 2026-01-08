@@ -16,7 +16,6 @@ export interface CurveProperties extends BaseProperties {
     Yfunc: string;
   };
   thickness: number;
-  bordercolor: string;
 }
 
 export interface LineProperties extends BaseProperties {

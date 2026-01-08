@@ -16,7 +16,7 @@ import { Tabs } from "@radix-ui/react-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ValueTrackersPanelTab from "./value";
 import PtValueTrackersPanelTab from "./point";
-import { ExpressionPopover } from "../../trackers/expressionPopover";
+import { ExpressionPopover } from "./components/expressionPopover";
 
 const TrackerSidePanel = () => {
   // const { scene, valRefresh } = useScene();
