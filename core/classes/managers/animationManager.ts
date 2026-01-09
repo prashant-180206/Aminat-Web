@@ -30,7 +30,7 @@ export class AnimationManager {
         type: animData.type,
         category: animData.category,
         label: animData.label,
-        animFuncInput: animData.tweenMeta,
+        animFuncInput: animData.animFuncInput,
       });
     });
     this.animStore.push(storeData);
@@ -121,15 +121,10 @@ export class AnimationManager {
 
   removeAnimation(id: string) {
     const animData = this.animations.get(id);
-    if (!animData) {
-      console.warn(`Animation with id ${id} not found`);
-      return;
-    }
-    console.log("Removing animation:", id);
+    if (!animData) return;
 
     animData.anim.revert();
     this.animations.delete(id);
-    // this.metas.delete(id);
 
     this.order = this.order
       .map((group) => group.filter((animId) => animId !== id))
@@ -143,12 +138,34 @@ export class AnimationManager {
     }
   }
 
+  removeAnimForMobject(targetId: string) {
+    const idsToRemove: string[] = [];
+    this.animations.forEach((animData, id) => {
+      if (animData.targetId === targetId) {
+        idsToRemove.push(id);
+      }
+    });
+    for (const id of idsToRemove) {
+      this.removeAnimation(id);
+    }
+  }
+
+  removeAnimForTracker(targetId: string) {
+    const idsToRemove: string[] = [];
+    this.animations.forEach((animData, id) => {
+      if (animData.targetId === targetId) {
+        idsToRemove.push(id);
+      }
+    });
+    for (const id of idsToRemove) {
+      this.removeAnimation(id);
+    }
+  }
+
   resetAll() {
-    // Reverse order of groups
     for (let g = this.order.length - 1; g >= 0; g--) {
       const group = this.order[g];
 
-      // Reverse order within the group
       for (let i = group.length - 1; i >= 0; i--) {
         const id = group[i];
         const animData = this.animations.get(id);
@@ -158,7 +175,6 @@ export class AnimationManager {
           tween.pause();
           tween.seek(1);
           tween.reset();
-          // anime
         }
       }
     }

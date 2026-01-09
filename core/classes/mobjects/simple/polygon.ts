@@ -5,6 +5,7 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 
 export class MPolygon extends Konva.Shape {
   public animgetter: AnimGetter;
@@ -25,7 +26,7 @@ export class MPolygon extends Konva.Shape {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "blue",
+      color: Colors.PRIMARY,
       scale: 1,
       rotation: 0,
       points: [
@@ -34,7 +35,7 @@ export class MPolygon extends Konva.Shape {
         { x: 1, y: 1 },
         { x: 0, y: 1 },
       ],
-      bordercolor: "black",
+      bordercolor: Colors.BORDER,
       thickness: 3,
       zindex: 0,
       opacity: 1,

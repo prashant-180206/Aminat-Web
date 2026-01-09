@@ -21,15 +21,16 @@ const TrackersList = ({
   onTrackerSelect,
   onTrackerRemove,
 }: TrackersListProps) => {
-  const { scene, valToggle } = useScene();
+  const { scene, valToggle, valRefresh, animRefresh } = useScene();
   void valToggle;
 
   const handleRemoveTracker = (name: string) => {
     if (!scene) return;
-    scene.trackerManager.remove(name);
-    scene.animManager.removeAnimation(`slider_appear_${name}`);
-    toast.info("Tracker removed");
+    scene.removeTracker(name);
+    toast.success(`Removed tracker: ${name}`);
     onTrackerRemove(name);
+    valRefresh();
+    animRefresh();
   };
 
   return (

@@ -44,7 +44,7 @@ export default function Layout({
 
               {/* Scene Canvas */}
               <div
-                className="flex flex-row bg-card border-2 border-border rounded-lg shadow-xl mx-4"
+                className="flex flex-row bg-card overflow-hidden border-2 border-border rounded-lg shadow-xl mx-4"
                 style={{ height: DEFAULT_HEIGHT, width: DEFAULT_WIDTH }}
               >
                 <SceneView />

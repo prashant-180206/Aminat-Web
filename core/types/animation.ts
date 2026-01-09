@@ -14,7 +14,7 @@ export interface AnimMeta {
   type: string;
   category: "Mobject" | "Tracker" | "Slider" | "PtTracker" | "PtSlider";
   label: string;
-  tweenMeta: TargetValue;
+  animFuncInput: TargetValue;
   anim: Timer;
 }
 

@@ -8,7 +8,6 @@ export class AnimGetter {
   private AnimGetterMap = new Map<string, AnimFuncMeta>();
   private node: Mobject;
   private counter = 0;
-  private static HIDDEN_SCALE = 0.0001;
 
   constructor(obj: Mobject) {
     this.node = obj;
@@ -29,7 +28,7 @@ export class AnimGetter {
             ]
           : easings.eases.inOutQuad;
         const timer = createTimer({
-          duration: 1000,
+          duration: args.duration ? args.duration * 1000 : 1000,
           autoplay: false,
           onUpdate: (t) => {
             const transformedProgress = easefunc(t.progress);
@@ -45,7 +44,7 @@ export class AnimGetter {
           targetId: this.node.id(),
           type: "Create",
           label: `Creating ${this.node.id()}`,
-          tweenMeta: args,
+          animFuncInput: args,
           anim: timer,
           category: "Mobject",
         };
@@ -67,7 +66,7 @@ export class AnimGetter {
             ]
           : easings.eases.inOutQuad;
         const timer = createTimer({
-          duration: 1000,
+          duration: args.duration ? args.duration * 1000 : 1000,
           autoplay: false,
           onUpdate: (t) => {
             const progress = t.progress;
@@ -83,7 +82,7 @@ export class AnimGetter {
           targetId: this.node.id(),
           type: "Destroy",
           label: `Destroying ${this.node.id()}`,
-          tweenMeta: args,
+          animFuncInput: args,
           anim: timer,
           category: "Mobject",
         };
@@ -110,11 +109,9 @@ export class AnimGetter {
               easingMap[args.easing] as keyof typeof easings.eases.in
             ]
           : easings.eases.inOutQuad;
-        // const easefunc = easings.eases.inOutQuad;
 
         const timer = createTimer({
           duration: args.duration ? args.duration * 1000 : 1000,
-          // easing : easingMap[args.easing] || 'easeInOutQuad',
           autoplay: false,
           onUpdate: (t) => {
             const progress = t.progress;
@@ -137,7 +134,7 @@ export class AnimGetter {
           targetId: this.node.id(),
           type: "Move",
           label: `Moving ${this.node.id()}`,
-          tweenMeta: args,
+          animFuncInput: args,
           category: "Mobject",
           anim: timer,
         };

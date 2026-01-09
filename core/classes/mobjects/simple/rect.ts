@@ -6,6 +6,7 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 
 export class MRect extends Konva.Rect {
   public animgetter: AnimGetter;
@@ -26,14 +27,14 @@ export class MRect extends Konva.Rect {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "blue",
+      color: Colors.FILL,
       scale: 1,
       rotation: 0,
       dimensions: {
         width: 3,
         height: 2,
       },
-      bordercolor: "black",
+      bordercolor: Colors.BORDER,
       thickness: 2,
       cornerRadius: 0,
       zindex: 0,

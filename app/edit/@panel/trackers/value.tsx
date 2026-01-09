@@ -24,7 +24,7 @@ import { TrackerAnimator } from "@/core/utils/valAnimation";
 // import { getAnimationforTracker } from "@/core/utils/valAnimation";
 
 const ValueTrackersPanelTab = () => {
-  const { scene, valRefresh } = useScene();
+  const { scene, valRefresh, animRefresh } = useScene();
 
   const trackers = scene?.trackerManager.getAllTrackerMetas() || [];
 
@@ -194,14 +194,10 @@ const ValueTrackersPanelTab = () => {
                       size="sm"
                       variant="destructive"
                       onClick={() => {
-                        scene?.trackerManager.remove(tm.id);
-                        scene?.animManager.removeAnimation(
-                          `slider_appear_${tm.id}`
-                        );
-                        scene?.animManager.removeAnimation(
-                          `slider_disappear_${tm.id}`
-                        );
+                        scene?.removeTracker(tm.id);
+                        toast.success(`Deleted tracker ${tm.id}`);
                         valRefresh();
+                        animRefresh();
                       }}
                     >
                       <Trash2 size={14} />

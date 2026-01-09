@@ -141,20 +141,13 @@ export class TrackerManager {
   }
 
   clear() {
-    // Clean up all expression links first
-
     this.connManager.clear();
-    // Standard cleanup for sliders and maps
     [...this.trackers.values(), ...this.pointTrackers.values()].forEach((m) =>
       m.slider?.destroy()
     );
     this.trackers.clear();
     this.pointTrackers.clear();
   }
-
-  /* ------------------------------------------------------- */
-  /* Persistence                                             */
-  /* ------------------------------------------------------- */
 
   storeAsObj(): TrackerManagerData {
     const data: TrackerManagerData = {

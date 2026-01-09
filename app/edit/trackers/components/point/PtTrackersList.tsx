@@ -21,14 +21,16 @@ const PtTrackersList = ({
   onTrackerSelect,
   onTrackerRemove,
 }: PtTrackersListProps) => {
-  const { scene, valToggle } = useScene();
+  const { scene, valToggle, valRefresh, animRefresh } = useScene();
   void valToggle;
 
   const handleRemoveTracker = (name: string) => {
     if (!scene) return;
-    scene.trackerManager.remove(name);
-    toast.info("Point tracker removed");
+    scene.removeTracker(name);
+    toast.success(`Removed point tracker: ${name}`);
     onTrackerRemove(name);
+    valRefresh();
+    animRefresh();
   };
 
   return (

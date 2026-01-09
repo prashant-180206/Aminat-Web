@@ -49,7 +49,10 @@ const AnimationsTab: React.FC = () => {
   const addAnim = () => {
     if (!animMeta) return;
     const res = animMeta.func(inputObject);
-    if (!res) return;
+    if (!res) {
+      toast.error("Failed to create animation. Check parameters.");
+      return;
+    }
 
     setAnimGroup((prev) => [...prev, res]);
     toast.success("Animation staged");

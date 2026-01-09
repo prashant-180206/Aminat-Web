@@ -7,6 +7,7 @@ import { evaluate } from "mathjs";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { Colors } from "@/core/utils/colors";
+import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 
 export class ParametricCurve extends Konva.Line {
   public animgetter: AnimGetter;
@@ -41,6 +42,8 @@ export class ParametricCurve extends Konva.Line {
       zindex: 0,
       ...config,
     };
+
+    MobjectAnimAdder.addCurveAnimations(this);
 
     this.updateFromProperties();
     this.name("Curve");

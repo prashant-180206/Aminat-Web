@@ -20,7 +20,7 @@ const PtTrackerItem = ({
   onSelect,
   onRemove,
 }: PtTrackerItemProps) => {
-  const { valRefresh, valToggle } = useScene();
+  const { valToggle } = useScene();
   void valToggle;
   return (
     <div
@@ -46,7 +46,6 @@ const PtTrackerItem = ({
           onClick={(e) => {
             e.stopPropagation();
             onRemove(trackerId);
-            valRefresh();
           }}
         >
           ×

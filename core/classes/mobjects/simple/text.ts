@@ -5,6 +5,7 @@ import { TextProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 
 export class MText extends Konva.Text {
   public animgetter: AnimGetter;
@@ -32,9 +33,9 @@ export class MText extends Konva.Text {
       position: { x: 0, y: 0 },
       scale: 1,
       rotation: 0,
-      color: "#ffffff",
+      color: Colors.BG,
       textData: {
-        color: "#ffffff",
+        color: Colors.TEXT,
         content: "Hello World",
         fontsize: 24,
         fontfamily: "Arial",

@@ -5,6 +5,7 @@ import { p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { Colors } from "@/core/utils/colors";
 
 export class MPlane extends Konva.Group {
   public animgetter: AnimGetter;
@@ -30,7 +31,7 @@ export class MPlane extends Konva.Group {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "gray",
+      color: Colors.BG_SEC,
       scale: 1,
       rotation: 0,
       dimensions: {
@@ -47,8 +48,8 @@ export class MPlane extends Konva.Group {
       gridthickness: 1,
       showgrid: true,
       showlabels: true,
-      labelcolor: "#555",
-      axiscolor: "#000",
+      labelcolor: Colors.TEXT_SEC,
+      axiscolor: Colors.PRIMARY,
       axissthickness: 2,
       ...config,
     };

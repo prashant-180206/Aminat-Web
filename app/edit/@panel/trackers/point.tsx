@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { TrackerAnimator } from "@/core/utils/valAnimation";
 
 const PtValueTrackersPanelTab = () => {
-  const { scene, valRefresh } = useScene();
+  const { scene, valRefresh, animRefresh } = useScene();
 
   const trackers = scene?.trackerManager.getAllPtTrackerMetas() || [];
 
@@ -202,6 +202,10 @@ const PtValueTrackersPanelTab = () => {
                           return;
                         }
                         scene?.animManager.addAnimations(anim);
+                        scene?.animManager.animate();
+                        toast.success("Animation added to queue.");
+                        valRefresh();
+                        animRefresh();
                       }}
                     />
                     {/* </div> */}
@@ -233,6 +237,7 @@ const PtValueTrackersPanelTab = () => {
 
                         scene?.animManager.animate();
                         valRefresh();
+                        animRefresh();
                       }}
                     >
                       <PencilOff size={14} />
@@ -248,14 +253,9 @@ const PtValueTrackersPanelTab = () => {
                       size="sm"
                       variant="destructive"
                       onClick={() => {
-                        scene?.trackerManager.remove(tm.id);
-                        scene?.animManager.removeAnimation(
-                          `slider_appear_${tm.id}`
-                        );
-                        scene?.animManager.removeAnimation(
-                          `slider_disappear_${tm.id}`
-                        );
+                        scene?.removeTracker(tm.id);
                         valRefresh();
+                        animRefresh();
                       }}
                     >
                       <Trash2 size={14} />

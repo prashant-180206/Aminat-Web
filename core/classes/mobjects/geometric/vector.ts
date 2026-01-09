@@ -5,6 +5,8 @@ import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
+import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
+import { Colors } from "@/core/utils/colors";
 // import { easingMap } from "@/core/maps/easingMap";
 
 export class MVector extends Konva.Arrow {
@@ -27,7 +29,7 @@ export class MVector extends Konva.Arrow {
 
     this._properties = {
       position: { x: 0, y: 0 },
-      color: "red",
+      color: Colors.PRIMARY,
       scale: 1,
       rotation: 0,
       lineEnds: {
@@ -78,7 +80,7 @@ export class MVector extends Konva.Arrow {
     });
 
     this.updateFromProperties();
-    // this.setupAnimationFunctions();
+    MobjectAnimAdder.addLineAnimations(this);
     this.name("Vector");
   }
 
@@ -95,99 +97,6 @@ export class MVector extends Konva.Arrow {
     Object.assign(this._properties, newProps);
     this.updateFromProperties();
   }
-
-  // private setupAnimationFunctions() {
-  //   this.animgetter.addAnimFunc("LineStart", {
-  //     type: "PointChange",
-  //     mobjId: this.id(),
-  //     title: "Line Start",
-  //     input: {
-  //       X: "number",
-  //       Y: "number",
-  //       duration: "number",
-  //       easing: "string",
-  //     },
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     func: (args: { [key: string]: any }) => {
-  //       const targetX = args.X ?? 0;
-  //       const targetY = args.Y ?? 0;
-  //       const canvasPoint = p2c(targetX, targetY);
-
-  //       // Note: tween is created but not played here,
-  //       // as per original logic which returns null.
-  //       const tween = new Konva.Tween({
-  //         node: this,
-  //         duration: args.duration || 1,
-  //         easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-  //         points: [
-  //           canvasPoint.x,
-  //           canvasPoint.y,
-  //           this.points()[2],
-  //           this.points()[3],
-  //         ],
-  //         onFinish: () => {
-  //           this.UpdateFromKonvaProperties();
-  //         },
-  //       });
-
-  //       return {
-  //         id: `${this.id()}-ls-${targetX}-${targetY}-${
-  //           this.animgetter.getAnimNames().length
-  //         }`,
-  //         mobjId: this.id(),
-  //         type: "PointChange",
-  //         label: `Changing start of ${this.id()} to (${targetX}, ${targetY})`,
-  //         tweenMeta: args,
-  //         anim: tween,
-  //       };
-  //     },
-  //   });
-  //   this.animgetter.addAnimFunc("LineEnd", {
-  //     type: "PointChange",
-  //     mobjId: this.id(),
-  //     title: "Line Start",
-  //     input: {
-  //       X: "number",
-  //       Y: "number",
-  //       duration: "number",
-  //       easing: "string",
-  //     },
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     func: (args: { [key: string]: any }) => {
-  //       const targetX = args.X ?? 0;
-  //       const targetY = args.Y ?? 0;
-  //       const canvasPoint = p2c(targetX, targetY);
-
-  //       // Note: tween is created but not played here,
-  //       // as per original logic which returns null.
-  //       const tween = new Konva.Tween({
-  //         node: this,
-  //         duration: args.duration || 1,
-  //         easing: easingMap[args.easing] || Konva.Easings.EaseInOut,
-  //         points: [
-  //           this.points()[0],
-  //           this.points()[1],
-  //           canvasPoint.x,
-  //           canvasPoint.y,
-  //         ],
-  //         onFinish: () => {
-  //           this.UpdateFromKonvaProperties();
-  //         },
-  //       });
-
-  //       return {
-  //         id: `${this.id()}-le-${targetX}-${targetY}-${
-  //           this.animgetter.getAnimNames().length
-  //         }`,
-  //         mobjId: this.id(),
-  //         type: "PointChange",
-  //         label: `Changing End of ${this.id()} to (${targetX}, ${targetY})`,
-  //         tweenMeta: args,
-  //         anim: tween,
-  //       };
-  //     },
-  //   });
-  // }
 
   private updateFromProperties() {
     const {

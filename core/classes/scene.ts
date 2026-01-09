@@ -8,6 +8,8 @@ import { SceneSerializer } from "./serializers/sceneSerializer";
 import { MobjectManager } from "./managers/MobjectManager";
 import { ConnectionManager } from "./managers/connectionManager";
 import { TrackerManager } from "./managers/TrackerManager";
+import { Colors } from "../utils/colors";
+import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "../config";
 
 class Scene extends Konva.Stage {
   /* ---------------- Public ---------------- */
@@ -38,6 +40,15 @@ class Scene extends Konva.Stage {
       this.mobjManager
     );
     this.animManager = new AnimationManager();
+
+    const bgrec = new Konva.Rect({
+      x: 0,
+      y: 0,
+      width: DEFAULT_WIDTH,
+      height: DEFAULT_HEIGHT,
+      fill: Colors.BG,
+    });
+    this.layer.add(bgrec);
   }
 
   addMobjectFunction(func: (mobj: Mobject) => void) {
@@ -54,7 +65,12 @@ class Scene extends Konva.Stage {
 
   removeMobject(id: string) {
     this.mobjManager.removeMobject(id);
-    // this.trackerManager.
+    this.animManager.removeAnimForMobject(id);
+  }
+
+  removeTracker(id: string) {
+    this.trackerManager.remove(id);
+    this.animManager.removeAnimForTracker(id);
   }
 
   getMobjectById(id: string): Mobject | null {

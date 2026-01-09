@@ -3,9 +3,10 @@ import { ValueTracker } from "../classes/Tracker/valuetracker";
 import { PtValueTracker } from "../classes/Tracker/ptValuetracker";
 import { AnimMeta } from "../types/animation";
 import { easingMap } from "../maps/easingMap";
-import { TrackerManager } from "../classes/Tracker/helpers/TrackerManager";
+// import { TrackerManager } from "../classes/Tracker/helpers/TrackerManager";
 import Konva from "@/lib/konva";
 import { PtTrackerMeta, TrackerMeta } from "../types/tracker";
+import { TrackerManager } from "../classes/managers/TrackerManager";
 // import { min } from "mathjs";
 
 export class TrackerAnimator {
@@ -39,7 +40,7 @@ export class TrackerAnimator {
       type: "ValueTracker",
       category: "Tracker",
       label: `Animating ValueTracker ${id}`,
-      tweenMeta: { target, duration, easing },
+      animFuncInput: { target, duration, easing },
       anim: timer,
     };
   };
@@ -77,7 +78,7 @@ export class TrackerAnimator {
       type: "PtValueTracker",
       category: "PtTracker",
       label: `Animating PtValueTracker ${id}`,
-      tweenMeta: { targetX: target.x, targetY: target.y, duration, easing },
+      animFuncInput: { targetX: target.x, targetY: target.y, duration, easing },
       anim: timer,
     };
   };
@@ -108,7 +109,7 @@ export class TrackerAnimator {
       type: "SliderAppear",
       category: "Slider",
       label: `Slider Appear Animation for ${trackerId}`,
-      tweenMeta: {
+      animFuncInput: {
         duration: 1,
         min: sliderInput.min,
         max: sliderInput.max,
@@ -132,7 +133,7 @@ export class TrackerAnimator {
       type: "SliderDisappear",
       category: "Slider",
       label: `Slider Disappear Animation for ${tm.id}`,
-      tweenMeta: { duration: 1 },
+      animFuncInput: { duration: 1 },
     };
     return { success: true, anim: animInfo };
   };
@@ -172,7 +173,7 @@ export class TrackerAnimator {
       type: "PtSliderAppear",
       category: "PtSlider",
       label: `Slider Appear Animation for ${trackerId}`,
-      tweenMeta: {
+      animFuncInput: {
         duration: 1,
         minX: sliderInput.x.min,
         maxX: sliderInput.x.max,
@@ -197,7 +198,7 @@ export class TrackerAnimator {
       type: "PtSliderDisappear",
       category: "PtSlider",
       label: `PtSlider Disappear Animation for ${tm.id}`,
-      tweenMeta: { duration: 1 },
+      animFuncInput: { duration: 1 },
     };
     return { success: true, anim: animInfo };
   };
