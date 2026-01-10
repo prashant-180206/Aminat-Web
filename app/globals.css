@@ -201,3 +201,28 @@
     display: none;
   }
 }
+
+/* Remove borders in all states */
+.latex-editor .mq-editable-field,
+.latex-editor .mq-editable-field:hover,
+.latex-editor .mq-editable-field:focus,
+.latex-editor .mq-focused {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* White text cursor (caret) */
+.latex-editor .mq-cursor {
+  border-left-color: white !important;
+}
+
+/* Optional: text color consistency */
+.latex-editor .mq-root-block {
+  color: white;
+}
+
+/* Prevent background change on hover */
+.latex-editor .mq-editable-field:hover {
+  background: transparent !important;
+}

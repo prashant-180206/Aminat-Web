@@ -1,4 +1,10 @@
-import { Expand, RotateCw, ScanEye, SquareRoundCorner } from "lucide-react";
+import {
+  Expand,
+  FunctionSquareIcon,
+  RotateCw,
+  ScanEye,
+  SquareRoundCorner,
+} from "lucide-react";
 import { DimensionsInput } from "../input/pairInput";
 import { PopoverSliderInput } from "../input/popoverSlider";
 import { RangesInput } from "../input/rangeInput";
@@ -7,6 +13,7 @@ import { ZIndexInput } from "../input/zIndexInput";
 import { LineEndsInput } from "../input/lineEndInput";
 import { FuncsInput } from "../input/funcInput";
 import PointsDropdownEditor from "../input/pointsDropdownEditor";
+import { PopoverLatexInput } from "../input/popoverLatexInput";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type PropertyRenderer = (args: {
@@ -135,5 +142,17 @@ export const PROPERTY_REGISTRY: Record<string, PropertyRenderer> = {
 
   points: ({ value, onChange }) => (
     <PointsDropdownEditor points={value} onChange={onChange} />
+  ),
+
+  LatexContent: ({ value, onChange, refreshFunc }) => (
+    <div className="flex">
+      <PopoverLatexInput
+        label=""
+        value={value}
+        onChange={onChange}
+        refreshFunc={refreshFunc}
+        icon={<FunctionSquareIcon />}
+      />
+    </div>
   ),
 };

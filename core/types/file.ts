@@ -4,6 +4,7 @@ import { BaseProperties } from "./properties";
 export interface MobjectData {
   properties: BaseProperties;
   id: string;
+  specificData?: string;
 }
 
 export interface SceneData {

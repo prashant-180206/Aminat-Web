@@ -1,5 +1,5 @@
 import katex from "katex";
-import Konva from "konva";
+import Konva from "@/lib/konva";
 
 export interface LatexRenderOptions {
   fontSize?: number;
@@ -19,6 +19,7 @@ export class LatexShape extends Konva.Image {
     super({
       ...(config as Konva.ImageConfig),
       fill: "red",
+      cornerRadius: 10,
     });
 
     this.latex = latex;
@@ -55,22 +56,21 @@ export class LatexShape extends Konva.Image {
       output: "mathml",
       displayMode: true,
       throwOnError: false,
-      // strict: "ignore",
     });
 
     const { w, h } = this.measureMathML(rawSvg);
     console.log("Measured dimensions:", { w, h });
 
+    const { newh, neww } = {
+      newh: h * (this.renderOptions.fontSize / 18),
+      neww: w * (this.renderOptions.fontSize / 18),
+    }; // scale based on font size
+
     // We inject styles for color and sizing
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" width='${w * 2}pt' height='${
-      h * 2
-    }pt'>
-        <foreignObject width="${w * 2}pt" height="${h * 2}pt">
-          <span xmlns="http://www.w3.org/1999/xhtml" 
-               style="font-size: ${this.renderOptions.fontSize}px; color: ${
-      this.renderOptions.color
-    };">
+      <svg xmlns="http://www.w3.org/2000/svg" width='${neww}pt' height='${newh}pt'>
+        <foreignObject width="${neww}pt" height="${newh}pt">
+          <span xmlns="http://www.w3.org/1999/xhtml" style="font-size: ${this.renderOptions.fontSize}px; color: ${this.renderOptions.color};width:100%; height:100% ; display: flex; align-items: center; justify-content: center;">
             ${rawSvg}
           </span>
         </foreignObject>

@@ -1,11 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible } from "@/components/ui/collapsible";
+import dynamic from "next/dynamic";
+
+const CollapsibleTrigger = dynamic(
+  () =>
+    import("@/components/ui/collapsible").then((mod) => mod.CollapsibleTrigger),
+  {
+    ssr: false,
+  }
+);
+const CollapsibleContent = dynamic(
+  () =>
+    import("@/components/ui/collapsible").then((mod) => mod.CollapsibleContent),
+  {
+    ssr: false,
+  }
+);
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";

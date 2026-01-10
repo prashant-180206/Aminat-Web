@@ -5,7 +5,6 @@ import Scene from "@/core/classes/scene";
 import { useScene } from "@/hooks/SceneContext";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
 import { Mobject } from "@/core/types/mobjects";
-import { LatexShape } from "@/core/latexmanager";
 // import { useScene } from "@/context/SceneContext";
 
 export default function SceneView() {
@@ -32,17 +31,6 @@ export default function SceneView() {
         setActiveMobject(mobj);
         setActiveMobjectId(mobj.id());
       });
-
-      const equation = new LatexShape("\\int_0^\\infty x^2 dx", {
-        x: 50,
-        y: 50,
-        fontSize: 40,
-        color: "blue",
-        draggable: true, // Now it's a first-class Konva object!
-      });
-
-      scene.layer.add(equation);
-      scene.layer.draw();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

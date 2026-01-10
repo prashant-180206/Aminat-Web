@@ -60,6 +60,7 @@ export const usePropertyDescriptors = (): PropertyDescriptorData => {
     showlabels: 440,
     labelsize: 450,
     labelcolor: 460,
+    LatexContent: 470,
   };
 
   const { activeMobject, scene, activeMobjectId } = useScene();

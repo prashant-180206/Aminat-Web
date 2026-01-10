@@ -67,7 +67,6 @@ export const TextStyleInput: React.FC<TextStyleInputProps> = ({
         size={6}
         // className="w-8 h-8 rounded-md border"
       />
-
       {/* Font size */}
       <NumberStepperInput
         value={local.fontsize}
@@ -76,42 +75,45 @@ export const TextStyleInput: React.FC<TextStyleInputProps> = ({
         step={1}
         onChange={(v) => update({ fontsize: v })}
       />
-
       {/* Font family */}
-      <Select
-        value={local.fontfamily}
-        onValueChange={(v) => update({ fontfamily: v })}
-      >
-        <SelectTrigger className="h-9 w-36 text-xs">
-          <Type className="h-4 w-4 mr-1" />
-          <SelectValue placeholder="Font" />
-        </SelectTrigger>
-        <SelectContent>
-          {FONT_FAMILIES.map((font) => (
-            <SelectItem key={font} value={font}>
-              <span style={{ fontFamily: font }}>{font}</span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
+      {value.content !== undefined && (
+        <Select
+          value={local.fontfamily}
+          onValueChange={(v) => update({ fontfamily: v })}
+        >
+          <SelectTrigger className="h-9 w-36 text-xs">
+            <Type className="h-4 w-4 mr-1" />
+            <SelectValue placeholder="Font" />
+          </SelectTrigger>
+          <SelectContent>
+            {FONT_FAMILIES.map((font) => (
+              <SelectItem key={font} value={font}>
+                <span style={{ fontFamily: font }}>{font}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
       {/* Bold */}
-      <Toggle
-        pressed={local.bold}
-        onPressedChange={(v) => update({ bold: v })}
-        size="sm"
-      >
-        <Bold className="h-4 w-4" />
-      </Toggle>
-
+      {value.content !== undefined && (
+        <Toggle
+          pressed={local.bold}
+          onPressedChange={(v) => update({ bold: v })}
+          size="sm"
+        >
+          <Bold className="h-4 w-4" />
+        </Toggle>
+      )}
       {/* Italic */}
-      <Toggle
-        pressed={local.italic}
-        onPressedChange={(v) => update({ italic: v })}
-        size="sm"
-      >
-        <Italic className="h-4 w-4" />
-      </Toggle>
+      {value.content !== undefined && (
+        <Toggle
+          pressed={local.italic}
+          onPressedChange={(v) => update({ italic: v })}
+          size="sm"
+        >
+          <Italic className="h-4 w-4" />
+        </Toggle>
+      )}
     </div>
   );
 };

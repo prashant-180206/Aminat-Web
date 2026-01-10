@@ -6,7 +6,8 @@ import { Dot } from "../classes/mobjects/simple/dot";
 import { MLine } from "../classes/mobjects/simple/line";
 import { MPolygon } from "../classes/mobjects/simple/polygon";
 import { MRect } from "../classes/mobjects/simple/rect";
-import { MText } from "../classes/mobjects/simple/text";
+import { LatexText } from "../classes/mobjects/text/latexText";
+import { MText } from "../classes/mobjects/text/text";
 
 export type Mobject =
   | MCircle
@@ -17,7 +18,8 @@ export type Mobject =
   | MPolygon
   | MText
   | MVector
-  | MPlane;
+  | MPlane
+  | LatexText;
 
 export type MobjectMapType = {
   [key: string]: {

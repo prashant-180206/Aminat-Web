@@ -5,7 +5,7 @@ import { MRect } from "../classes/mobjects/simple/rect";
 import { Dot } from "../classes/mobjects/simple/dot";
 // import { MLine } from "../classes/mobjects/simple/MLine";
 import { MPolygon } from "../classes/mobjects/simple/polygon";
-import { MText } from "../classes/mobjects/simple/text";
+import { MText } from "../classes/mobjects/text/text";
 import { MVector } from "../classes/mobjects/geometric/vector";
 import { MPlane } from "../classes/mobjects/group/plane";
 import {
@@ -18,9 +18,11 @@ import {
   PentagonIcon,
   RectangleHorizontal,
   Slash,
+  SquareFunction,
 } from "lucide-react";
 import { MobjectMapType } from "../types/mobjects";
 import { MLine } from "../classes/mobjects/simple/line";
+import { LatexText } from "../classes/mobjects/text/latexText";
 
 const MobjectMap: MobjectMapType = {
   Circle: { func: () => new MCircle("Circle"), name: "Circle", Icon: Circle },
@@ -48,6 +50,11 @@ const MobjectMap: MobjectMapType = {
     Icon: MoveUpRight,
   },
   Plane: { func: () => new MPlane("Plane"), name: "Plane", Icon: Grid3x3 },
+  Formula: {
+    func: () => new LatexText("Formula"),
+    name: "Formula",
+    Icon: SquareFunction,
+  },
 };
 
 export default MobjectMap;

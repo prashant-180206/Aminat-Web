@@ -1,0 +1,57 @@
+import { Colors } from "@/core/utils/colors";
+import { AnimGetter } from "../../animation/animgetter";
+import Konva from "@/lib/konva";
+import { BaseProperties } from "@/core/types/properties";
+import { TrackerConnector } from "../../Tracker/helpers/TrackerConnector";
+import { MobjectData } from "@/core/types/file";
+
+class SampleMobject extends Konva.Node {
+  public animgetter: AnimGetter;
+  public trackerconnector: TrackerConnector;
+  private _properties: BaseProperties = {
+    color: Colors.FILL,
+    position: { x: 0, y: 0 },
+    scale: 1,
+    rotation: 0,
+    opacity: 1,
+    zindex: 0,
+  };
+  private _TYPE: string;
+
+  constructor(TYPE: string, config?: Konva.CircleConfig) {
+    super(config);
+    this._TYPE = TYPE;
+    this.animgetter = new AnimGetter(this);
+    this.trackerconnector = new TrackerConnector(this);
+  }
+
+  type(): string {
+    return this._TYPE;
+  }
+
+  UpdateFromKonvaProperties() {}
+
+  // Object getter - returns copy to prevent mutation
+  get properties(): BaseProperties {
+    return { ...this._properties };
+  }
+
+  // Object setter - accepts full or partial properties object
+  set properties(value: Partial<BaseProperties>) {
+    Object.assign(this._properties, value);
+  }
+
+  storeAsObj(): MobjectData {
+    return {
+      properties: this._properties,
+      id: this.id(),
+    };
+  }
+
+  loadFromObj(obj: MobjectData) {
+    this.properties = obj.properties as BaseProperties;
+    this.UpdateFromKonvaProperties();
+  }
+}
+
+export default SampleMobject;

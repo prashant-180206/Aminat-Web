@@ -56,6 +56,10 @@ export interface TextProperties extends BaseProperties {
     color: string;
   };
 }
+export type LatexTextProperies = Omit<TextProperties, "textData"> & {
+  textData: Omit<TextProperties["textData"], "content">;
+  LatexContent: string;
+};
 
 export interface PolygonProperties extends BaseProperties {
   points: Point[];
