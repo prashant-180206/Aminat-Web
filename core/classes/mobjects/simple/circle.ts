@@ -50,12 +50,8 @@ class MCircle extends Konva.Circle {
     this._properties.position = c2p(pos.x, pos.y);
     this._properties.radius = this.radius() / DEFAULT_SCALE;
     this._properties.color = this.fill() as string;
-    // this._properties.bordercolor = this.stroke() as string;
-    // this._properties.thickness = this.strokeWidth();
-    // this._properties.opacity = this.opacity();
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
-    // this._properties.zindex = this.zIndex();
   }
 
   // Object getter - returns copy to prevent mutation

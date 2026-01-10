@@ -1,7 +1,7 @@
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
 import { PlaneProperties } from "@/core/types/properties";
-import { p2c } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
@@ -213,7 +213,8 @@ export class MPlane extends Konva.Group {
 
   UpdateFromKonvaProperties() {
     const pos = this.position();
-    this._properties.position = { x: pos.x, y: pos.y };
+    const tpos = c2p(pos.x, pos.y);
+    this._properties.position = { x: tpos.x, y: tpos.y };
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
   }

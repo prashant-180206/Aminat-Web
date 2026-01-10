@@ -17,6 +17,7 @@ const EditorHeader = dynamic(() => import("./components/EditorHeader"), {
 // import EditorHeader from "./components/EditorHeader";
 import EditorFooter from "./components/EditorFooter";
 import Controller from "./components/controller";
+import { TinyRecorderScene } from "@/components/recorder";
 
 export default function Layout({
   children,
@@ -51,6 +52,7 @@ export default function Layout({
               </div>
 
               <Controller />
+              <TinyRecorderScene />
             </div>
           </div>
 
