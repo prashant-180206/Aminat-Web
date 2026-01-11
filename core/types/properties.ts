@@ -26,6 +26,10 @@ export interface LineProperties extends BaseProperties {
   thickness: number;
 }
 
+export interface DashedLineProperties extends LineProperties {
+  dashRatio: number;
+}
+
 export interface VectorProperties extends LineProperties {
   pointerSize: number;
 }
@@ -56,6 +60,20 @@ export interface TextProperties extends BaseProperties {
     color: string;
   };
 }
+
+export interface DynamicTextProperties extends BaseProperties {
+  textData: {
+    content: string;
+    fontsize: number;
+    fontfamily: string;
+    bold: boolean;
+    italic: boolean;
+    color: string;
+    val1: number;
+    val2: number;
+  };
+}
+
 export type LatexTextProperies = Omit<TextProperties, "textData"> & {
   textData: Omit<TextProperties["textData"], "content">;
   LatexContent: string;
@@ -77,13 +95,20 @@ export interface PlaneProperties extends BaseProperties {
     height: number;
   };
   ranges: {
-    xrange: [number, number];
-    yrange: [number, number];
+    xrange: [number, number, number];
+    yrange: [number, number, number];
   };
   gridthickness: number;
   axissthickness: number;
   axiscolor: string;
   showgrid: boolean;
+  showlabels: boolean;
+  labelsize: number;
+  labelcolor: string;
+}
+export interface NumberLineProperties extends BaseProperties {
+  range: [number, number, number]; // [min, max, step]
+  axissthickness: number;
   showlabels: boolean;
   labelsize: number;
   labelcolor: string;

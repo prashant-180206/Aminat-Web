@@ -6,6 +6,7 @@ import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnecto
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { Colors } from "@/core/utils/colors";
+import { DEFAULT_SCALE } from "@/core/config";
 // import { easingMap } from "@/core/maps/easingMap";
 
 export class MLine extends Konva.Line {
@@ -21,6 +22,8 @@ export class MLine extends Konva.Line {
       lineJoin: "round",
     });
 
+    this.position({ x: 0, y: 0 });
+
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
@@ -33,7 +36,7 @@ export class MLine extends Konva.Line {
         start: { x: 0, y: 0 },
         end: { x: 1, y: 1 },
       },
-      thickness: 3,
+      thickness: 6,
       opacity: 1,
       zindex: 0,
       ...config,
@@ -42,7 +45,7 @@ export class MLine extends Konva.Line {
     this.name("Line");
     this.setupTrackerConnectors();
     MobjectAnimAdder.addLineAnimations(this);
-    this.updateFromProperties();
+    this.properties = this._properties;
   }
 
   /**
@@ -78,45 +81,33 @@ export class MLine extends Konva.Line {
     return { ...this._properties };
   }
 
-  set properties(newProps: Partial<LineProperties>) {
-    Object.assign(this._properties, newProps);
-    this.updateFromProperties();
+  set properties(value: Partial<LineProperties>) {
+    Object.assign(this._properties, value);
+    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.lineEnds) {
+      const { start, end } = this._properties.lineEnds;
+      const st = {
+        x: start.x * DEFAULT_SCALE,
+        y: -start.y * DEFAULT_SCALE,
+      };
+      const en = {
+        x: end.x * DEFAULT_SCALE,
+        y: -end.y * DEFAULT_SCALE,
+      };
+      this.points([st.x, st.y, en.x, en.y]);
+    }
+    if (value.color) this.stroke(value.color);
+    if (value.thickness) this.strokeWidth(value.thickness);
+    if (value.scale) this.scale({ x: value.scale, y: value.scale });
+    if (value.rotation) this.rotation(value.rotation);
+    if (value.opacity) this.opacity(value.opacity);
+    if (this.parent && value.zindex) this.zIndex(value.zindex);
+    // this.updateFromProperties();
   }
 
   /* ------------------------------------------------------- */
   /* Internal Sync Logic                                     */
   /* ------------------------------------------------------- */
-
-  /**
-   * Syncs Konva visual state to the internal _properties object.
-   */
-  private updateFromProperties() {
-    const {
-      position,
-      color,
-      scale,
-      rotation,
-      lineEnds: { start, end },
-      thickness,
-      opacity,
-      zindex,
-    } = this._properties;
-
-    // Apply scale to logical points before converting to canvas pixels
-    const st = p2c(start.x * scale, start.y * scale);
-    const en = p2c(end.x * scale, end.y * scale);
-
-    this.points([st.x, st.y, en.x, en.y]);
-    this.stroke(color);
-    this.strokeWidth(thickness * scale);
-    this.position(position);
-    this.rotation(rotation);
-    this.opacity(opacity);
-
-    if (this.parent) {
-      this.zIndex(zindex);
-    }
-  }
 
   /**
    * Syncs internal _properties to match the current Konva visual state.

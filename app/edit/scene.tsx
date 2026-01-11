@@ -35,5 +35,16 @@ export default function SceneView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={containerref} className=" inline-block overflow-hidden" />;
+  return (
+    <div
+      ref={containerref}
+      className=" inline-block "
+      style={{
+        height: DEFAULT_HEIGHT,
+        width: DEFAULT_WIDTH,
+        transformOrigin: "top left",
+        scale: "0.45",
+      }}
+    />
+  );
 }

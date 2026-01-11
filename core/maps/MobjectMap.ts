@@ -9,6 +9,7 @@ import { MText } from "../classes/mobjects/text/text";
 import { MVector } from "../classes/mobjects/geometric/vector";
 import { MPlane } from "../classes/mobjects/group/plane";
 import {
+  Axis3d,
   CaseSensitive,
   ChartSpline,
   Circle,
@@ -19,10 +20,15 @@ import {
   RectangleHorizontal,
   Slash,
   SquareFunction,
+  TextInitial,
+  TriangleDashed,
 } from "lucide-react";
 import { MobjectMapType } from "../types/mobjects";
 import { MLine } from "../classes/mobjects/simple/line";
 import { LatexText } from "../classes/mobjects/text/latexText";
+import { DynamicText } from "../classes/mobjects/text/DynamicText";
+import { MDashedLine } from "../classes/mobjects/simple/dashedLine";
+import { MNumberLine } from "../classes/mobjects/group/numberLine";
 
 const MobjectMap: MobjectMapType = {
   Circle: { func: () => new MCircle("Circle"), name: "Circle", Icon: Circle },
@@ -38,6 +44,11 @@ const MobjectMap: MobjectMapType = {
   },
   Dot: { func: () => new Dot("Dot"), name: "Dot", Icon: DotIcon },
   Line: { func: () => new MLine("Line"), name: "Line", Icon: Slash },
+  DashedLine: {
+    func: () => new MDashedLine("DashedLine"),
+    name: "DashedLine",
+    Icon: TriangleDashed,
+  },
   Polygon: {
     func: () => new MPolygon("Polygon"),
     name: "Polygon",
@@ -54,6 +65,16 @@ const MobjectMap: MobjectMapType = {
     func: () => new LatexText("Formula"),
     name: "Formula",
     Icon: SquareFunction,
+  },
+  DText: {
+    func: () => new DynamicText("DText"),
+    name: "DText",
+    Icon: TextInitial,
+  },
+  NumberLine: {
+    func: () => new MNumberLine("NumberLine"),
+    name: "NumberLine",
+    Icon: Axis3d,
   },
 };
 

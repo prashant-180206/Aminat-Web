@@ -1,65 +1,75 @@
+// anim/classes/mobjects/simple/plane.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
 import { PlaneProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { Colors } from "@/core/utils/colors";
+import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
 
 export class MPlane extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: PlaneProperties;
   private _TYPE: string;
 
-  private axisLayer = new Konva.Group();
-  private gridLayer = new Konva.Group();
-  private labelLayer = new Konva.Group();
+  private _properties: PlaneProperties = {
+    position: { x: 0, y: 0 },
+    scale: 1,
+    color: Colors.GRIDCOLOR,
+    rotation: 0,
+    zindex: 0,
+    opacity: 1,
+    dimensions: { width: 10, height: 10 },
+    ranges: {
+      xrange: [
+        -DEFAULT_WIDTH / DEFAULT_SCALE / 2,
+        DEFAULT_WIDTH / DEFAULT_SCALE / 2,
+        1,
+      ],
+      yrange: [
+        -DEFAULT_HEIGHT / DEFAULT_SCALE / 2,
+        DEFAULT_HEIGHT / DEFAULT_SCALE / 2,
+        1,
+      ],
+    },
+    gridthickness: 4,
+    axissthickness: 4,
+    axiscolor: Colors.BORDER,
+    showgrid: true,
+    showlabels: true,
+    labelsize: 36,
+    labelcolor: Colors.TEXT,
+  };
+
+  // Sub-groups for organization
+  private gridGroup: Konva.Group;
+  private axesGroup: Konva.Group;
+  private labelGroup: Konva.Group;
+  private ticksGroup: Konva.Group;
 
   constructor(TYPE: string, config: Partial<PlaneProperties> = {}) {
     super({
-      draggable: true, // enable drag
+      draggable: true,
+      name: "Plane",
     });
 
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
-    const xrange = DEFAULT_WIDTH / DEFAULT_SCALE / 2;
-    const yrange = DEFAULT_HEIGHT / DEFAULT_SCALE / 2;
+    // Initialize layers within the group
+    this.gridGroup = new Konva.Group({ name: "GridLines", listening: false });
+    this.axesGroup = new Konva.Group({ name: "Axes" });
+    this.labelGroup = new Konva.Group({ name: "Labels", listening: false });
+    this.ticksGroup = new Konva.Group({ name: "AxisTicks", listening: false });
 
-    this._properties = {
-      position: { x: 0, y: 0 },
-      color: Colors.BG_SEC,
-      scale: 1,
-      rotation: 0,
-      dimensions: {
-        width: DEFAULT_WIDTH / DEFAULT_SCALE,
-        height: DEFAULT_HEIGHT / DEFAULT_SCALE,
-      },
-      ranges: {
-        xrange: [-xrange, xrange],
-        yrange: [-yrange, yrange],
-      },
-      labelsize: 16,
-      opacity: 1,
-      zindex: 0,
-      gridthickness: 1,
-      showgrid: true,
-      showlabels: true,
-      labelcolor: Colors.TEXT_SEC,
-      axiscolor: Colors.PRIMARY,
-      axissthickness: 2,
-      ...config,
-    };
+    this.add(this.gridGroup);
+    this.add(this.axesGroup);
+    this.add(this.ticksGroup);
+    this.add(this.labelGroup);
 
-    this.add(this.gridLayer);
-    this.add(this.axisLayer);
-    this.add(this.labelLayer);
-
-    this.updateFromProperties();
-    this.name("Plane");
+    this.properties = { ...this._properties, ...config };
   }
 
   type(): string {
@@ -70,156 +80,217 @@ export class MPlane extends Konva.Group {
     return { ...this._properties };
   }
 
-  set properties(newProps: Partial<PlaneProperties>) {
-    Object.assign(this._properties, newProps);
-    this.updateFromProperties();
+  set properties(value: Partial<PlaneProperties>) {
+    Object.assign(this._properties, value);
+
+    // Standard transformations
+    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.scale) this.scale({ x: value.scale, y: value.scale });
+    if (value.rotation) this.rotation(value.rotation);
+    if (value.opacity) this.opacity(value.opacity);
+    if (this.parent && value.zindex) this.zIndex(value.zindex);
+    if (value.ranges) this.refreshPlane();
+
+    if (value.color) {
+      this.gridGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.stroke(value.color!);
+      });
+    }
+
+    if (value.axiscolor) {
+      this.axesGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.stroke(value.axiscolor!);
+      });
+
+      this.ticksGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.stroke(value.axiscolor!);
+      });
+    }
+
+    if (value.axissthickness) {
+      this.axesGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.strokeWidth(value.axissthickness!);
+      });
+
+      this.ticksGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.strokeWidth(value.axissthickness!);
+      });
+    }
+
+    if (value.labelcolor) {
+      this.labelGroup.children.forEach((text) => {
+        if (text instanceof Konva.Text) text.fill(value.labelcolor!);
+      });
+    }
+    if (value.labelsize) {
+      this.labelGroup.children.forEach((text) => {
+        if (text instanceof Konva.Text) text.fontSize(value.labelsize!);
+      });
+    }
+    if (value.gridthickness) {
+      this.gridGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.strokeWidth(value.gridthickness!);
+      });
+    }
+
+    if (value.showgrid !== undefined) {
+      this.gridGroup.visible(value.showgrid);
+    }
+    if (value.showlabels !== undefined) {
+      this.labelGroup.visible(value.showlabels);
+    }
   }
 
-  private updateFromProperties() {
+  private refreshPlane() {
+    this.gridGroup.destroyChildren();
+    this.axesGroup.destroyChildren();
+    this.labelGroup.destroyChildren();
+    this.ticksGroup.destroyChildren();
+
     const {
-      position,
-      scale,
-      rotation,
-      dimensions: { width, height },
       ranges: { xrange, yrange },
-      gridthickness,
-      showgrid,
-      showlabels,
-      labelcolor,
-      axiscolor,
-      color,
-      axissthickness,
       labelsize,
-      opacity,
-      zindex,
     } = this._properties;
 
-    const pwidth = width * DEFAULT_SCALE;
-    const pheight = height * DEFAULT_SCALE;
-
-    // group transform (dragging will change this position too)
-    const p = p2c(position.x, position.y);
-    this.position({
-      x: p.x - pwidth / 2,
-      y: p.y - pheight / 2,
-    });
-    this.scale({ x: scale, y: scale });
-    this.rotation(rotation);
-    this.opacity(opacity);
-    if (this.parent) this.zIndex(zindex);
-
-    this.gridLayer.removeChildren();
-    this.axisLayer.removeChildren();
-    this.labelLayer.removeChildren();
-
-    const [xmin, xmax] = xrange;
-    const [ymin, ymax] = yrange;
-    const xspan = xmax - xmin;
-    const yspan = ymax - ymin;
-
-    const toCanvasX = (x: number) => ((x - xmin) / xspan) * pwidth;
-    const toCanvasY = (y: number) => pheight - ((y - ymin) / yspan) * pheight;
-    // axes
-    if (xmin < 0 && xmax > 0) {
-      const x0 = toCanvasX(0);
-      this.axisLayer.add(
+    const drawAxis = (points: number[]) =>
+      this.axesGroup.add(
         new Konva.Line({
-          points: [x0, 0, x0, pheight],
-          stroke: axiscolor,
-          strokeWidth: axissthickness,
+          points,
+          opacity: 1,
         })
       );
-    }
 
-    if (ymin < 0 && ymax > 0) {
-      const y0 = toCanvasY(0);
-      this.axisLayer.add(
+    const drawGridLine = (points: number[]) =>
+      this.gridGroup.add(
         new Konva.Line({
-          points: [0, y0, pwidth, y0],
-          stroke: axiscolor,
-          strokeWidth: axissthickness,
+          points,
+          opacity: 0.4,
         })
       );
-    }
 
-    // grid
-    if (showgrid) {
-      const xStart = Math.ceil(xmin);
-      const xEnd = Math.floor(xmax);
-      for (let x = xStart; x <= xEnd; x++) {
-        if (x === 0) continue;
-        const cx = toCanvasX(x);
-        this.gridLayer.add(
-          new Konva.Line({
-            points: [cx, 0, cx, pheight],
-            stroke: color,
-            strokeWidth: gridthickness,
-          })
-        );
+    const drawXLabel = (x: number) =>
+      this.labelGroup.add(
+        new Konva.Text({
+          x: x * DEFAULT_SCALE,
+          y: 5,
+          text: x.toString().slice(0, 4),
+          align: "center",
+          offsetX: labelsize / 2,
+        })
+      );
+
+    const drawYLabel = (y: number) =>
+      this.labelGroup.add(
+        new Konva.Text({
+          x: -2 * labelsize - 10,
+          y: -y * DEFAULT_SCALE - labelsize / 2,
+          text: y.toString().slice(0, 4),
+          align: "right",
+          width: labelsize * 2,
+          offsetY: labelsize / 2,
+        })
+      );
+
+    const TICK_SIZE = 8;
+
+    const drawXTick = (x: number) =>
+      this.ticksGroup.add(
+        new Konva.Line({
+          points: [x * DEFAULT_SCALE, -TICK_SIZE, x * DEFAULT_SCALE, TICK_SIZE],
+          stroke: this._properties.axiscolor,
+          strokeWidth: this._properties.axissthickness,
+          opacity: 1,
+        })
+      );
+
+    const drawYTick = (y: number) =>
+      this.ticksGroup.add(
+        new Konva.Line({
+          points: [
+            -TICK_SIZE,
+            -y * DEFAULT_SCALE,
+            TICK_SIZE,
+            -y * DEFAULT_SCALE,
+          ],
+          stroke: this._properties.axiscolor,
+          strokeWidth: this._properties.axissthickness,
+          opacity: 1,
+        })
+      );
+
+    const generateAxisGrid = (
+      min: number,
+      max: number,
+      step: number,
+      drawLine: (v: number) => void,
+      drawLabel: (v: number) => void
+    ) => {
+      const steps = Math.ceil(Math.max(Math.abs(min), Math.abs(max)) / step);
+
+      for (let i = 1; i <= steps; i++) {
+        const p = i * step;
+        const n = -p;
+
+        if (p <= max) {
+          drawLine(p);
+          drawLabel(p);
+        }
+        if (n >= min) {
+          drawLine(n);
+          drawLabel(n);
+        }
       }
+    };
 
-      const yStart = Math.ceil(ymin);
-      const yEnd = Math.floor(ymax);
-      for (let y = yStart; y <= yEnd; y++) {
-        if (y === 0) continue;
-        const cy = toCanvasY(y);
-        this.gridLayer.add(
-          new Konva.Line({
-            points: [0, cy, pwidth, cy],
-            stroke: color,
-            strokeWidth: gridthickness,
-          })
-        );
-      }
-    }
+    // ---- Axes ----
+    drawAxis([0, -yrange[0] * DEFAULT_SCALE, 0, -yrange[1] * DEFAULT_SCALE]); // Y axis
+    drawAxis([xrange[0] * DEFAULT_SCALE, 0, xrange[1] * DEFAULT_SCALE, 0]); // X axis
 
-    // labels
-    if (showlabels) {
-      const fontSize = labelsize;
+    // ---- X direction grid ----
+    generateAxisGrid(
+      xrange[0],
+      xrange[1],
+      xrange[2],
+      (x) =>
+        drawGridLine([
+          x * DEFAULT_SCALE,
+          -yrange[0] * DEFAULT_SCALE,
+          x * DEFAULT_SCALE,
+          -yrange[1] * DEFAULT_SCALE,
+        ]),
+      drawXLabel
+    );
 
-      const xStart = Math.ceil(xmin);
-      const xEnd = Math.floor(xmax);
-      for (let x = xStart; x <= xEnd; x++) {
-        const cx = toCanvasX(x);
-        const cy = toCanvasY(0);
-        this.labelLayer.add(
-          new Konva.Text({
-            x: cx + 2,
-            y: cy + 2,
-            text: String(x),
-            fontSize,
-            fill: labelcolor,
-          })
-        );
-      }
+    // ---- Y direction grid ----
+    generateAxisGrid(
+      yrange[0],
+      yrange[1],
+      yrange[2],
+      (y) =>
+        drawGridLine([
+          xrange[0] * DEFAULT_SCALE,
+          -y * DEFAULT_SCALE,
+          xrange[1] * DEFAULT_SCALE,
+          -y * DEFAULT_SCALE,
+        ]),
+      drawYLabel
+    );
 
-      const yStart = Math.ceil(ymin);
-      const yEnd = Math.floor(ymax);
-      for (let y = yStart; y <= yEnd; y++) {
-        const cx = toCanvasX(0);
-        const cy = toCanvasY(y);
-        this.labelLayer.add(
-          new Konva.Text({
-            x: cx + 2,
-            y: cy + 2,
-            text: String(y),
-            fontSize,
-            fill: labelcolor,
-          })
-        );
-      }
-    }
+    generateAxisGrid(xrange[0], xrange[1], xrange[2], drawXTick, () => {});
+
+    generateAxisGrid(yrange[0], yrange[1], yrange[2], drawYTick, () => {});
+
+    this.getLayer()?.batchDraw();
   }
 
   UpdateFromKonvaProperties() {
     const pos = this.position();
-    const tpos = c2p(pos.x, pos.y);
-    this._properties.position = { x: tpos.x, y: tpos.y };
+    this._properties.position = c2p(pos.x, pos.y);
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
   }
 
-  storeAsObj() {
+  storeAsObj(): MobjectData {
     return {
       properties: this._properties,
       id: this.id(),

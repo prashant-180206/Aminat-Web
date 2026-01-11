@@ -10,7 +10,16 @@ import { Colors } from "@/core/utils/colors";
 export class Dot extends Konva.Circle {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: DotProperties;
+  private _properties: DotProperties = {
+    position: { x: 0, y: 0 },
+    color: Colors.PRIMARY,
+    scale: 1,
+    rotation: 0,
+    radius: 6,
+    zindex: 0,
+    opacity: 1,
+    // ...config,
+  };
   private _TYPE: string;
 
   constructor(TYPE: string, config: Partial<DotProperties> = {}) {
@@ -23,18 +32,9 @@ export class Dot extends Konva.Circle {
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
-    this._properties = {
-      position: { x: 0, y: 0 },
-      color: Colors.PRIMARY,
-      scale: 1,
-      rotation: 0,
-      radius: 6,
-      zindex: 0,
-      opacity: 1,
-      ...config,
-    };
+    this._properties = { ...this._properties, ...config };
 
-    this.updateFromProperties();
+    this.properties = this._properties;
     this.name("Dot");
   }
 
@@ -47,22 +47,16 @@ export class Dot extends Konva.Circle {
     return { ...this._properties };
   }
 
-  set properties(newProps: Partial<DotProperties>) {
-    Object.assign(this._properties, newProps);
-    this.updateFromProperties();
-  }
-
-  private updateFromProperties() {
-    const { position, color, scale, rotation, radius, opacity, zindex } =
-      this._properties;
-
-    this.fill(color);
-    this.strokeWidth(0);
-    this.radius(radius * scale);
-    this.position(p2c(position.x, position.y));
-    this.rotation(rotation);
-    this.opacity(opacity);
-    if (this.parent) this.zIndex(zindex);
+  set properties(value: Partial<DotProperties>) {
+    Object.assign(this._properties, value);
+    if (value.color) this.fill(value.color);
+    if (value.radius) this.radius(value.radius * this._properties.scale);
+    if (value.scale) this.radius(this._properties.radius * value.scale);
+    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.rotation) this.rotation(value.rotation);
+    if (value.opacity) this.opacity(value.opacity);
+    if (this.parent && value.zindex) this.zIndex(value.zindex);
+    // this.updateFromProperties();
   }
 
   UpdateFromKonvaProperties() {

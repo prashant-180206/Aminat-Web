@@ -1,3 +1,3 @@
-export const DEFAULT_WIDTH = 850;
-export const DEFAULT_HEIGHT = 480;
-export const DEFAULT_SCALE = 50;
+export const DEFAULT_WIDTH = 1920;
+export const DEFAULT_HEIGHT = 1080;
+export const DEFAULT_SCALE = 100;

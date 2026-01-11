@@ -7,13 +7,15 @@ import {
 } from "lucide-react";
 import { DimensionsInput } from "../input/pairInput";
 import { PopoverSliderInput } from "../input/popoverSlider";
-import { RangesInput } from "../input/rangeInput";
+import { ParameterRangeInput } from "../input/paramrangeInput";
 import { TextStyleInput } from "../input/textInput";
 import { ZIndexInput } from "../input/zIndexInput";
 import { LineEndsInput } from "../input/lineEndInput";
 import { FuncsInput } from "../input/funcInput";
 import PointsDropdownEditor from "../input/pointsDropdownEditor";
 import { PopoverLatexInput } from "../input/popoverLatexInput";
+import { RangesInput } from "../input/rangesInput";
+import { RangeInput } from "../input/rangeInput";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type PropertyRenderer = (args: {
@@ -28,6 +30,25 @@ export const PROPERTY_REGISTRY: Record<string, PropertyRenderer> = {
     <div className="flex">
       <ZIndexInput value={value} onChange={onChange} />
     </div>
+  ),
+
+  parameterRange: ({ value, onChange, refreshFunc }) => (
+    <div className="flex">
+      <ParameterRangeInput
+        value={value}
+        // property={property}
+        onChange={onChange}
+        refreshFunc={refreshFunc}
+      />
+    </div>
+  ),
+  range: ({ value, onChange, refreshFunc }) => (
+    <RangeInput
+      value={value}
+      // property={property}
+      onChange={onChange}
+      refreshFunc={refreshFunc}
+    />
   ),
 
   ranges: ({ value, property, onChange, refreshFunc }) => (

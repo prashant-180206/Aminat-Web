@@ -12,10 +12,10 @@ class MCircle extends Konva.Circle {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _properties: CircleProperties = {
-    radius: 2,
+    radius: 1,
     color: Colors.FILL,
     bordercolor: Colors.BORDER,
-    thickness: 4,
+    thickness: 10,
     position: { x: 0, y: 0 },
     scale: 1,
     rotation: 0,
@@ -64,13 +64,13 @@ class MCircle extends Konva.Circle {
     Object.assign(this._properties, value);
 
     // Sync Konva properties
-    if (value.radius !== undefined) {
+    if (value.radius) {
       this.radius(value.radius * DEFAULT_SCALE);
     }
-    if (value.color !== undefined) this.fill(value.color);
-    if (value.bordercolor !== undefined) this.stroke(value.bordercolor);
-    if (value.thickness !== undefined) this.strokeWidth(value.thickness);
-    if (value.position !== undefined) {
+    if (value.color) this.fill(value.color);
+    if (value.bordercolor) this.stroke(value.bordercolor);
+    if (value.thickness) this.strokeWidth(value.thickness);
+    if (value.position) {
       const newpos = p2c(
         value.position.x ?? this._properties.position.x,
         value.position.y ?? this._properties.position.y

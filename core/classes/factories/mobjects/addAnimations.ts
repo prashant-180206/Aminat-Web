@@ -4,9 +4,10 @@ import { MLine } from "../../mobjects/simple/line";
 import { createTimer, easings } from "animejs";
 import { ParametricCurve } from "../../mobjects/simple/curve";
 import { parse } from "mathjs";
+import { MDashedLine } from "../../mobjects/simple/dashedLine";
 
 export class MobjectAnimAdder {
-  static addLineAnimations(mobj: MLine | MVector) {
+  static addLineAnimations(mobj: MLine | MVector | MDashedLine) {
     mobj.animgetter.addAnimFunc("LineStart", {
       title: "Line Start",
       type: "LineStart",
@@ -19,11 +20,12 @@ export class MobjectAnimAdder {
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       func: (args: { [key: string]: any }) => {
+        if (args.duration <= 0) return null;
         const targetX = args.X ?? 0;
         const targetY = args.Y ?? 0;
         const targetpos = { x: targetX, y: targetY };
-        const currentpos = mobj.properties.lineEnds.start;
-        const end = mobj.properties.lineEnds.end;
+        const currentpos = { ...mobj.properties.lineEnds.start };
+        const end = { ...mobj.properties.lineEnds.end };
         const easefunc = args.easing
           ? easings.eases[
               easingMap[args.easing] as keyof typeof easings.eases.in
@@ -69,6 +71,7 @@ export class MobjectAnimAdder {
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       func: (args: { [key: string]: any }) => {
+        if (args.duration <= 0) return null;
         const targetX = args.X ?? 0;
         const targetY = args.Y ?? 0;
         const targetpos = { x: targetX, y: targetY };

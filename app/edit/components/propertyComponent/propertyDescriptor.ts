@@ -81,8 +81,6 @@ export const usePropertyDescriptors = (): PropertyDescriptorData => {
           type = "color";
         } else if (typeof val === "object" && val && "x" in val && "y" in val) {
           type = "point";
-        } else if (Array.isArray(val)) {
-          type = "range";
         } else if (
           type !== "string" &&
           type !== "number" &&

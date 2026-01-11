@@ -19,7 +19,7 @@ export class LatexText extends Konva.Image {
     color: Colors.BG,
     textData: {
       color: Colors.TEXT,
-      fontsize: 24,
+      fontsize: 60,
       fontfamily: "Arial",
       bold: false,
       italic: false,

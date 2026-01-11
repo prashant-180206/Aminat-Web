@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { SlidersHorizontal } from "lucide-react";
 
-type Range = [number, number, number];
+type Range = [number, number];
 
 type RangeInputProps = {
   value: Range;
@@ -21,7 +21,7 @@ type RangeInputProps = {
   step?: number;
 };
 
-export const RangeInput: React.FC<RangeInputProps> = ({
+export const ParameterRangeInput: React.FC<RangeInputProps> = ({
   // property,
   value,
   onChange,
@@ -39,20 +39,14 @@ export const RangeInput: React.FC<RangeInputProps> = ({
 
   const updateMin = (v: number) => {
     const nextMin = Math.min(v, range[1]);
-    const next: Range = [nextMin, range[1], range[2]];
+    const next: Range = [nextMin, range[1]];
     setRange(next);
     onChange(next);
   };
 
   const updateMax = (v: number) => {
     const nextMax = Math.max(v, range[0]);
-    const next: Range = [range[0], nextMax, range[2]];
-    setRange(next);
-    onChange(next);
-  };
-  const updateStep = (v: number) => {
-    const nextStep = v;
-    const next: Range = [range[0], range[1], nextStep];
+    const next: Range = [range[0], nextMax];
     setRange(next);
     onChange(next);
   };
@@ -106,25 +100,6 @@ export const RangeInput: React.FC<RangeInputProps> = ({
               step={step}
               onValueChange={(v) => {
                 updateMax(v[0]);
-                refreshFunc();
-              }}
-            />
-          </div>
-
-          {/* Step slider */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Step</span>
-              <span className="font-mono">{range[2].toFixed(1)}</span>
-            </div>
-
-            <Slider
-              value={[range[2]]}
-              min={0}
-              max={3}
-              step={0.1}
-              onValueChange={(v) => {
-                updateStep(v[0]);
                 refreshFunc();
               }}
             />

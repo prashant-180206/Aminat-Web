@@ -11,7 +11,21 @@ import { Colors } from "@/core/utils/colors";
 export class MRect extends Konva.Rect {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: RectangleProperties;
+  private _properties: RectangleProperties = {
+    position: { x: 0, y: 0 },
+    color: Colors.FILL,
+    scale: 1,
+    rotation: 0,
+    dimensions: {
+      width: 3,
+      height: 2,
+    },
+    bordercolor: Colors.BORDER,
+    thickness: 6,
+    cornerRadius: 0,
+    zindex: 0,
+    opacity: 1,
+  };
   private _TYPE: string;
 
   constructor(TYPE: string, config: Partial<RectangleProperties> = {}) {
@@ -25,24 +39,9 @@ export class MRect extends Konva.Rect {
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
-    this._properties = {
-      position: { x: 0, y: 0 },
-      color: Colors.FILL,
-      scale: 1,
-      rotation: 0,
-      dimensions: {
-        width: 3,
-        height: 2,
-      },
-      bordercolor: Colors.BORDER,
-      thickness: 2,
-      cornerRadius: 0,
-      zindex: 0,
-      opacity: 1,
-      ...config,
-    };
+    this._properties = { ...this._properties, ...config };
 
-    this.updateFromProperties();
+    this.properties = this._properties;
     this.name("Rect");
   }
 
@@ -55,40 +54,29 @@ export class MRect extends Konva.Rect {
     return { ...this._properties };
   }
 
-  set properties(newProps: Partial<RectangleProperties>) {
-    Object.assign(this._properties, newProps);
-    this.updateFromProperties();
+  set properties(value: Partial<RectangleProperties>) {
+    Object.assign(this._properties, value);
+    if (value.dimensions) {
+      this.width(this._properties.dimensions.width * DEFAULT_SCALE);
+      this.height(this._properties.dimensions.height * DEFAULT_SCALE);
+    }
+    if (value.position) {
+      const p = p2c(value.position.x, value.position.y);
+      this.position({
+        x: p.x - this.width() / 2,
+        y: p.y - this.height() / 2,
+      });
+    }
+    if (value.color) this.fill(value.color);
+    if (value.bordercolor) this.stroke(value.bordercolor);
+    if (value.thickness) this.strokeWidth(value.thickness);
+    if (value.scale) this.scale({ x: value.scale, y: value.scale });
+    if (value.rotation) this.rotation(value.rotation);
+    if (value.cornerRadius) this.cornerRadius(value.cornerRadius);
+    if (value.opacity) this.opacity(value.opacity);
+    if (this.parent && value.zindex) this.zIndex(value.zindex);
   }
 
-  private updateFromProperties() {
-    const {
-      position,
-      color,
-      scale,
-      rotation,
-      dimensions: { width, height },
-      bordercolor,
-      thickness,
-      cornerRadius,
-      zindex,
-      opacity,
-    } = this._properties;
-
-    this.fill(color);
-    this.stroke(bordercolor);
-    this.strokeWidth(thickness);
-    this.width(width * scale * DEFAULT_SCALE);
-    this.height(height * scale * DEFAULT_SCALE);
-    const pos = p2c(position.x - width / 2, position.y + height / 2);
-    this.position({
-      x: pos.x,
-      y: pos.y,
-    });
-    this.rotation(rotation);
-    if (cornerRadius >= 0) this.cornerRadius(cornerRadius);
-    this.opacity(opacity);
-    if (this.parent) this.zIndex(zindex);
-  }
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = c2p(

@@ -1,9 +1,12 @@
 export const Colors = {
-  PRIMARY: "#0e639c",
-  BG: "#1e1e1e",
-  BG_SEC: "#252526",
-  BORDER: "#3c3c3c",
-  TEXT: "#d4d4d4",
-  TEXT_SEC: "#808080",
-  FILL: "#0e639c",
+  PRIMARY: "#4fbbdf",
+  // PRIMARY: "#0e639c",
+  BG: "#000000",
+  BG_SEC: "#438193",
+  YELLOW_SHADE: "#ffef00", // Yellow Shade
+  BORDER: "#2f9baf",
+  TEXT: "#eae9ec",
+  TEXT_SEC: "#c9c9c8",
+  FILL: "#4fbbdf",
+  GRIDCOLOR: "#438193",
 };

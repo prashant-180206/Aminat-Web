@@ -1,6 +1,4 @@
-// anim/classes/mobjects/vector.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { VectorProperties } from "@/core/types/properties";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
@@ -8,19 +6,20 @@ import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { Colors } from "@/core/utils/colors";
 import { DEFAULT_SCALE } from "@/core/config";
+import { DashedLineProperties } from "@/core/types/properties";
 
-export class MVector extends Konva.Arrow {
+export class MDashedLine extends Konva.Line {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: VectorProperties;
+  private _properties: DashedLineProperties;
   private _TYPE: string;
 
-  constructor(TYPE: string, config: Partial<VectorProperties> = {}) {
+  constructor(TYPE: string, config: Partial<DashedLineProperties> = {}) {
     super({
       tension: 0,
       lineCap: "round",
       lineJoin: "round",
-    } as Konva.ArrowConfig);
+    });
 
     this.position({ x: 0, y: 0 });
 
@@ -40,20 +39,23 @@ export class MVector extends Konva.Arrow {
       thickness: 6,
       opacity: 1,
       zindex: 0,
-      pointerSize: 16,
+      dashRatio: 10,
       ...config,
     };
 
-    this.name("Vector");
+    this.name("DashedLine");
     this.setupTrackerConnectors();
     MobjectAnimAdder.addLineAnimations(this);
-
-    // Initial sync
     this.properties = this._properties;
   }
 
+  /* ------------------------------------------------------- */
+  /* Tracker Connectors                                     */
+  /* ------------------------------------------------------- */
+
   private setupTrackerConnectors() {
     const directions = ["startX", "startY", "endX", "endY"] as const;
+
     directions.forEach((key) => {
       this.trackerconnector.addConnectorFunc(key, (value: number) => {
         const { lineEnds } = this._properties;
@@ -70,22 +72,25 @@ export class MVector extends Konva.Arrow {
   }
 
   /* ------------------------------------------------------- */
-  /* Getters / Setters                                       */
+  /* Getters / Setters                                      */
   /* ------------------------------------------------------- */
 
   type(): string {
     return this._TYPE;
   }
 
-  get properties(): VectorProperties {
+  get properties(): DashedLineProperties {
     return { ...this._properties };
   }
 
-  set properties(value: Partial<VectorProperties>) {
+  set properties(value: Partial<DashedLineProperties>) {
     Object.assign(this._properties, value);
+
     if (value.position) this.position(p2c(value.position.x, value.position.y));
+
     if (value.lineEnds) {
       const { start, end } = this._properties.lineEnds;
+
       const st = {
         x: start.x * DEFAULT_SCALE,
         y: -start.y * DEFAULT_SCALE,
@@ -94,22 +99,33 @@ export class MVector extends Konva.Arrow {
         x: end.x * DEFAULT_SCALE,
         y: -end.y * DEFAULT_SCALE,
       };
+
       this.points([st.x, st.y, en.x, en.y]);
     }
+
     if (value.color) this.stroke(value.color);
     if (value.thickness) this.strokeWidth(value.thickness);
     if (value.scale) this.scale({ x: value.scale, y: value.scale });
     if (value.rotation) this.rotation(value.rotation);
     if (value.opacity) this.opacity(value.opacity);
     if (this.parent && value.zindex) this.zIndex(value.zindex);
-    if (value.pointerSize) {
-      this.pointerLength(value.pointerSize * this._properties.scale);
-      this.pointerWidth(value.pointerSize * this._properties.scale);
+
+    if (value.dashRatio !== undefined) {
+      this.applyDash(this._properties.dashRatio);
     }
   }
 
   /* ------------------------------------------------------- */
-  /* Internal Sync Logic                                     */
+  /* Dash Handling                                          */
+  /* ------------------------------------------------------- */
+
+  private applyDash(ratio: number) {
+    const dash = Math.max(1, ratio);
+    this.dash([dash, dash]);
+  }
+
+  /* ------------------------------------------------------- */
+  /* Internal Sync Logic                                    */
   /* ------------------------------------------------------- */
 
   UpdateFromKonvaProperties() {
@@ -121,21 +137,28 @@ export class MVector extends Konva.Arrow {
     const endLogical = c2p(pts[2], pts[3]);
 
     const s = this._properties.scale;
+
     this._properties.lineEnds.start = {
       x: startLogical.x / s,
       y: startLogical.y / s,
     };
+
     this._properties.lineEnds.end = {
       x: endLogical.x / s,
       y: endLogical.y / s,
     };
+
+    const dash = this.dash();
+    if (dash && dash.length >= 2) {
+      this._properties.dashRatio = dash[0];
+    }
   }
 
   /* ------------------------------------------------------- */
-  /* Serialization                                           */
+  /* Serialization                                         */
   /* ------------------------------------------------------- */
 
-  storeAsObj() {
+  storeAsObj(): MobjectData {
     return {
       properties: this._properties,
       id: this.id(),
@@ -143,7 +166,7 @@ export class MVector extends Konva.Arrow {
   }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as VectorProperties;
+    this.properties = obj.properties as DashedLineProperties;
     this.UpdateFromKonvaProperties();
   }
 }

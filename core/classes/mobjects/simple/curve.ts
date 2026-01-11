@@ -12,7 +12,20 @@ import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 export class ParametricCurve extends Konva.Line {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: CurveProperties;
+  private _properties: CurveProperties = {
+    position: { x: 0, y: 0 },
+    color: Colors.PRIMARY,
+    scale: 1,
+    rotation: 0,
+    parameterRange: [0, 2 * Math.PI],
+    funcs: {
+      Xfunc: "t",
+      Yfunc: "sin(t)",
+    },
+    thickness: 6,
+    opacity: 1,
+    zindex: 0,
+  };
   private _TYPE: string;
 
   constructor(TYPE: string, config: Partial<CurveProperties> = {}) {
@@ -23,29 +36,16 @@ export class ParametricCurve extends Konva.Line {
       strokeWidth: 3,
     });
 
+    this._properties = { ...this._properties, ...config };
+
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
-    this._properties = {
-      position: { x: 0, y: 0 },
-      color: Colors.PRIMARY,
-      scale: 1,
-      rotation: 0,
-      parameterRange: [0, 2 * Math.PI],
-      funcs: {
-        Xfunc: "t",
-        Yfunc: "sin(t)",
-      },
-      thickness: 3,
-      opacity: 1,
-      zindex: 0,
-      ...config,
-    };
-
     MobjectAnimAdder.addCurveAnimations(this);
 
-    this.updateFromProperties();
+    this.properties = this._properties;
+
     this.name("Curve");
   }
 
@@ -58,54 +58,36 @@ export class ParametricCurve extends Konva.Line {
     return { ...this._properties };
   }
 
-  set properties(newProps: Partial<CurveProperties>) {
-    Object.assign(this._properties, newProps);
-    this.updateFromProperties();
+  set properties(value: Partial<CurveProperties>) {
+    if (value.color) this.stroke(value.color);
+    if (value.thickness) this.strokeWidth(value.thickness);
+    if (value.scale) this.scale({ x: value.scale, y: value.scale });
+    if (value.rotation) this.rotation(value.rotation);
+    if (value.opacity) this.opacity(value.opacity);
+    if (this.parent && value.zindex) this.zIndex(value.zindex);
+    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.funcs) {
+      this.generateCurve(
+        value.funcs.Xfunc,
+        value.funcs.Yfunc,
+        this._properties.parameterRange
+      );
+    }
+    if (value.parameterRange) {
+      this.generateCurve(
+        this._properties.funcs.Xfunc,
+        this._properties.funcs.Yfunc,
+        value.parameterRange
+      );
+    }
+    Object.assign(this._properties, value);
   }
 
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = c2p(pos.x, pos.y);
-    // this._properties.thickness = this.strokeWidth();
-    // this._properties.color = this.stroke() as string;
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
-    // this._properties.opacity = this.opacity();
-    // this._properties.zindex = this.zIndex();
-  }
-
-  private updateFromProperties() {
-    const {
-      position,
-      color,
-      scale,
-      rotation,
-      thickness,
-      // bordercolor,
-      parameterRange,
-      funcs,
-      opacity,
-      zindex,
-    } = this._properties;
-
-    // Apply base properties
-    this.position(p2c(position.x, position.y));
-    this.stroke(color);
-    this.strokeWidth(thickness);
-    this.scale({ x: scale, y: scale });
-    this.rotation(rotation);
-    this.opacity(opacity);
-    if (this.parent) this.zIndex(zindex);
-    this.generateCurve(funcs.Xfunc, funcs.Yfunc, parameterRange);
-
-    this.trackerconnector.addConnectorFunc("Range start", (value: number) => {
-      const range = this._properties.parameterRange;
-      this.setParameterRange([value, range[1]]);
-    });
-    this.trackerconnector.addConnectorFunc("Range end", (value: number) => {
-      const range = this._properties.parameterRange;
-      this.setParameterRange([range[0], value]);
-    });
   }
 
   private generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
