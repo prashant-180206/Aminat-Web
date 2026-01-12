@@ -31,7 +31,10 @@ const Footer = () => {
             <h4 className="font-semibold text-foreground mb-4">Product</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/edit" className="hover:text-blue-400 transition">
+                <Link
+                  href="/scene/edit"
+                  className="hover:text-blue-400 transition"
+                >
                   Editor
                 </Link>
               </li>
@@ -76,7 +79,7 @@ const Footer = () => {
           {/* CTA */}
           <div>
             <h4 className="font-semibold text-foreground mb-4">Get Started</h4>
-            <Link href="/edit">
+            <Link href="/scene/edit">
               <Button className="w-full">Start Creating</Button>
             </Link>
           </div>

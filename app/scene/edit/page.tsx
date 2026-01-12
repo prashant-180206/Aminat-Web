@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function Edit() {
-  redirect("/edit/mobjects");
+  redirect("/scene/edit/mobjects");
 }

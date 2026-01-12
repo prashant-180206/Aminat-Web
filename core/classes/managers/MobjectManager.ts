@@ -63,4 +63,11 @@ export class MobjectManager {
   getMobjectById(id: string): Mobject | null {
     return this.layer.findOne(`#${id}`) as Mobject | null;
   }
+
+  clear() {
+    this.mobjectsMeta.forEach((m) => {
+      this.removeMobject(m.id);
+    });
+    this.mobjectsMeta = [];
+  }
 }

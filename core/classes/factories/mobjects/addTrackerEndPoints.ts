@@ -1,3 +1,6 @@
+import { MVector } from "../../mobjects/geometric/vector";
+import { MDashedLine } from "../../mobjects/simple/dashedLine";
+import { MLine } from "../../mobjects/simple/line";
 import { DynamicText } from "../../mobjects/text/DynamicText";
 
 export class TrackerEndPointsAdder {
@@ -19,6 +22,24 @@ export class TrackerEndPointsAdder {
           val2: val,
         },
       };
+    });
+  }
+
+  static addLinePointConnectors(mobject: MLine | MVector | MDashedLine) {
+    const directions = ["startX", "startY", "endX", "endY"] as const;
+
+    directions.forEach((key) => {
+      mobject.trackerconnector.addConnectorFunc(key, (value: number) => {
+        const { lineEnds } = mobject.properties;
+        const newEnds = { ...lineEnds };
+
+        if (key === "startX") newEnds.start.x = value;
+        if (key === "startY") newEnds.start.y = value;
+        if (key === "endX") newEnds.end.x = value;
+        if (key === "endY") newEnds.end.y = value;
+
+        mobject.properties = { lineEnds: newEnds };
+      });
     });
   }
 }

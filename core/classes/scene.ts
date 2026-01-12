@@ -77,11 +77,20 @@ class Scene extends Konva.Stage {
     return this.mobjManager.getMobjectById(id);
   }
 
+  reset() {
+    this.mobjManager.clear();
+    this.animManager.clear();
+    this.connManager.clear();
+    this.trackerManager.clear();
+    this.layer.destroyChildren();
+  }
+
   storeAsObj(): SceneData {
     return SceneSerializer.serialize(this);
   }
 
   loadFromObj(data: SceneData) {
+    this.reset();
     SceneSerializer.deserialize(data, this);
   }
 }

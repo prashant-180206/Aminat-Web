@@ -19,6 +19,7 @@ import {
   Download,
 } from "lucide-react";
 import { useScene } from "@/hooks/SceneContext";
+import { TinyRecorderScene } from "@/app/scene/edit/recorder";
 
 const EditorHeader = () => {
   const { scene } = useScene();
@@ -143,6 +144,7 @@ const EditorHeader = () => {
 
         {/* User Actions */}
         <div className="flex items-center gap-2">
+          <TinyRecorderScene />
           <Link href="/">
             <Button variant="ghost" size="sm">
               Exit Editor

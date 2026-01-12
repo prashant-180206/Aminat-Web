@@ -7,7 +7,7 @@ import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { Colors } from "@/core/utils/colors";
 import { DEFAULT_SCALE } from "@/core/config";
-// import { easingMap } from "@/core/maps/easingMap";
+import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
 
 export class MLine extends Konva.Group {
   public animgetter: AnimGetter;
@@ -66,30 +66,9 @@ export class MLine extends Konva.Group {
     this.trackerconnector = new TrackerConnector(this);
     this._properties = { ...this._properties, ...config };
     this.name("Line");
-    this.setupTrackerConnectors();
+    TrackerEndPointsAdder.addLinePointConnectors(this);
     MobjectAnimAdder.addLineAnimations(this);
     this.properties = this._properties;
-  }
-
-  /**
-   * Registers property-specific update functions for external trackers.
-   */
-  private setupTrackerConnectors() {
-    const directions = ["startX", "startY", "endX", "endY"] as const;
-
-    directions.forEach((key) => {
-      this.trackerconnector.addConnectorFunc(key, (value: number) => {
-        const { lineEnds } = this._properties;
-        const newEnds = { ...lineEnds };
-
-        if (key === "startX") newEnds.start.x = value;
-        if (key === "startY") newEnds.start.y = value;
-        if (key === "endX") newEnds.end.x = value;
-        if (key === "endY") newEnds.end.y = value;
-
-        this.properties = { lineEnds: newEnds };
-      });
-    });
   }
 
   /* ------------------------------------------------------- */

@@ -11,7 +11,7 @@ import PointValueTrackersTab from "./PointValueTrackersTab";
 
 const TrackersPage = () => {
   return (
-    <div className="w-[280px] h-screen p-4 flex flex-col gap-4 text-sm overflow-y-auto no-scrollbar">
+    <div className="w-[280px] h-full p-4 flex flex-col gap-4 text-sm overflow-y-auto no-scrollbar">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-base">Trackers</h2>

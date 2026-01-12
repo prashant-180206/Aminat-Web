@@ -43,7 +43,7 @@ export const TinyRecorderScene = () => {
         {!isRecording ? (
           <button
             onClick={startRecording}
-            className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
+            className="px-4 py-2 bg-red-600 text-sm text-white rounded-full hover:bg-red-700 transition"
           >
             ⏺ Record Scene
           </button>

@@ -115,4 +115,9 @@ export class ConnectionManager {
 
     return success;
   }
+
+  clear() {
+    this._ptValFuncRelations = [];
+    this._valFuncRelations = [];
+  }
 }

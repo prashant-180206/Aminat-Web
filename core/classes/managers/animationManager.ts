@@ -1,6 +1,4 @@
 import { AnimMeta, AnimStoreData } from "@/core/types/animation";
-// import { AnimManagerData } from "@/core/types/file";
-// import anime from "animejs";
 
 export class AnimationManager {
   private animations = new Map<string, AnimMeta>();
@@ -91,14 +89,15 @@ export class AnimationManager {
 
   animate() {
     if (this.order.length === 0) return;
-
+    if (this.activeIndex >= this.order.length) {
+      this.resetAll();
+      this.activeIndex = 0;
+    }
     const group = this.order[this.activeIndex];
-
-    this.activeIndex = (this.activeIndex + 1) % this.order.length;
-
     group.forEach((id) => {
       this.animations.get(id)?.anim.restart();
     });
+    this.activeIndex = this.activeIndex + 1;
   }
 
   reverseAnimate() {
@@ -198,5 +197,16 @@ export class AnimationManager {
         }
       }
     }
+  }
+
+  clear() {
+    this.animations.forEach((a) => {
+      a.anim.cancel();
+      a.anim.revert();
+    });
+    this.animations.clear();
+    this.animStore = [];
+    this.order = [];
+    this._activeIndex = 0;
   }
 }

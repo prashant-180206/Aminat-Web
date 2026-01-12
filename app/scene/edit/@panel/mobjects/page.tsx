@@ -44,7 +44,11 @@ const MobjectsSidePanel = () => {
     >
       {/* Collapsed Toggle */}
       <CollapsibleTrigger asChild className="absolute top-2 right-2 z-10">
-        <Button size="icon" variant="ghost" className="rounded-full shadow-sm">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="rounded-full shadow-sm absolute right-4 top-2"
+        >
           <Menu className="h-4 w-4" />
         </Button>
       </CollapsibleTrigger>

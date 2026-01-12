@@ -1,15 +1,24 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-// import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible } from "@/components/ui/collapsible";
+import dynamic from "next/dynamic";
+
+const CollapsibleTrigger = dynamic(
+  () =>
+    import("@/components/ui/collapsible").then((mod) => mod.CollapsibleTrigger),
+  {
+    ssr: false,
+  }
+);
+const CollapsibleContent = dynamic(
+  () =>
+    import("@/components/ui/collapsible").then((mod) => mod.CollapsibleContent),
+  {
+    ssr: false,
+  }
+);
 import { Separator } from "@/components/ui/separator";
-// import { Badge } from "@/components/ui/badge";
-// import { useScene } from "@/hooks/SceneContext";
 import { Menu, Layers } from "lucide-react";
 import React from "react";
 import { Tabs } from "@radix-ui/react-tabs";
@@ -45,7 +54,7 @@ const TrackerSidePanel = () => {
               <h1 className="font-semibold tracking-wide">Value Trackers</h1>
             </div>
           </div>
-          <div className="p-4 pb-0">
+          <div className="p-4 pb-4">
             <ExpressionPopover />
           </div>
 

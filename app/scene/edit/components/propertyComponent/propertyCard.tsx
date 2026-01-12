@@ -3,11 +3,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ColorDisc } from "@/components/colordisc";
 import { Label } from "@/components/ui/label";
-import { PointInput } from ".././input/pairInput";
+import { PointInput } from "../input/pairInput";
 import { ParameterRangeInput } from "../input/paramrangeInput";
-import { PopoverSliderInput } from ".././input/popoverSlider";
+import { PopoverSliderInput } from "../input/popoverSlider";
 import { SquareDashedTopSolid } from "lucide-react";
-import { NumberStepperInput } from ".././input/numberInput";
+import { NumberStepperInput } from "../input/numberInput";
 import { PROPERTY_REGISTRY } from "./registry";
 
 type Props = {

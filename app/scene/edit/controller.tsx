@@ -35,47 +35,67 @@ const Controller = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2 shadow-sm">
+    <div className="flex items-center gap-0.5 rounded-md border bg-background px-1 py-0.5 shadow-sm">
       {/* Reverse */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={reverse}>
-            <Rewind className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={reverse}
+            className="h-6 w-6 p-0"
+          >
+            <Rewind className="h-3.5 w-3.5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Play reverse</TooltipContent>
+        <TooltipContent side="top">Reverse</TooltipContent>
       </Tooltip>
 
-      {/* Play (Primary) */}
+      {/* Play */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={play}>
-            <Play className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={play}
+            className="h-6 w-6 p-0"
+          >
+            <Play className="h-3.5 w-3.5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Play animation</TooltipContent>
+        <TooltipContent side="top">Play</TooltipContent>
       </Tooltip>
 
-      <Separator orientation="vertical" className="mx-1 h-6" />
+      <Separator orientation="vertical" className="mx-0.5 h-4" />
 
       {/* Reset */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={reset}>
-            <RotateCcw className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={reset}
+            className="h-6 w-6 p-0"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Reset all animations</TooltipContent>
+        <TooltipContent side="top">Reset</TooltipContent>
       </Tooltip>
 
       {/* Finish */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={finish}>
-            <SkipForward className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={finish}
+            className="h-6 w-6 p-0"
+          >
+            <SkipForward className="h-3.5 w-3.5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Finish instantly</TooltipContent>
+        <TooltipContent side="top">Finish</TooltipContent>
       </Tooltip>
     </div>
   );

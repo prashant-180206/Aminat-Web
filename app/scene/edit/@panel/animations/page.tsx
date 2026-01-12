@@ -2,11 +2,23 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible } from "@/components/ui/collapsible";
+import dynamic from "next/dynamic";
+
+const CollapsibleTrigger = dynamic(
+  () =>
+    import("@/components/ui/collapsible").then((mod) => mod.CollapsibleTrigger),
+  {
+    ssr: false,
+  }
+);
+const CollapsibleContent = dynamic(
+  () =>
+    import("@/components/ui/collapsible").then((mod) => mod.CollapsibleContent),
+  {
+    ssr: false,
+  }
+);
 // import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -55,7 +67,7 @@ const AnimationSidePanel = () => {
       </TooltipProvider>
 
       {/* Sidebar */}
-      <CollapsibleContent className="w-[300px] h-screen overflow-auto no-scrollbar">
+      <CollapsibleContent className="w-[300px] h-full overflow-auto no-scrollbar">
         <div className="flex flex-col ">
           {/* Header */}
           <div className="px-4 py-4 space-y-3">

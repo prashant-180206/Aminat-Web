@@ -24,7 +24,7 @@ export class ValueTracker {
   }
 
   set value(v: number) {
-    if (Math.abs(this._value - v) < 0.001) return;
+    if (Math.abs(this._value - v) < 0.002) return;
 
     this._value = v;
 

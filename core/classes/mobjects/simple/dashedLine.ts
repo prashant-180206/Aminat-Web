@@ -7,6 +7,7 @@ import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { Colors } from "@/core/utils/colors";
 import { DEFAULT_SCALE } from "@/core/config";
 import { DashedLineProperties } from "@/core/types/properties";
+import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
 
 export class MDashedLine extends Konva.Group {
   public animgetter: AnimGetter;
@@ -68,31 +69,9 @@ export class MDashedLine extends Konva.Group {
     this._properties = { ...this._properties, ...config };
 
     this.name("DashedLine");
-    this.setupTrackerConnectors();
+    TrackerEndPointsAdder.addLinePointConnectors(this);
     MobjectAnimAdder.addLineAnimations(this);
     this.properties = this._properties;
-  }
-
-  /* ------------------------------------------------------- */
-  /* Tracker Connectors                                     */
-  /* ------------------------------------------------------- */
-
-  private setupTrackerConnectors() {
-    const directions = ["startX", "startY", "endX", "endY"] as const;
-
-    directions.forEach((key) => {
-      this.trackerconnector.addConnectorFunc(key, (value: number) => {
-        const { lineEnds } = this._properties;
-        const newEnds = { ...lineEnds };
-
-        if (key === "startX") newEnds.start.x = value;
-        if (key === "startY") newEnds.start.y = value;
-        if (key === "endX") newEnds.end.x = value;
-        if (key === "endY") newEnds.end.y = value;
-
-        this.properties = { lineEnds: newEnds };
-      });
-    });
   }
 
   /* ------------------------------------------------------- */

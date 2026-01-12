@@ -11,19 +11,13 @@ import {
 } from "@/components/ui/tooltip";
 import { ArrowUp, ArrowDown, Grip } from "lucide-react";
 import { AnimationCard } from "./AnimationCard";
+import { AnimMeta } from "@/core/types/animation";
 // import { useScene } from "@/hooks/SceneContext";
 // import { useScene } from "@/hooks/SceneContext";
-
-interface Animation {
-  id: string;
-  type: string;
-  mobjId: string;
-  label: string;
-}
 
 interface AnimationGroupCardProps {
   groupIndex: number;
-  animations: Animation[];
+  animations: AnimMeta[];
   isActive: boolean;
   isFirst: boolean;
   isLast: boolean;
@@ -124,7 +118,7 @@ export const AnimationGroupCard = ({
             <AnimationCard
               id={anim.id}
               type={anim.type}
-              mobjId={anim.mobjId}
+              mobjId={anim.targetId}
               label={anim.label}
               onDelete={() => onDeleteAnimation(anim.id)}
             />

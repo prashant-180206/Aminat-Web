@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { ValueTracker } from ".././valuetracker";
 import { createTimer, easings } from "animejs";
+import { Colors } from "@/core/utils/colors";
 // import { easingMap } from "@/core/maps/easingMap";
 
 type SliderConfig = {
@@ -35,6 +36,7 @@ export class Slider extends Konva.Group {
   public get rank(): number {
     return this._rank;
   }
+  private trackStartX = 0;
 
   // private dummyNode = new Konva.Group();
 
@@ -49,7 +51,7 @@ export class Slider extends Konva.Group {
 
   constructor(
     tracker: ValueTracker,
-    config: SliderConfig = {},
+    config: { min: number; max: number },
     rank: number,
     name = "Slider"
   ) {
@@ -61,18 +63,18 @@ export class Slider extends Konva.Group {
 
     // Default Configuration
     this.config = {
-      width: config.width ?? 160,
-      height: config.height ?? 6,
+      width: 240,
+      height: 6,
       min: config.min ?? 0,
       max: config.max ?? 100,
-      initial: config.initial ?? 0,
-      trackColor: config.trackColor ?? "#333",
-      thumbColor: config.thumbColor ?? "#ffffff",
-      thumbRadius: config.thumbRadius ?? 8,
-      bgColor: config.bgColor ?? "#1f1f1f",
-      labelColor: config.labelColor ?? "#999",
-      fontSize: config.fontSize ?? 12,
-      padding: config.padding ?? 16,
+      initial: 0,
+      trackColor: Colors.FILL,
+      thumbColor: Colors.PRIMARY,
+      thumbRadius: 10,
+      bgColor: Colors.BG_SEC,
+      labelColor: Colors.TEXT,
+      fontSize: 24,
+      padding: 20,
     };
 
     this.min = this.config.min;
@@ -129,10 +131,11 @@ export class Slider extends Konva.Group {
 
     // Layout Constants
     const titleAreaHeight = c.fontSize + 8;
-    const labelAreaHeight = c.fontSize + 4;
-    const totalHeight =
-      c.padding * 2 + titleAreaHeight + c.thumbRadius * 2 + labelAreaHeight;
-    const totalWidth = c.width + c.padding * 2;
+    // const labelAreaHeight = c.fontSize + 4;
+    const labelAreaWidth = c.fontSize;
+    const totalHeight = c.padding * 2 + titleAreaHeight + c.thumbRadius * 2;
+    this.trackStartX = c.padding + labelAreaWidth + c.padding;
+    const totalWidth = c.width + this.trackStartX + labelAreaWidth + c.padding;
 
     this.background.setAttrs({
       width: totalWidth,
@@ -143,7 +146,7 @@ export class Slider extends Konva.Group {
 
     // 1. Title (Top)
     this.titleText.setAttrs({
-      text: this._name.toUpperCase(),
+      // text: this._name.toUpperCase(),
       fontSize: c.fontSize - 2,
       fill: c.labelColor,
       x: c.padding,
@@ -154,7 +157,7 @@ export class Slider extends Konva.Group {
     // 2. Track (Middle)
     const trackY = c.padding + titleAreaHeight + c.thumbRadius;
     this.track.setAttrs({
-      x: c.padding,
+      x: this.trackStartX,
       y: trackY - c.height / 2,
       width: c.width,
       height: c.height,
@@ -174,14 +177,14 @@ export class Slider extends Konva.Group {
       const transform = this.getAbsoluteTransform().copy().invert();
       const localPos = transform.point(pos);
       const clampedX = Math.max(
-        c.padding,
-        Math.min(localPos.x, c.padding + c.width)
+        this.trackStartX,
+        Math.min(localPos.x, this.trackStartX + c.width)
       );
       return this.getAbsoluteTransform().point({ x: clampedX, y: trackY });
     });
 
     // 4. Labels (Bottom)
-    const labelY = trackY + c.thumbRadius + 6;
+    const labelY = trackY - c.fontSize / 2;
     this.minLabel.setAttrs({
       text: this.min.toString(),
       x: c.padding,
@@ -192,7 +195,7 @@ export class Slider extends Konva.Group {
 
     this.maxLabel.setAttrs({
       text: this.max.toString(),
-      x: c.padding + c.width,
+      x: c.padding + c.width + this.trackStartX + c.fontSize / 2,
       y: labelY,
       fontSize: c.fontSize,
       fill: c.labelColor,
@@ -202,7 +205,7 @@ export class Slider extends Konva.Group {
     // 5. Global Position based on Rank
     this.position({
       x: c.padding,
-      y: this._rank * (totalHeight + 12) + c.padding,
+      y: this._rank * (totalHeight + 12 + c.padding) + c.padding,
     });
 
     this.syncThumbFromValue();
@@ -213,7 +216,7 @@ export class Slider extends Konva.Group {
   private bindLogic() {
     // 1. UI -> Tracker: When user drags the thumb
     const updateTrackerFromUI = () => {
-      const localX = this.thumb.x() - this.config.padding;
+      const localX = this.thumb.x() - this.trackStartX;
       this.tracker.value = this.getValueFromX(localX);
     };
 
@@ -232,8 +235,8 @@ export class Slider extends Konva.Group {
 
       this.thumb.x(
         Math.max(
-          this.config.padding,
-          Math.min(localPos.x, this.config.padding + this.config.width)
+          this.trackStartX,
+          Math.min(localPos.x, this.trackStartX + this.config.width)
         )
       );
       updateTrackerFromUI();
@@ -241,9 +244,12 @@ export class Slider extends Konva.Group {
 
     // 2. Tracker -> UI: When value changes externally (e.g., via expressions)
     // We use the slider's unique name or ID as the updater key
-    this.tracker.addHiddenUpdater(`slider-sync-${this._name}`, () =>
-      this.syncThumbFromValue()
-    );
+    this.tracker.addHiddenUpdater(`slider-sync-${this._name}`, () => {
+      this.titleText.text(
+        `${this._name.toUpperCase()}: ${this.tracker.value.toFixed(2)}`
+      );
+      this.syncThumbFromValue();
+    });
   }
 
   /**
@@ -256,7 +262,7 @@ export class Slider extends Konva.Group {
   }
 
   public syncThumbFromValue() {
-    const x = this.config.padding + this.getRelativeX(this.tracker.value);
+    const x = this.trackStartX + this.getRelativeX(this.tracker.value);
     this.thumb.x(x);
   }
 

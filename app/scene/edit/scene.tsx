@@ -7,7 +7,11 @@ import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
 import { Mobject } from "@/core/types/mobjects";
 // import { useScene } from "@/context/SceneContext";
 
-export default function SceneView() {
+interface SceneViewProps {
+  scaleFactor?: number;
+}
+
+export default function SceneView({ scaleFactor = 0.45 }: SceneViewProps) {
   const { scene, setScene, setActiveMobject, setActiveMobjectId } = useScene();
   const containerref = useRef<HTMLDivElement>(null);
 
@@ -38,15 +42,23 @@ export default function SceneView() {
 
   return (
     <div
-      ref={containerref}
-      id="canvasParent"
-      className="inline-block "
+      className="flex flex-row items-start justify-start bg-card border-2 border-border  overflow-hidden rounded-lg shadow-xl mx-4"
       style={{
-        height: DEFAULT_HEIGHT,
-        width: DEFAULT_WIDTH,
-        transformOrigin: "top left",
-        scale: "0.45",
+        height: DEFAULT_HEIGHT * scaleFactor,
+        width: DEFAULT_WIDTH * scaleFactor,
       }}
-    />
+    >
+      <div
+        ref={containerref}
+        id="canvasParent"
+        className="inline-block "
+        style={{
+          height: DEFAULT_HEIGHT,
+          width: DEFAULT_WIDTH,
+          transformOrigin: "top left",
+          scale: scaleFactor,
+        }}
+      />
+    </div>
   );
 }

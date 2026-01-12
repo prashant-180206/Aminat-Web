@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { PtValueTracker } from "../ptValuetracker";
 import { createTimer, easings } from "animejs";
+import { Colors } from "@/core/utils/colors";
 
 export class PtSlider extends Konva.Group {
   readonly tracker: PtValueTracker;
@@ -19,19 +20,21 @@ export class PtSlider extends Konva.Group {
   };
 
   private config = {
-    trackWidth: 150,
+    trackWidth: 240,
     trackHeight: 6,
-    thumbRadius: 8,
-    padding: 15,
-    labelGap: 10,
-    fontSize: 12,
-    titleFontSize: 14,
-    bgColor: "#1f1f1f",
-    trackColor: "#333",
-    thumbColor: "#fff",
-    labelColor: "#999",
-    titleColor: "#ddd",
+    thumbRadius: 10,
+    padding: 20,
+    labelGap: 24,
+    fontSize: 24,
+    titleFontSize: 24,
+    bgColor: Colors.BG_SEC,
+    trackColor: Colors.FILL,
+    thumbColor: Colors.PRIMARY,
+    labelColor: Colors.TEXT,
+    titleColor: Colors.TEXT,
   };
+
+  private trackStartX: number = 0;
 
   private minX: number;
   private maxX: number;
@@ -121,10 +124,10 @@ export class PtSlider extends Konva.Group {
     const labelWidth = 30;
     const titleHeight = c.titleFontSize + 8;
 
-    const trackStartX = labelWidth + c.labelGap;
+    const trackX = labelWidth + c.labelGap;
     const rowHeight = c.thumbRadius * 2 + 10;
 
-    const totalWidth = trackStartX + c.trackWidth + labelWidth + c.labelGap;
+    const totalWidth = trackX + c.trackWidth + labelWidth + c.labelGap;
     const totalHeight = c.padding * 2 + titleHeight + rowHeight * 2;
 
     this.background.setAttrs({
@@ -155,7 +158,7 @@ export class PtSlider extends Konva.Group {
       this.labels.maxX,
       this.minX,
       this.maxX,
-      trackStartX,
+      trackX,
       yRow1
     );
 
@@ -166,7 +169,7 @@ export class PtSlider extends Konva.Group {
       this.labels.maxY,
       this.minY,
       this.maxY,
-      trackStartX,
+      trackX,
       yRow2
     );
 
