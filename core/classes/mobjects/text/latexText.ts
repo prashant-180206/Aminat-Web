@@ -156,7 +156,6 @@ export class LatexText extends Konva.Image {
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = c2p(pos.x, pos.y);
-    this._properties.color = this.fill() as string;
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
   }

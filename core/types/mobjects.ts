@@ -1,4 +1,4 @@
-import { MVector } from "../classes/mobjects/geometric/vector";
+import { DoubleArrow, MVector } from "../classes/mobjects/geometric/vector";
 import { MNumberLine } from "../classes/mobjects/group/numberLine";
 import { MPlane } from "../classes/mobjects/group/plane";
 import MCircle from "../classes/mobjects/simple/circle";
@@ -21,6 +21,7 @@ export type Mobject =
   | MPolygon
   | MText
   | MVector
+  | DoubleArrow
   | MPlane
   | LatexText
   | DynamicText

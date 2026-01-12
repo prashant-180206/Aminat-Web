@@ -21,6 +21,7 @@ export default function SceneView() {
       setScene(scene);
 
       scene.addMobjectFunction((mobj: Mobject) => {
+        mobj.on("dragmove", mobj.UpdateFromKonvaProperties);
         mobj.on("click", () => {
           scene.activeMobject = mobj;
           setActiveMobject(mobj);
@@ -38,7 +39,8 @@ export default function SceneView() {
   return (
     <div
       ref={containerref}
-      className=" inline-block "
+      id="canvasParent"
+      className="inline-block "
       style={{
         height: DEFAULT_HEIGHT,
         width: DEFAULT_WIDTH,

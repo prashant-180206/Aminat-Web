@@ -6,7 +6,7 @@ import { Dot } from "../classes/mobjects/simple/dot";
 // import { MLine } from "../classes/mobjects/simple/MLine";
 import { MPolygon } from "../classes/mobjects/simple/polygon";
 import { MText } from "../classes/mobjects/text/text";
-import { MVector } from "../classes/mobjects/geometric/vector";
+import { DoubleArrow, MVector } from "../classes/mobjects/geometric/vector";
 import { MPlane } from "../classes/mobjects/group/plane";
 import {
   Axis3d,
@@ -15,6 +15,7 @@ import {
   Circle,
   DotIcon,
   Grid3x3,
+  MoveDiagonal,
   MoveUpRight,
   PentagonIcon,
   RectangleHorizontal,
@@ -59,6 +60,12 @@ const MobjectMap: MobjectMapType = {
     func: () => new MVector("Vector"),
     name: "Vector",
     Icon: MoveUpRight,
+  },
+
+  DoubleArrow: {
+    func: () => new DoubleArrow("DoubleArrow"),
+    name: "DoubleArrow",
+    Icon: MoveDiagonal,
   },
   Plane: { func: () => new MPlane("Plane"), name: "Plane", Icon: Grid3x3 },
   Formula: {

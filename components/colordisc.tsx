@@ -10,7 +10,7 @@ import { Input } from "./ui/input";
 type ColorDiscProps = {
   value: string;
   onChange: (val: string) => void;
-  refreshFunc: () => void;
+  refreshFunc?: () => void;
   size?: number;
 };
 
@@ -62,7 +62,7 @@ export const ColorDisc = ({
               onClick={() => {
                 onChange(color);
                 setOpen(false);
-                refreshFunc();
+                refreshFunc?.();
               }}
             />
           ))}
@@ -84,7 +84,7 @@ export const ColorDisc = ({
               onChange={(e) => {
                 onChange(e.target.value);
                 setOpen(false);
-                refreshFunc();
+                refreshFunc?.();
               }}
             />
           </label>

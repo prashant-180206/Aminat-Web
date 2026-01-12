@@ -8,10 +8,13 @@ import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnecto
 import { MobjectData } from "@/core/types/file";
 import { Colors } from "@/core/utils/colors";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
+import { DEFAULT_SCALE } from "@/core/config";
 
-export class ParametricCurve extends Konva.Line {
+export class ParametricCurve extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
+  private line: Konva.Line;
+  private label: Konva.Text;
   private _properties: CurveProperties = {
     position: { x: 0, y: 0 },
     color: Colors.PRIMARY,
@@ -25,22 +28,45 @@ export class ParametricCurve extends Konva.Line {
     thickness: 6,
     opacity: 1,
     zindex: 0,
+    label: {
+      labelText: "label",
+      visible: false,
+      offset: { x: 0, y: 0 },
+      fontsize: 32,
+      color: Colors.TEXT,
+      position: "center",
+    },
   };
   private _TYPE: string;
 
   constructor(TYPE: string, config: Partial<CurveProperties> = {}) {
-    super({
+    super();
+    this.line = new Konva.Line({
       tension: 0.8,
       lineCap: "round",
       lineJoin: "round",
       strokeWidth: 3,
     });
+    this.add(this.line);
+    this.line.position({ x: 0, y: 0 });
 
     this._properties = { ...this._properties, ...config };
 
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
+
+    this.label = new Konva.Text({
+      text: this._properties.label.labelText,
+      fontSize: this._properties.label.fontsize,
+      fill: this._properties.label.color,
+      x: this._properties.label.offset.x,
+      y: this._properties.label.offset.y,
+      visible: this._properties.label.visible,
+      listening: false,
+    });
+
+    this.add(this.label);
 
     MobjectAnimAdder.addCurveAnimations(this);
 
@@ -59,13 +85,16 @@ export class ParametricCurve extends Konva.Line {
   }
 
   set properties(value: Partial<CurveProperties>) {
-    if (value.color) this.stroke(value.color);
-    if (value.thickness) this.strokeWidth(value.thickness);
+    if (value.color) this.line.stroke(value.color);
+    if (value.thickness) this.line.strokeWidth(value.thickness);
     if (value.scale) this.scale({ x: value.scale, y: value.scale });
     if (value.rotation) this.rotation(value.rotation);
     if (value.opacity) this.opacity(value.opacity);
     if (this.parent && value.zindex) this.zIndex(value.zindex);
-    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.position) {
+      this.position(p2c(value.position.x, value.position.y));
+      this.setLabelPosition();
+    }
     if (value.funcs) {
       this.generateCurve(
         value.funcs.Xfunc,
@@ -80,7 +109,41 @@ export class ParametricCurve extends Konva.Line {
         value.parameterRange
       );
     }
+    if (value.label) {
+      this.label.text(value.label.labelText);
+      this.label.fontSize(value.label.fontsize);
+      this.label.fill(value.label.color);
+      this.setLabelPosition();
+      this.label.visible(value.label.visible);
+    }
     Object.assign(this._properties, value);
+    this.fire("propChange", c2p(this.position().x, this.position().y));
+  }
+  private setLabelPosition() {
+    let position = { x: 0, y: 0 };
+    const [start, end] = this._properties.parameterRange;
+    const midX = (start + end) / 2;
+    const midY = (start + end) / 2;
+    if (this._properties.label.position === "start") {
+      position = {
+        x: evaluate(this._properties.funcs.Xfunc, { t: start }) as number,
+        y: evaluate(this._properties.funcs.Yfunc, { t: start }) as number,
+      };
+    } else if (this._properties.label.position === "end") {
+      position = {
+        x: evaluate(this._properties.funcs.Xfunc, { t: end }) as number,
+        y: evaluate(this._properties.funcs.Yfunc, { t: end }) as number,
+      };
+    } else if (this._properties.label.position === "center") {
+      position = {
+        x: evaluate(this._properties.funcs.Xfunc, { t: midX }) as number,
+        y: evaluate(this._properties.funcs.Yfunc, { t: midY }) as number,
+      };
+    }
+    this.label.position({
+      x: position.x * DEFAULT_SCALE + this._properties.label.offset.x,
+      y: -position.y * DEFAULT_SCALE + this._properties.label.offset.y,
+    });
   }
 
   UpdateFromKonvaProperties() {
@@ -116,7 +179,7 @@ export class ParametricCurve extends Konva.Line {
       points.push(canvasX, canvasY);
     }
 
-    this.points(points);
+    this.line.points(points);
     // this.draw();
   }
 

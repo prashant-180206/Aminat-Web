@@ -5,11 +5,15 @@ import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { Colors } from "@/core/utils/colors";
+// import { labelAble } from "./labelAble";
 // import type { Point } from './parametricCurve';
 
-export class Dot extends Konva.Circle {
+export class Dot extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
+
+  private circle: Konva.Circle;
+  private label: Konva.Text;
   private _properties: DotProperties = {
     position: { x: 0, y: 0 },
     color: Colors.PRIMARY,
@@ -18,6 +22,14 @@ export class Dot extends Konva.Circle {
     radius: 6,
     zindex: 0,
     opacity: 1,
+    label: {
+      labelText: "label",
+      visible: false,
+      offset: { x: 0, y: 0 },
+      fontsize: 32,
+      color: Colors.TEXT,
+      position: "center",
+    },
     // ...config,
   };
   private _TYPE: string;
@@ -31,11 +43,33 @@ export class Dot extends Konva.Circle {
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
+    this.circle = new Konva.Circle({
+      radius: this._properties.radius,
+      fill: this._properties.color,
+      strokeEnabled: false,
+      x: 0,
+      y: 0,
+    });
+
+    this.add(this.circle);
+
+    this.label = new Konva.Text({
+      text: this._properties.label.labelText,
+      fontSize: this._properties.label.fontsize,
+      fill: this._properties.label.color,
+      x: this._properties.label.offset.x,
+      y: this._properties.label.offset.y,
+      visible: this._properties.label.visible,
+      listening: false,
+    });
+
+    this.add(this.label);
 
     this._properties = { ...this._properties, ...config };
 
     this.properties = this._properties;
     this.name("Dot");
+    // this.className = "haveLabel";
   }
 
   type(): string {
@@ -49,19 +83,40 @@ export class Dot extends Konva.Circle {
 
   set properties(value: Partial<DotProperties>) {
     Object.assign(this._properties, value);
-    if (value.color) this.fill(value.color);
-    if (value.radius) this.radius(value.radius * this._properties.scale);
-    if (value.scale) this.radius(this._properties.radius * value.scale);
-    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.color) this.circle.fill(value.color);
+    if (value.radius) this.circle.radius(value.radius * this._properties.scale);
+    if (value.scale) this.circle.radius(this._properties.radius * value.scale);
+    if (value.position) {
+      this.position(p2c(value.position.x, value.position.y));
+      let txt = this._properties.label.labelText;
+      txt = txt.replace(/valx/g, this._properties.position.x.toFixed(2));
+      txt = txt.replace(/valy/g, this._properties.position.y.toFixed(2));
+      this.label.text(txt);
+    }
     if (value.rotation) this.rotation(value.rotation);
     if (value.opacity) this.opacity(value.opacity);
     if (this.parent && value.zindex) this.zIndex(value.zindex);
-    // this.updateFromProperties();
+    if (value.label) {
+      let txt = value.label.labelText;
+      txt = txt.replace(/valx/g, this._properties.position.x.toFixed(2));
+      txt = txt.replace(/valy/g, this._properties.position.y.toFixed(2));
+      this.label.text(txt);
+      this.label.fontSize(value.label.fontsize);
+      this.label.fill(value.label.color);
+      this.label.x(value.label.offset.x);
+      this.label.y(value.label.offset.y);
+      this.label.visible(value.label.visible);
+    }
   }
 
   UpdateFromKonvaProperties() {
     const pos = this.position();
     this._properties.position = c2p(pos.x, pos.y);
+    let txt = this._properties.label.labelText;
+    txt = txt.replace(/valx/g, this._properties.position.x.toFixed(2));
+    txt = txt.replace(/valy/g, this._properties.position.y.toFixed(2));
+    this.label.text(txt);
+
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
   }

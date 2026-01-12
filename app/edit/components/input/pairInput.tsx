@@ -17,7 +17,7 @@ type PairInputProps<T extends Record<string, number>> = {
   labels: [string, string];
   icon: LucideIcon;
   onChange: (val: T) => void;
-  refreshFunc: () => void;
+  refreshFunc?: () => void;
   min?: number;
   max?: number;
 };
@@ -41,13 +41,11 @@ export function PairInput<T extends Record<string, number>>({
       [key]: clamp(v),
     };
     onChange(next);
-    refreshFunc();
+    refreshFunc?.();
   };
 
   return (
     <div className="flex items-center justify-between gap-2 w-full">
-      {/* <span className="text-sm font-medium">{property}</span> */}
-
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -92,7 +90,7 @@ export const PointInput = (props: {
   property: string;
   value: Point;
   onChange: (v: Point) => void;
-  refreshFunc: () => void;
+  refreshFunc?: () => void;
 }) => (
   <PairInput<Point>
     {...props}

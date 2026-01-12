@@ -49,7 +49,6 @@ class MCircle extends Konva.Circle {
     const pos = this.position();
     this._properties.position = c2p(pos.x, pos.y);
     this._properties.radius = this.radius() / DEFAULT_SCALE;
-    this._properties.color = this.fill() as string;
     this._properties.scale = this.scaleX();
     this._properties.rotation = this.rotation();
   }

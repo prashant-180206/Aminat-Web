@@ -9,39 +9,62 @@ import { Colors } from "@/core/utils/colors";
 import { DEFAULT_SCALE } from "@/core/config";
 // import { easingMap } from "@/core/maps/easingMap";
 
-export class MLine extends Konva.Line {
+export class MLine extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: LineProperties;
+  private line: Konva.Line;
+  private label: Konva.Text;
+  private _properties: LineProperties = {
+    position: { x: 0, y: 0 },
+    color: Colors.PRIMARY,
+    scale: 1,
+    rotation: 0,
+    lineEnds: {
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 },
+    },
+    thickness: 6,
+    opacity: 1,
+    zindex: 0,
+    label: {
+      labelText: "label",
+      visible: false,
+      offset: { x: 0, y: 0 },
+      fontsize: 32,
+      color: Colors.TEXT,
+      position: "center",
+    },
+  };
   private _TYPE: string;
 
   constructor(TYPE: string, config: Partial<LineProperties> = {}) {
-    super({
+    super({});
+    this.line = new Konva.Line({
       tension: 0,
       lineCap: "round",
       lineJoin: "round",
     });
+    this.add(this.line);
+    this.line.position({ x: 0, y: 0 });
 
     this.position({ x: 0, y: 0 });
+
+    this.label = new Konva.Text({
+      text: this._properties.label.labelText,
+      fontSize: this._properties.label.fontsize,
+      fill: this._properties.label.color,
+      x: this._properties.label.offset.x,
+      y: this._properties.label.offset.y,
+      visible: this._properties.label.visible,
+      listening: false,
+    });
+
+    this.add(this.label);
 
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
-    this._properties = {
-      position: { x: 0, y: 0 },
-      color: Colors.PRIMARY,
-      scale: 1,
-      rotation: 0,
-      lineEnds: {
-        start: { x: 0, y: 0 },
-        end: { x: 1, y: 1 },
-      },
-      thickness: 6,
-      opacity: 1,
-      zindex: 0,
-      ...config,
-    };
-
+    this._properties = { ...this._properties, ...config };
     this.name("Line");
     this.setupTrackerConnectors();
     MobjectAnimAdder.addLineAnimations(this);
@@ -83,7 +106,11 @@ export class MLine extends Konva.Line {
 
   set properties(value: Partial<LineProperties>) {
     Object.assign(this._properties, value);
-    if (value.position) this.position(p2c(value.position.x, value.position.y));
+    if (value.position) {
+      console.log(value.position);
+      this.position(p2c(value.position.x, value.position.y));
+      this.setLabelPosition();
+    }
     if (value.lineEnds) {
       const { start, end } = this._properties.lineEnds;
       const st = {
@@ -94,15 +121,40 @@ export class MLine extends Konva.Line {
         x: end.x * DEFAULT_SCALE,
         y: -end.y * DEFAULT_SCALE,
       };
-      this.points([st.x, st.y, en.x, en.y]);
+      this.line.points([st.x, st.y, en.x, en.y]);
     }
-    if (value.color) this.stroke(value.color);
-    if (value.thickness) this.strokeWidth(value.thickness);
+    if (value.color) this.line.stroke(value.color);
+    if (value.thickness) this.line.strokeWidth(value.thickness);
     if (value.scale) this.scale({ x: value.scale, y: value.scale });
     if (value.rotation) this.rotation(value.rotation);
     if (value.opacity) this.opacity(value.opacity);
     if (this.parent && value.zindex) this.zIndex(value.zindex);
+    if (value.label) {
+      this.label.text(value.label.labelText);
+      this.label.fontSize(value.label.fontsize);
+      this.label.fill(value.label.color);
+      this.setLabelPosition();
+      this.label.visible(value.label.visible);
+    }
     // this.updateFromProperties();
+  }
+
+  private setLabelPosition() {
+    let position = { x: 0, y: 0 };
+    const { start, end } = this._properties.lineEnds;
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+    if (this._properties.label.position === "start") {
+      position = { x: start.x, y: start.y };
+    } else if (this._properties.label.position === "end") {
+      position = { x: end.x, y: end.y };
+    } else if (this._properties.label.position === "center") {
+      position = { x: midX, y: midY };
+    }
+    this.label.position({
+      x: position.x * DEFAULT_SCALE + this._properties.label.offset.x,
+      y: -position.y * DEFAULT_SCALE + this._properties.label.offset.y,
+    });
   }
 
   /* ------------------------------------------------------- */
@@ -114,20 +166,25 @@ export class MLine extends Konva.Line {
    */
   UpdateFromKonvaProperties() {
     const pos = this.position();
-    this._properties.position = { x: pos.x, y: pos.y };
+    const newPos = c2p(pos.x, pos.y);
+    this._properties.position = newPos;
 
-    const pts = this.points();
-    const startLogical = c2p(pts[0], pts[1]);
-    const endLogical = c2p(pts[2], pts[3]);
-
-    const s = this._properties.scale;
+    const pts = this.line.points();
+    const startLogical = {
+      x: pts[0] / DEFAULT_SCALE,
+      y: -pts[1] / DEFAULT_SCALE,
+    };
+    const endLogical = {
+      x: pts[2] / DEFAULT_SCALE,
+      y: -pts[3] / DEFAULT_SCALE,
+    };
     this._properties.lineEnds.start = {
-      x: startLogical.x / s,
-      y: startLogical.y / s,
+      x: startLogical.x,
+      y: startLogical.y,
     };
     this._properties.lineEnds.end = {
-      x: endLogical.x / s,
-      y: endLogical.y / s,
+      x: endLogical.x,
+      y: endLogical.y,
     };
   }
 

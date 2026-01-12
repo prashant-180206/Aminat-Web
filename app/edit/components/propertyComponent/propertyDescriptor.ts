@@ -63,7 +63,8 @@ export const usePropertyDescriptors = (): PropertyDescriptorData => {
     LatexContent: 470,
   };
 
-  const { activeMobject, scene, activeMobjectId } = useScene();
+  const { activeMobject, scene, activeMobjectId, mobjToggle } = useScene();
+  void mobjToggle;
   const [refresh, setRefresh] = useState(true);
 
   const getPropertyOrder = (key: string) => PROPERTY_ORDER[key] ?? 1000;

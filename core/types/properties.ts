@@ -1,5 +1,14 @@
 export type Point = { x: number; y: number };
 
+export interface Label {
+  labelText: string;
+  visible: boolean;
+  offset: Point;
+  fontsize: number;
+  color: string;
+  position: "start" | "center" | "end";
+}
+
 export interface BaseProperties {
   position: Point;
   color: string;
@@ -16,6 +25,7 @@ export interface CurveProperties extends BaseProperties {
     Yfunc: string;
   };
   thickness: number;
+  label: Label;
 }
 
 export interface LineProperties extends BaseProperties {
@@ -24,6 +34,7 @@ export interface LineProperties extends BaseProperties {
     end: Point;
   };
   thickness: number;
+  label: Label;
 }
 
 export interface DashedLineProperties extends LineProperties {
@@ -87,6 +98,7 @@ export interface PolygonProperties extends BaseProperties {
 
 export interface DotProperties extends BaseProperties {
   radius: number;
+  label: Label;
 }
 
 export interface PlaneProperties extends BaseProperties {

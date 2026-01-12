@@ -16,6 +16,7 @@ import PointsDropdownEditor from "../input/pointsDropdownEditor";
 import { PopoverLatexInput } from "../input/popoverLatexInput";
 import { RangesInput } from "../input/rangesInput";
 import { RangeInput } from "../input/rangeInput";
+import { LabelPopover } from "../input/labelInut";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type PropertyRenderer = (args: {
@@ -173,6 +174,15 @@ export const PROPERTY_REGISTRY: Record<string, PropertyRenderer> = {
         onChange={onChange}
         refreshFunc={refreshFunc}
         icon={<FunctionSquareIcon />}
+      />
+    </div>
+  ),
+  label: ({ value, onChange, refreshFunc }) => (
+    <div className="flex">
+      <LabelPopover
+        value={value}
+        onChange={onChange}
+        refreshFunc={refreshFunc}
       />
     </div>
   ),
