@@ -44,7 +44,7 @@ const SignIn = () => {
         toast.error(errorMessage);
       } else if (result?.ok) {
         toast.success("Signed in successfully!");
-        router.push("/scene/edit");
+        router.push("/project");
       }
     } catch (err) {
       const errorMessage = "An error occurred during sign in";
@@ -59,7 +59,7 @@ const SignIn = () => {
   const handleGithubSignIn = async () => {
     setIsGithubLoading(true);
     try {
-      await signIn("github", { callbackUrl: "/scene" });
+      await signIn("github", { callbackUrl: "/project" });
       console.log("Redirecting to GitHub for sign in");
     } catch (err) {
       toast.error("Failed to sign in with GitHub");
@@ -192,7 +192,7 @@ const SignIn = () => {
         {/* Demo Link */}
         <div className="mt-8 text-center">
           <p className="text-txt-sec mb-4">Want to try it first?</p>
-          <Link href="/scene/edit">
+          <Link href="/project">
             <Button
               variant="ghost"
               className="text-blue-600 hover:text-blue-700"

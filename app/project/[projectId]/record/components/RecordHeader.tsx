@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sparkles, ChevronLeft } from "lucide-react";
-import { TinyRecorderScene } from "../../edit/recorder";
+import { TinyRecorderScene } from "../../../[projectId]/edit/recorder";
 
 const RecordHeader = () => {
   return (

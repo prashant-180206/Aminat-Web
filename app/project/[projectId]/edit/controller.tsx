@@ -33,7 +33,7 @@ const Controller = () => {
   };
 
   return (
-    <div className="flex items-center gap-0.5 rounded-md border bg-background px-1 py-0.5 shadow-sm">
+    <div className="flex items-center gap-0.5 rounded-md border bg-background px-1 shadow-sm">
       {/* Reverse */}
       <Tooltip>
         <TooltipTrigger asChild>

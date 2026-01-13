@@ -120,7 +120,7 @@ export function ProjectCard({ project, onProjectDeleted }: ProjectCardProps) {
         </div>
 
         {/* Action Button */}
-        <Link href={`/scene/edit?projectId=${project._id}`}>
+        <Link href={`/project/${project._id}/edit`}>
           <Button className="w-full gap-2">
             <Play className="w-4 h-4" />
             Open Project

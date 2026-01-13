@@ -14,8 +14,8 @@ export default withAuth({
 // Configure which routes to protect
 export const config = {
   matcher: [
-    "/scene/edit/:path*",
-    "/scene/record/:path*",
+    "/project/:path*/edit/:path*",
+    "/project/:path*/record/:path*",
     "/api/protected/:path*",
     "/api/projects/:path*",
   ],

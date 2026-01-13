@@ -8,13 +8,9 @@ const EditSidebar = dynamic(() => import("./components/sidebar"), {
   ssr: false,
 });
 
-const EditorHeader = dynamic(() => import("./components/EditorHeader"), {
-  ssr: false,
-});
-// import EditorHeader from "./components/EditorHeader";
 import EditorFooter from "./components/EditorFooter";
 import Controller from "./controller";
-import SceneView from "../scene";
+import SceneView from "../../scene";
 import TimeLine from "./timeline";
 
 export default function Layout({
@@ -25,9 +21,7 @@ export default function Layout({
   panel?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-screen md:h-screen w-full bg-background no-scrollbar">
-      {/* Header */}
-      <EditorHeader />
+    <div className="flex flex-col min-h-[calc(100vh-3.6rem)] md:h-[calc(100vh-3.5rem)] w-full bg-background no-scrollbar">
       {/* Main Content Area */}
       <div className="flex flex-row flex-1 overflow-hidden">
         {/* Left Sidebar with route content */}

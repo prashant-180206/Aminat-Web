@@ -20,7 +20,7 @@ import {
   // SquareCode,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import React from "react";
 
 type SidebarProps = {
@@ -28,16 +28,32 @@ type SidebarProps = {
 };
 
 const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
-  const pathname = usePathname();
+  const { projectId } = useParams();
+  const path = usePathname();
 
-  const isActive = (route: string) => pathname?.startsWith(route);
+  const isActive = (route: string) => path.endsWith(route);
 
   const navItems = [
-    { route: "/scene/edit/mobjects", icon: DraftingCompass, label: "Mobjects" },
-    { route: "/scene/edit/animations", icon: PlayCircle, label: "Animations" },
-    { route: "/scene/edit/trackers", icon: Sigma, label: "Trackers" },
-    // { route: "/edit/code", icon: SquareCode, label: "Code Editor" },
-    { route: "/scene/edit/settings", icon: Settings, label: "Settings" },
+    {
+      route: `/project/${projectId}/mobjects`,
+      icon: DraftingCompass,
+      label: "Mobjects",
+    },
+    {
+      route: `/project/${projectId}/animations`,
+      icon: PlayCircle,
+      label: "Animations",
+    },
+    {
+      route: `/project/${projectId}/trackers`,
+      icon: Sigma,
+      label: "Trackers",
+    },
+    {
+      route: `/project/${projectId}/settings`,
+      icon: Settings,
+      label: "Settings",
+    },
   ];
 
   return (

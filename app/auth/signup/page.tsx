@@ -89,7 +89,7 @@ const SignUp = () => {
       });
 
       if (signInResult?.ok) {
-        router.push("/scene/edit");
+        router.push("/project");
       } else {
         // Account created but sign in failed, redirect to sign in page
         router.push("/auth/signin");

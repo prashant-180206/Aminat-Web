@@ -56,7 +56,7 @@ export function CreateProjectDialog({
       onProjectCreated?.();
 
       // Navigate to edit page with the new project
-      router.push(`/scene/edit?projectId=${project.project._id}`);
+      router.push(`/project/projectId=${project.project._id}/edit`);
     } catch (error) {
       toast.error("An error occurred");
       console.error(error);
