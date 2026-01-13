@@ -1,24 +1,29 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Github } from "lucide-react";
+import { toast } from "sonner";
 
 const SignUp = () => {
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
   });
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -54,9 +59,59 @@ const SignUp = () => {
     }
 
     setIsLoading(true);
-    // TODO: Implement actual authentication
-    console.log("Sign up with:", formData);
-    setTimeout(() => setIsLoading(false), 1000);
+
+    try {
+      // Create user account
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message || "Failed to create account");
+        toast.error(data.message || "Failed to create account");
+        return;
+      }
+
+      toast.success("Account created successfully! Signing in...");
+
+      // Sign in after registration
+      const signInResult = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (signInResult?.ok) {
+        router.push("/scene/edit");
+      } else {
+        // Account created but sign in failed, redirect to sign in page
+        router.push("/auth/signin");
+      }
+    } catch (err) {
+      setError("An error occurred during sign up");
+      toast.error("An error occurred during sign up");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithubSignUp = async () => {
+    setIsGithubLoading(true);
+    try {
+      await signIn("github");
+    } catch (err) {
+      toast.error("Failed to sign up with GitHub");
+      console.error(err);
+      setIsGithubLoading(false);
+    }
   };
 
   return (
@@ -89,6 +144,32 @@ const SignUp = () => {
             </div>
           )}
 
+          {/* OAuth Buttons */}
+          <div className="space-y-3 mb-6">
+            <Button
+              type="button"
+              onClick={handleGithubSignUp}
+              disabled={isGithubLoading}
+              className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+            >
+              <Github className="w-4 h-4 mr-2" />
+              {isGithubLoading ? "Signing up..." : "Sign up with GitHub"}
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-card text-txt py-4 z-10">
+                Or sign up with email
+              </span>
+            </div>
+          </div>
+
+          {/* Email/Password Form */}
           <form onSubmit={handleSignUp} className="space-y-4">
             {/* Full Name */}
             <div>

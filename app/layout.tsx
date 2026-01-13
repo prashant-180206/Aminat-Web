@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProviders } from "../hooks/providers";
 
 export const metadata: Metadata = {
   title: "Animat - Math",
@@ -19,9 +20,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       > */}
       <body className={`dark`}>
-        <Toaster duration={2000} />
-
-        {children}
+        <AuthProviders>
+          <Toaster duration={2000} />
+          {children}
+        </AuthProviders>
       </body>
     </html>
   );

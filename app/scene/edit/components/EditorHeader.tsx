@@ -19,7 +19,7 @@ import {
   Download,
 } from "lucide-react";
 import { useScene } from "@/hooks/SceneContext";
-import { TinyRecorderScene } from "@/app/scene/edit/recorder";
+import { signOut } from "next-auth/react";
 
 const EditorHeader = () => {
   const { scene } = useScene();
@@ -79,6 +79,13 @@ const EditorHeader = () => {
 
   const handleResetAll = () => {
     scene?.animManager.resetAll();
+  };
+
+  const handleLogout = async () => {
+    const res = await signOut();
+    if (res) {
+      console.log("User signed out successfully");
+    }
   };
 
   return (
@@ -144,12 +151,19 @@ const EditorHeader = () => {
 
         {/* User Actions */}
         <div className="flex items-center gap-2">
-          <TinyRecorderScene />
           <Link href="/">
             <Button variant="ghost" size="sm">
               Exit Editor
             </Button>
           </Link>
+          <Link href="/scene/record">
+            <Button variant="ghost" size="sm">
+              Go to Record
+            </Button>
+          </Link>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            Logout
+          </Button>
         </div>
       </div>
     </header>

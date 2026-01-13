@@ -9,28 +9,26 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { useScene } from "@/hooks/SceneContext";
-import { Play, RotateCcw, Rewind, SkipForward } from "lucide-react";
+import { Play, RotateCcw, Rewind } from "lucide-react";
+import { toast } from "sonner";
 
 const Controller = () => {
   const { scene, animRefresh } = useScene();
 
   const play = () => {
-    scene?.animManager.animate();
+    const result = scene?.animManager.animate();
+    if (!result) toast.error("All animations have been played");
     animRefresh();
   };
 
   const reverse = () => {
-    scene?.animManager.reverseAnimate();
+    const res = scene?.animManager.reverseAnimate();
+    if (!res) toast.error("All animations have been reversed");
     animRefresh();
   };
 
-  const reset = async () => {
-    await scene?.animManager.resetAll();
-    animRefresh();
-  };
-
-  const finish = () => {
-    scene?.animManager.finishAll();
+  const reset = () => {
+    scene?.animManager.resetAll();
     animRefresh();
   };
 
@@ -81,21 +79,6 @@ const Controller = () => {
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">Reset</TooltipContent>
-      </Tooltip>
-
-      {/* Finish */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={finish}
-            className="h-6 w-6 p-0"
-          >
-            <SkipForward className="h-3.5 w-3.5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="top">Finish</TooltipContent>
       </Tooltip>
     </div>
   );

@@ -7,6 +7,12 @@ import { parse } from "mathjs";
 import { MDashedLine } from "../../mobjects/simple/dashedLine";
 
 export class MobjectAnimAdder {
+  /**
+   * The function `addLineAnimations` in TypeScript adds animation functionality to a line, vector, or
+   * dashed line object by animating changes to its start and end points.
+   * @param {MLine | MVector | MDashedLine} mobj - The `mobj` parameter in the `addLineAnimations`
+   * function can be of type `MLine`, `MVector`, or `MDashedLine`.
+   */
   static addLineAnimations(mobj: MLine | MVector | MDashedLine) {
     mobj.animgetter.addAnimFunc("LineStart", {
       title: "Line Start",
@@ -35,7 +41,8 @@ export class MobjectAnimAdder {
           autoplay: false,
           duration: args.duration * 1000 || 1000,
           onUpdate: (t) => {
-            const progress = easefunc(t.progress);
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const progress = easefunc(p);
             const newX = currentpos.x + (targetpos.x - currentpos.x) * progress;
             const newY = currentpos.y + (targetpos.y - currentpos.y) * progress;
             mobj.properties = {
@@ -86,7 +93,8 @@ export class MobjectAnimAdder {
           autoplay: false,
           duration: args.duration * 1000 || 1000,
           onUpdate: (t) => {
-            const progress = easefunc(t.progress);
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const progress = easefunc(p);
             const newX = currentpos.x + (targetpos.x - currentpos.x) * progress;
             const newY = currentpos.y + (targetpos.y - currentpos.y) * progress;
             mobj.properties = {
@@ -137,7 +145,8 @@ export class MobjectAnimAdder {
           autoplay: false,
           duration: args.duration * 1000 || 1000,
           onUpdate: (t) => {
-            const progress = easefunc(t.progress);
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const progress = easefunc(p);
             const newStart =
               currentpos[0] + (targetpos.start - currentpos[0]) * progress;
             const newEnd =
@@ -207,7 +216,8 @@ export class MobjectAnimAdder {
           autoplay: false,
           duration: args.duration * 1000 || 1000,
           onUpdate: (t) => {
-            const progress = easefunc(t.progress);
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const progress = easefunc(p);
             const newXFunc = `${currentXFunc} + (${TargetXFunc} - ${currentXFunc}) * ${progress}`;
             const newYFunc = `${currentYFunc} + (${TargetYFunc} - ${currentYFunc}) * ${progress}`;
             mobj.updateFunctions(newXFunc, newYFunc);

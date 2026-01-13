@@ -33,11 +33,11 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
   const isActive = (route: string) => pathname?.startsWith(route);
 
   const navItems = [
-    { route: "/edit/mobjects", icon: DraftingCompass, label: "Mobjects" },
-    { route: "/edit/animations", icon: PlayCircle, label: "Animations" },
-    { route: "/edit/trackers", icon: Sigma, label: "Trackers" },
+    { route: "/scene/edit/mobjects", icon: DraftingCompass, label: "Mobjects" },
+    { route: "/scene/edit/animations", icon: PlayCircle, label: "Animations" },
+    { route: "/scene/edit/trackers", icon: Sigma, label: "Trackers" },
     // { route: "/edit/code", icon: SquareCode, label: "Code Editor" },
-    { route: "/edit/settings", icon: Settings, label: "Settings" },
+    { route: "/scene/edit/settings", icon: Settings, label: "Settings" },
   ];
 
   return (

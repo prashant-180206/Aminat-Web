@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Scene from "@/core/classes/scene";
+// import Scene from "@/core/classes/scene";
 import { useScene } from "@/hooks/SceneContext";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
-import { Mobject } from "@/core/types/mobjects";
+// import { Mobject } from "@/core/types/mobjects";
 // import { useScene } from "@/context/SceneContext";
 
 interface SceneViewProps {
@@ -12,31 +12,11 @@ interface SceneViewProps {
 }
 
 export default function SceneView({ scaleFactor = 0.45 }: SceneViewProps) {
-  const { scene, setScene, setActiveMobject, setActiveMobjectId } = useScene();
+  const { setSceneContainer } = useScene();
   const containerref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerref.current && !scene) {
-      const scene = new Scene({
-        container: containerref.current,
-        width: DEFAULT_WIDTH,
-        height: DEFAULT_HEIGHT,
-      });
-      setScene(scene);
-
-      scene.addMobjectFunction((mobj: Mobject) => {
-        mobj.on("dragmove", mobj.UpdateFromKonvaProperties);
-        mobj.on("click", () => {
-          scene.activeMobject = mobj;
-          setActiveMobject(mobj);
-          setActiveMobjectId(mobj.id());
-          mobj.UpdateFromKonvaProperties();
-        });
-        scene.activeMobject = mobj;
-        setActiveMobject(mobj);
-        setActiveMobjectId(mobj.id());
-      });
-    }
+    setSceneContainer?.(containerref.current!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

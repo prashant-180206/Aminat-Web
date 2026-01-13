@@ -2,60 +2,123 @@
 
 import { KonvaRecorder } from "@/core/KonvaRecorder";
 import { useScene } from "@/hooks/SceneContext";
-import React, { useRef, useState } from "react";
-// import { Stage, Layer, Circle, Text } from "react-konva";
-// import { KonvaRecorder } from './KonvaRecorder'; // The class from the previous step
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { CircleDot, Square, Timer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 export const TinyRecorderScene = () => {
   const { scene } = useScene();
 
   const recorderRef = useRef<KonvaRecorder | null>(null);
+  const timerRef = useRef<number | null>(null);
+
   const [isRecording, setIsRecording] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+
+  const formatTime = (s: number) => {
+    const mm = String(Math.floor(s / 60)).padStart(2, "0");
+    const ss = String(s % 60).padStart(2, "0");
+    return `${mm}:${ss}`;
+  };
+
+  const startTimer = () => {
+    timerRef.current = window.setInterval(() => {
+      setSeconds((s) => s + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
 
   const startRecording = () => {
-    if (!scene) return;
+    if (!scene || isRecording) return;
 
-    // Initialize the recorder with the current stage
-    recorderRef.current = new KonvaRecorder(scene, { fps: 30 });
+    recorderRef.current = new KonvaRecorder(scene);
     recorderRef.current.start();
+
+    setSeconds(0);
     setIsRecording(true);
+    startTimer();
+
+    toast.success("Recording started");
   };
 
   const stopRecording = async () => {
     if (!recorderRef.current) return;
 
-    const videoUrl = await recorderRef.current.stop();
-    recorderRef.current.saveToDisk(videoUrl, "canvas-capture.webm");
+    try {
+      const videoUrl = await recorderRef.current.stop();
+      recorderRef.current.saveToDisk(videoUrl, "canvas-capture.webm");
+      toast.success("Recording saved");
+    } catch {
+      toast.error("Failed to save recording");
+    }
 
-    // Cleanup
+    stopTimer();
     setIsRecording(false);
     recorderRef.current = null;
   };
 
+  useEffect(() => {
+    return () => stopTimer();
+  }, []);
+
   if (!scene) {
-    return <div>Loading scene...</div>;
+    return <div className="text-sm text-muted-foreground">Loading scene…</div>;
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 bg-gray-900 rounded-lg">
-      {/* Control UI */}
-      <div className="flex gap-2">
-        {!isRecording ? (
-          <button
-            onClick={startRecording}
-            className="px-4 py-2 bg-red-600 text-sm text-white rounded-full hover:bg-red-700 transition"
-          >
-            ⏺ Record Scene
-          </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            className="px-4 py-2 bg-gray-200 text-black rounded-full animate-pulse"
-          >
-            ⏹ Stop & Save
-          </button>
-        )}
-      </div>
-    </div>
+    <>
+      {/* Fixed Recording Bar */}
+      {isRecording && (
+        <div className="fixed top-4 left-[50%] translate-x-[-50%] border-b w-40  bg-background/90 backdrop-blur">
+          <div className=" flex h-12  items-center justify-between px-4">
+            <div className="flex items-center gap-3">
+              <Badge variant="destructive" className="gap-1">
+                <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                REC
+              </Badge>
+
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Timer size={14} />
+                {formatTime(seconds)}
+              </div>
+            </div>
+
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={stopRecording}
+              className="gap-2"
+            >
+              <Square size={14} />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Normal Start Button */}
+      <Card className="inline-flex items-center gap-3 p-3">
+        <Button
+          onClick={startRecording}
+          disabled={isRecording}
+          className="gap-2"
+        >
+          <CircleDot size={16} />
+          Start Recording
+        </Button>
+
+        <span className="text-xs text-muted-foreground">
+          Records current Konva scene
+        </span>
+      </Card>
+    </>
   );
 };

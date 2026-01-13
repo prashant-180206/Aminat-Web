@@ -31,7 +31,8 @@ export class AnimGetter {
           duration: args.duration ? args.duration * 1000 : 1000,
           autoplay: false,
           onUpdate: (t) => {
-            const transformedProgress = easefunc(t.progress);
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const transformedProgress = easefunc(p);
             this.node.properties = {
               scale: transformedProgress * 1.0,
               opacity: transformedProgress * 1.0,
@@ -69,7 +70,7 @@ export class AnimGetter {
           duration: args.duration ? args.duration * 1000 : 1000,
           autoplay: false,
           onUpdate: (t) => {
-            const progress = t.progress;
+            const progress = t.reversed ? 1 - t.progress : t.progress;
             const transformedProgress = easefunc(progress);
             this.node.properties = {
               scale: 1.0 - transformedProgress * 1.0,
@@ -114,7 +115,7 @@ export class AnimGetter {
           duration: args.duration ? args.duration * 1000 : 1000,
           autoplay: false,
           onUpdate: (t) => {
-            const progress = t.progress;
+            const progress = t.reversed ? 1 - t.progress : t.progress;
             const transformedProgress = easefunc(progress);
             this.node.properties = {
               position: {

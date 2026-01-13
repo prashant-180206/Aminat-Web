@@ -1,24 +1,71 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Github } from "lucide-react";
+import { toast } from "sonner";
 
 const SignIn = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    // Validation
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
     setIsLoading(true);
-    // TODO: Implement actual authentication
-    console.log("Sign in with:", { email, password });
-    setTimeout(() => setIsLoading(false), 1000);
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        const errorMessage = result.error || "Invalid email or password";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } else if (result?.ok) {
+        toast.success("Signed in successfully!");
+        router.push("/scene/edit");
+      }
+    } catch (err) {
+      const errorMessage = "An error occurred during sign in";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithubSignIn = async () => {
+    setIsGithubLoading(true);
+    try {
+      await signIn("github", { callbackUrl: "/scene" });
+      console.log("Redirecting to GitHub for sign in");
+    } catch (err) {
+      toast.error("Failed to sign in with GitHub");
+      console.error(err);
+      setIsGithubLoading(false);
+    }
   };
 
   return (
@@ -44,6 +91,39 @@ const SignIn = () => {
             </p>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* OAuth Buttons */}
+          <div className="space-y-3 mb-6">
+            <Button
+              type="button"
+              onClick={handleGithubSignIn}
+              disabled={isGithubLoading}
+              className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+            >
+              <Github className="w-4 h-4 mr-2" />
+              {isGithubLoading ? "Signing in..." : "Sign in with GitHub"}
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-card text-txt py-4 z-10">
+                Or sign in with email
+              </span>
+            </div>
+          </div>
+
+          {/* Email/Password Form */}
           <form onSubmit={handleSignIn} className="space-y-4">
             {/* Email */}
             <div>
@@ -97,26 +177,6 @@ const SignIn = () => {
             </Button>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-card text-txt py-4 z-10">Or</span>
-            </div>
-          </div>
-
-          {/* Social Sign In (Coming Soon) */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full border-gray-300"
-            disabled
-          >
-            Continue with GitHub
-          </Button>
-
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-txt-sec">
             {"Don't have an account?"}{" "}
@@ -132,7 +192,7 @@ const SignIn = () => {
         {/* Demo Link */}
         <div className="mt-8 text-center">
           <p className="text-txt-sec mb-4">Want to try it first?</p>
-          <Link href="/edit">
+          <Link href="/scene/edit">
             <Button
               variant="ghost"
               className="text-blue-600 hover:text-blue-700"

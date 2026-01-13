@@ -14,6 +14,15 @@ export class AnimationManager {
 
   //  * Adds a group of animations that should play together
 
+  /**
+   * The function `addAnimations` takes in an array of animation metadata objects, stores the data in
+   * various data structures, and returns an array of IDs of the added animations.
+   * @param {AnimMeta[]} tweens - The `tweens` parameter in the `addAnimations` function is an array of
+   * objects of type `AnimMeta`. Each object in the array represents animation data with the following
+   * properties:
+   * @returns The `addAnimations` function returns an array of strings containing the IDs of the
+   * animations that were added.
+   */
   addAnimations(...tweens: AnimMeta[]): string[] {
     const ids: string[] = [];
 
@@ -47,6 +56,17 @@ export class AnimationManager {
 
   //  * Moves a whole animation group up or down in the playback order
 
+  /**
+   * The function `moveGroup` swaps the positions of two groups in an array while also updating the
+   * active index if necessary.
+   * @param {number} groupIndex - The `groupIndex` parameter is a number that represents the index of
+   * the group you want to move within the `order` array.
+   * @param {"up" | "down"} direction - The `direction` parameter in the `moveGroup` function specifies
+   * whether the group should be moved up or down. It can have two possible values: "up" or "down". If
+   * the direction is "up", the group at the specified `groupIndex` will be moved up one position.
+   * @returns If the `groupIndex` is out of bounds or if the `targetIndex` after moving the group is
+   * out of bounds, the function will return early without performing any actions.
+   */
   moveGroup(groupIndex: number, direction: "up" | "down") {
     if (groupIndex < 0 || groupIndex >= this.order.length) {
       return;
@@ -76,6 +96,11 @@ export class AnimationManager {
     }
   }
 
+  getProgress(): number {
+    if (this.order.length === 0) return 0;
+    return this.activeIndex / this.order.length;
+  }
+
   getOrder(): string[][] {
     return this.order.map((group) => [...group]);
   }
@@ -87,35 +112,32 @@ export class AnimationManager {
     );
   }
 
-  animate() {
-    if (this.order.length === 0) return;
+  animate(): boolean {
+    if (this.order.length === 0) return false;
     if (this.activeIndex >= this.order.length) {
-      this.resetAll();
-      this.activeIndex = 0;
+      return false;
     }
     const group = this.order[this.activeIndex];
     group.forEach((id) => {
       this.animations.get(id)?.anim.restart();
     });
     this.activeIndex = this.activeIndex + 1;
+
+    return true;
   }
 
-  reverseAnimate() {
-    if (this.order.length === 0) return;
-
-    const group = this.order[this.activeIndex];
-
-    if (this.activeIndex === 0) {
-      // Completed a full reverse cycle, reset all animations
-      this.finishAll();
+  reverseAnimate(): boolean {
+    if (this.order.length === 0) return false;
+    const targetno = this.activeIndex - 1;
+    if (targetno < 0) {
+      return false;
     }
-
-    // THEN REVERSE
+    const group = this.order[targetno];
     group.forEach((id) => {
       this.animations.get(id)?.anim.reverse();
     });
-    this.activeIndex =
-      (this.activeIndex - 1 + this.order.length) % this.order.length;
+    this.activeIndex--;
+    return true;
   }
 
   removeAnimation(id: string) {
@@ -179,24 +201,6 @@ export class AnimationManager {
     }
 
     this.activeIndex = 0;
-  }
-
-  finishAll() {
-    for (let g = this.order.length - 1; g >= 0; g--) {
-      const group = this.order[g];
-
-      // REVERSE within group too
-      for (let i = group.length - 1; i >= 0; i--) {
-        const id = group[i];
-        const animData = this.animations.get(id);
-        const tween = animData?.anim;
-
-        if (tween) {
-          // tween.finish(); // Jump to END state (scale=1, opacity=1 for Create)
-          tween.complete(); // Jump to END state (scale=1, opacity=1 for Create)
-        }
-      }
-    }
   }
 
   clear() {
