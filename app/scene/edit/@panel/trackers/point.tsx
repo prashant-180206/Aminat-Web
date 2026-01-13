@@ -21,7 +21,7 @@ import PtUpdateSliderPopover from "./components/updatePtPopover";
 import AnimatePtSliderPopover from "./components/animatePtSlider";
 // import { getAnimationforPtTracker } from "@/core/utils/valAnimation";
 import { toast } from "sonner";
-import { TrackerAnimator } from "@/core/utils/valAnimation";
+// import { TrackerAnimatorfuncs } from "@/core/utils/valAnimation";
 
 const PtValueTrackersPanelTab = () => {
   const { scene, valRefresh, animRefresh } = useScene();
@@ -190,18 +190,16 @@ const PtValueTrackersPanelTab = () => {
                     {/* <div> */}
                     <AnimatePtSliderPopover
                       onApply={({ duration, targetX, targetY, easing }) => {
-                        const anim = TrackerAnimator.getAnimationforPtTracker(
-                          tm.tracker,
-                          { x: targetX, y: targetY },
+                        const success = scene?.trackerAnimator.animatePtTracker(
                           tm.id,
+                          { x: targetX, y: targetY },
                           duration,
                           easing
                         );
-                        if (!anim) {
+                        if (!success) {
                           toast.error("Failed to create animation for slider.");
                           return;
                         }
-                        scene?.animManager.addAnimations(anim);
                         scene?.animManager.animate();
                         toast.success("Animation added to queue.");
                         valRefresh();
@@ -222,19 +220,17 @@ const PtValueTrackersPanelTab = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const { success, anim } =
-                          TrackerAnimator.getPtSliderDisappearAnimation(tm);
-
-                        if (!success || !anim) {
+                        const success =
+                          scene?.trackerAnimator.addPtSliderDisappearAnimation(
+                            tm.id
+                          );
+                        if (!success) {
                           toast.error(
                             "Failed to create hide slider animation."
                           );
                           return;
                         }
-
-                        scene?.animManager.addAnimations(anim);
                         toast.success("Hide slider animation added to queue.");
-
                         scene?.animManager.animate();
                         valRefresh();
                         animRefresh();

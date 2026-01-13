@@ -21,10 +21,14 @@ const PtAddTrackerCard = ({ onTrackerAdded }: PtAddTrackerCardProps) => {
 
   const addTracker = () => {
     if (!scene || !trackerName.trim()) return;
-    scene.trackerManager.addPtValueTracker(trackerName, {
+    const success = scene.trackerManager.addPtValueTracker(trackerName, {
       x: trackerPointX,
       y: trackerPointY,
     });
+    if (!success) {
+      toast.error("Tracker with this name already exists");
+      return;
+    }
 
     toast.success("Point tracker created");
     setTrackerName("");

@@ -1,7 +1,7 @@
 import Konva from "@/lib/konva";
 import { ValueTracker } from "@/core/classes/Tracker/valuetracker";
 import { PtTrackerMeta, TrackerMeta } from "@/core/types/tracker";
-import { TrackerManagerData } from "@/core/types/file";
+import { TrackerData } from "@/core/types/file";
 import { PtValueTracker } from "@/core/classes/Tracker/ptValuetracker";
 import { PtSlider } from "@/core/classes/Tracker/sliders/PtSlider";
 import { Slider } from "@/core/classes/Tracker/sliders/slider";
@@ -18,9 +18,11 @@ export class TrackerManager {
   }
 
   private layer: Konva.Layer;
+  private sliderLayer: Konva.Layer;
 
-  constructor(layer: Konva.Layer) {
+  constructor(layer: Konva.Layer, sliderLayer: Konva.Layer) {
     this.layer = layer;
+    this.sliderLayer = sliderLayer;
     this.connManager = new TrackerConnectionManager(
       this.trackers,
       this.pointTrackers
@@ -149,8 +151,8 @@ export class TrackerManager {
     this.pointTrackers.clear();
   }
 
-  storeAsObj(): TrackerManagerData {
-    const data: TrackerManagerData = {
+  storeAsObj(): TrackerData {
+    const data: TrackerData = {
       trackers: [],
       pointtrackers: [],
       connections: [],
@@ -177,13 +179,13 @@ export class TrackerManager {
     return data;
   }
 
-  loadFromObj(obj: TrackerManagerData) {
+  loadFromObj(obj: TrackerData) {
     // Load scalar trackers
     obj.trackers.forEach((t) => {
       const { tracker, success } = this.addValueTracker(t.id, t.value);
       if (success && tracker && t.sliders) {
         const { success: sSuccess, slider } = this.addSlider(t.id, t.sliders);
-        if (sSuccess && slider) this.layer.add(slider);
+        if (sSuccess && slider) this.sliderLayer.add(slider);
       }
     });
 
@@ -203,7 +205,7 @@ export class TrackerManager {
           },
           pt.sliders.rank
         );
-        if (sSuccess && slider) this.layer.add(slider);
+        if (sSuccess && slider) this.sliderLayer.add(slider);
       }
     });
 

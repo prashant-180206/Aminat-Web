@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Combobox } from "@/components/combobox";
 import { useScene } from "@/hooks/SceneContext";
+import { toast } from "sonner";
 
 interface PtConnectorFunctionsCardProps {
   connectorNames: string[];
@@ -37,8 +38,10 @@ const PtConnectorFunctionsCard = ({
       !selectedTracker ||
       !selectedFuncX ||
       !expressionX
-    )
+    ) {
+      toast.error("Missing information for connecting X function");
       return;
+    }
 
     const success = scene.connManager.ConnectXPtValueTrackerToMobject(
       selectedTracker,
@@ -46,6 +49,11 @@ const PtConnectorFunctionsCard = ({
       selectedFuncX,
       expressionX
     );
+    if (!success) {
+      toast.error("Failed to connect X function to mobject " + selectedTracker);
+    } else {
+      toast.success("Connected X function to mobject " + selectedTracker);
+    }
 
     onConnectionMade(success);
   };
@@ -66,6 +74,10 @@ const PtConnectorFunctionsCard = ({
       selectedFuncY,
       expressionY
     );
+    if (!success) {
+      toast.error("Failed to connect X function to mobject " + selectedTracker);
+    }
+    toast.success("Connected Y function to mobject " + selectedTracker);
 
     onConnectionMade(success);
   };

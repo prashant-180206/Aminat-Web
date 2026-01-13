@@ -9,12 +9,22 @@ export class MobjectFactory {
   static create(
     type: string,
     layer: Konva.Layer,
+    textlayer: Konva.Layer,
     opts: {
       id?: string;
       zIndex: number;
     }
   ): Mobject {
     const mobject = MobjectMap[type].func();
+
+    if (
+      (mobject instanceof Konva.Text || mobject instanceof Konva.Image) &&
+      textlayer
+    ) {
+      textlayer.add(mobject);
+    } else {
+      layer.add(mobject);
+    }
 
     mobject.id(opts.id ?? `${mobject.name()}-${opts.zIndex}`);
     mobject.properties = { zindex: opts.zIndex };
@@ -24,7 +34,6 @@ export class MobjectFactory {
       mobject.UpdateFromKonvaProperties();
     });
 
-    layer.add(mobject);
     return mobject;
   }
 }

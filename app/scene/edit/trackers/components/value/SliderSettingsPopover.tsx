@@ -9,8 +9,7 @@ import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
-import { NumberStepperInput } from "@/app/edit/components/input/numberInput";
-import { TrackerAnimator } from "@/core/utils/valAnimation";
+import { NumberStepperInput } from "@/app/scene/edit/components/input/numberInput";
 
 interface SliderSettingsPopoverProps {
   trackerId: string;
@@ -37,19 +36,15 @@ const SliderSettingsPopover = ({
   const makeSlider = () => {
     if (!scene) return;
 
-    const { success, anim } = TrackerAnimator.getSliderAppearAnimation(
-      scene.trackerManager,
+    const success = scene.trackerAnimator.addSliderAppearAnimation(
       trackerId,
-      scene.layer,
       sliderInput
     );
 
-    if (!success || !anim) {
+    if (!success) {
       toast.error("Failed to create slider");
       return;
     }
-    // const anim = slider.appearAnim();
-    scene.animManager.addAnimations(anim);
     scene.animManager.animate();
     toast.success("Slider created");
     onSliderAdded?.();

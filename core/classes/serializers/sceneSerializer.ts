@@ -1,7 +1,7 @@
 import { SceneData } from "@/core/types/file";
 import Scene from "../scene";
 import { AnimMeta } from "@/core/types/animation";
-import { TrackerAnimator } from "@/core/utils/valAnimation";
+// import { TrackerAnimatorfuncs } from "@/core/utils/valAnimation";
 
 export class SceneSerializer {
   static serialize(scene: Scene): SceneData {
@@ -12,7 +12,6 @@ export class SceneSerializer {
       valFuncRelations: scene.connManager.valFuncRelations,
       ptValFuncRelations: scene.connManager.ptValFuncRelations,
     };
-
     scene.mobjManager.mobjectsMeta.forEach((meta) => {
       data.mobjects.push({
         type: meta.type,
@@ -64,100 +63,80 @@ export class SceneSerializer {
 
     /* ---------------- animations ---------------- */
     const animStoreData = data.animationsData.animations;
-    animStoreData.forEach((group) => {
-      const animMetaGrp: AnimMeta[] = [];
-      group.forEach((animMeta) => {
-        if (animMeta.category === "Mobject") {
-          const mobject = scene.getMobjectById(animMeta.targetId);
-          if (!mobject) return;
-          const animfuncmeta = mobject.animgetter.getAnimMeta(animMeta.type);
-          if (!animfuncmeta) return;
-          const anim = animfuncmeta.func(animMeta.animFuncInput);
-          if (!anim) return;
-          animMetaGrp.push(anim);
-        }
-        if (animMeta.category === "Tracker") {
-          const tracker = scene.trackerManager.getTracker(animMeta.targetId);
-          if (!tracker) return;
-          const animfuncmeta = TrackerAnimator.getAnimationforTracker(
-            tracker.tracker,
-            animMeta.animFuncInput.target as number,
-            animMeta.targetId,
-            animMeta.animFuncInput.duration as number,
-            animMeta.animFuncInput.easing as string
-          );
-          animMetaGrp.push(animfuncmeta);
-        }
-        if (animMeta.category === "PtTracker") {
-          const pttracker = scene.trackerManager.getPtValueTracker(
-            animMeta.targetId
-          );
-          if (!pttracker) return;
-          const animfuncmeta = TrackerAnimator.getAnimationforPtTracker(
-            pttracker.tracker,
-            {
-              x: animMeta.animFuncInput.targetX as number,
-              y: animMeta.animFuncInput.targetY as number,
-            },
-            animMeta.targetId,
-            animMeta.animFuncInput.duration as number,
-            animMeta.animFuncInput.easing as string
-          );
-          animMetaGrp.push(animfuncmeta);
-        }
-        if (animMeta.category === "Slider") {
-          // Slider animation loading to be implemented
-          const tracker = scene.trackerManager.getTracker(animMeta.targetId);
-          if (!tracker) return;
-          let anim;
-          if (animMeta.type === "SliderAppear") {
-            anim = TrackerAnimator.getSliderAppearAnimation(
-              scene.trackerManager,
-              tracker.id,
-              scene.layer,
-              {
-                min: animMeta.animFuncInput.min as number,
-                max: animMeta.animFuncInput.max as number,
-                rank: animMeta.animFuncInput.rank as number,
-              }
-            );
-          } else if (animMeta.type === "SliderDisappear") {
-            anim = TrackerAnimator.getSliderDisappearAnimation(tracker);
-          }
-          if (!anim || !anim.anim) return;
 
-          animMetaGrp.push(anim.anim);
-        }
-        if (animMeta.category === "PtSlider") {
-          const pttracker = scene.trackerManager.getPtValueTracker(
-            animMeta.targetId
-          );
-          if (!pttracker) return;
-          let anim;
-          if (animMeta.type === "PtSliderAppear") {
-            anim = TrackerAnimator.getPtSliderAppearAnimation(
-              scene.trackerManager,
-              pttracker.id,
-              scene.layer,
-              {
-                x: {
-                  min: animMeta.animFuncInput.minX as number,
-                  max: animMeta.animFuncInput.maxX as number,
-                },
-                y: {
-                  min: animMeta.animFuncInput.minY as number,
-                  max: animMeta.animFuncInput.maxY as number,
-                },
-                rank: animMeta.animFuncInput.rank as number,
+    animStoreData.forEach((group) => {
+      // --- Non-mobject single animations ---
+      if (group.length === 1) {
+        const a = group[0];
+        if (a.category !== "Mobject") {
+          const i = a.animFuncInput;
+
+          const trackerHandlers: Record<string, () => void> = {
+            Tracker: () =>
+              scene.trackerAnimator.animateTracker(
+                a.targetId,
+                i.target as number,
+                i.duration as number,
+                i.easing as string
+              ),
+
+            PtTracker: () =>
+              scene.trackerAnimator.animatePtTracker(
+                a.targetId,
+                { x: i.targetX as number, y: i.targetY as number },
+                i.duration as number,
+                i.easing as string
+              ),
+
+            Slider: () => {
+              if (a.type === "SliderAppear") {
+                scene.trackerAnimator.addSliderAppearAnimation(a.targetId, {
+                  min: i.min as number,
+                  max: i.max as number,
+                  rank: i.rank as number,
+                });
               }
-            );
-          } else if (animMeta.type === "PtSliderDisappear") {
-            anim = TrackerAnimator.getPtSliderDisappearAnimation(pttracker);
-          }
-          if (!anim || !anim.anim) return;
-          animMetaGrp.push(anim.anim);
+              if (a.type === "SliderDisappear") {
+                scene.trackerAnimator.addSliderDisappearAnimation(a.targetId);
+              }
+            },
+
+            PtSlider: () => {
+              if (a.type === "PtSliderAppear") {
+                scene.trackerAnimator.addPtSliderAppearAnimation(a.targetId, {
+                  minX: i.minX as number,
+                  maxX: i.maxX as number,
+                  minY: i.minY as number,
+                  maxY: i.maxY as number,
+                  rank: i.rank as number,
+                });
+              }
+              if (a.type === "PtSliderDisappear") {
+                scene.trackerAnimator.addPtSliderDisappearAnimation(a.targetId);
+              }
+            },
+          };
+
+          trackerHandlers[a.category]?.();
         }
+      }
+
+      // --- Mobject animations ---
+      const animMetaGrp: AnimMeta[] = [];
+
+      group.forEach((a) => {
+        const mobject = scene.getMobjectById(a.targetId);
+        if (!mobject) return;
+
+        const meta = mobject.animgetter.getAnimMeta(a.type);
+        if (!meta) return;
+
+        const anim = meta.func(a.animFuncInput);
+        if (!anim) return;
+
+        animMetaGrp.push(anim);
       });
+
       scene.animManager.addAnimations(...animMetaGrp);
     });
   }

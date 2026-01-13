@@ -10,40 +10,69 @@ import { ConnectionManager } from "./managers/connectionManager";
 import { TrackerManager } from "./managers/TrackerManager";
 import { Colors } from "../utils/colors";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "../config";
+import { TrackerAnimator } from "./managers/trackerAnimator";
 
 class Scene extends Konva.Stage {
   /* ---------------- Public ---------------- */
-
-  layer: Konva.Layer;
+  private layer: Konva.Layer;
+  private textlayer: Konva.Layer;
+  private sliderLayer: Konva.Layer;
   private _activeMobject: Mobject | null = null;
+
+  set editMode(value: boolean) {
+    if (value) {
+      this.layer.listening(true);
+      this.textlayer.listening(true);
+    } else {
+      this.layer.listening(false);
+      this.textlayer.listening(false);
+    }
+  }
   get activeMobject(): Mobject | null {
     return this._activeMobject;
   }
   set activeMobject(value: Mobject | null) {
     this._activeMobject = value;
   }
-
   /* ---------------- Private ---------------- */
   animManager: AnimationManager;
   trackerManager: TrackerManager;
+  trackerAnimator: TrackerAnimator;
   mobjManager: MobjectManager;
   connManager: ConnectionManager;
 
   constructor(config: Konva.StageConfig) {
     super(config);
     this.layer = new Konva.Layer();
+    this.textlayer = new Konva.Layer();
+    this.sliderLayer = new Konva.Layer();
+    this.layer.position({
+      x: DEFAULT_WIDTH / 2,
+      y: DEFAULT_HEIGHT / 2,
+    });
+    this.textlayer.position({
+      x: DEFAULT_WIDTH / 2,
+      y: DEFAULT_HEIGHT / 2,
+    });
     this.add(this.layer);
-    this.mobjManager = new MobjectManager(this.layer);
-    this.trackerManager = new TrackerManager(this.layer);
+    this.add(this.textlayer);
+    this.add(this.sliderLayer);
+    this.mobjManager = new MobjectManager(this.layer, this.textlayer);
+    this.trackerManager = new TrackerManager(this.layer, this.sliderLayer);
     this.connManager = new ConnectionManager(
       this.trackerManager,
       this.mobjManager
     );
     this.animManager = new AnimationManager();
+    this.trackerAnimator = new TrackerAnimator(
+      this.animManager,
+      this.trackerManager,
+      this.sliderLayer
+    );
 
     const bgrec = new Konva.Rect({
-      x: 0,
-      y: 0,
+      x: -DEFAULT_WIDTH / 2,
+      y: -DEFAULT_HEIGHT / 2,
       width: DEFAULT_WIDTH,
       height: DEFAULT_HEIGHT,
       fill: Colors.BG,
@@ -54,10 +83,6 @@ class Scene extends Konva.Stage {
   addMobjectFunction(func: (mobj: Mobject) => void) {
     this.mobjManager.addMobjectFunction(func);
   }
-
-  /* ============================================================ */
-  /* MOBJECT LIFECYCLE                                            */
-  /* ============================================================ */
 
   addMobject(type: string, id?: string): Mobject {
     return this.mobjManager.addMobject(type, id);

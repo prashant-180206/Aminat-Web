@@ -222,6 +222,10 @@ export class MobjectAnimAdder {
             const newYFunc = `${currentYFunc} + (${TargetYFunc} - ${currentYFunc}) * ${progress}`;
             mobj.updateFunctions(newXFunc, newYFunc);
           },
+          onComplete: () => {
+            mobj.properties.funcs.Xfunc = TargetXFunc;
+            mobj.properties.funcs.Yfunc = TargetYFunc;
+          },
         });
         return {
           id: `${mobj.id()}-ls-${TargetXFunc}-${TargetYFunc}-${

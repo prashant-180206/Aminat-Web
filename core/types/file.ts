@@ -14,7 +14,7 @@ export interface SceneData {
   }[];
 
   animationsData: AnimManagerData;
-  trackerManagerData: TrackerManagerData;
+  trackerManagerData: TrackerData;
   valFuncRelations: ValFuncRelations[];
   ptValFuncRelations: PtValFuncRelations[];
 }
@@ -23,7 +23,7 @@ export interface AnimManagerData {
   animations: AnimStoreData[][];
 }
 
-export interface TrackerManagerData {
+export interface TrackerData {
   trackers: {
     id: string;
     value: number;

@@ -41,4 +41,8 @@ export class TrackerConnector {
   getConnectorFunc(name: string): ((value: number) => void) | null {
     return this.connectorFuncs.get(name) || null;
   }
+
+  clearConnectorFuncs(): void {
+    this.connectorFuncs.clear();
+  }
 }

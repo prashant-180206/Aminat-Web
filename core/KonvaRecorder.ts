@@ -15,7 +15,7 @@ export class KonvaRecorder {
 
   constructor(stage: Konva.Stage, options: RecorderOptions = {}) {
     this.stage = stage;
-    this.fps = options.fps || 30;
+    this.fps = options.fps || 60;
     this.mimeType = options.mimeType || "video/webm; codecs=vp9";
   }
 
@@ -33,16 +33,14 @@ export class KonvaRecorder {
     }
 
     const stream = canvas.captureStream(this.fps);
-
     this.chunks = [];
 
     try {
       this.mediaRecorder = new MediaRecorder(stream, {
         mimeType: this.mimeType,
-        videoBitsPerSecond: 2500000, // 2.5 Mbps for clear math text
+        videoBitsPerSecond: 5000000,
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
+    } catch {
       console.warn("MimeType not supported, falling back to default");
       this.mediaRecorder = new MediaRecorder(stream);
     }
@@ -55,6 +53,30 @@ export class KonvaRecorder {
 
     this.mediaRecorder.start();
     console.log("⏺️ Recording started...");
+  }
+
+  /**
+   * Pauses the recording
+   */
+  public pause(): void {
+    if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+      this.mediaRecorder.pause();
+      console.log("⏸️ Recording paused.");
+    } else {
+      console.warn("Recorder is not recording.");
+    }
+  }
+
+  /**
+   * Resumes the recording after a pause
+   */
+  public resume(): void {
+    if (this.mediaRecorder && this.mediaRecorder.state === "paused") {
+      this.mediaRecorder.resume();
+      console.log("▶️ Recording resumed.");
+    } else {
+      console.warn("Recorder is not paused.");
+    }
   }
 
   /**
