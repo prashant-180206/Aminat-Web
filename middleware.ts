@@ -17,5 +17,6 @@ export const config = {
     "/scene/edit/:path*",
     "/scene/record/:path*",
     "/api/protected/:path*",
+    "/api/projects/:path*",
   ],
 };

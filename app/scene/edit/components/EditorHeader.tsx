@@ -10,14 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sparkles,
-  Save,
-  FolderOpen,
-  FileText,
-  Play,
-  Download,
-} from "lucide-react";
+import { Sparkles, Save, FolderOpen, FileText, Play } from "lucide-react";
 import { useScene } from "@/hooks/SceneContext";
 import { signOut } from "next-auth/react";
 
@@ -66,11 +59,6 @@ const EditorHeader = () => {
       }
     };
     input.click();
-  };
-
-  const handleExport = () => {
-    // Placeholder for future video export functionality
-    alert("Video export coming soon!");
   };
 
   const handlePlayAll = () => {
@@ -125,10 +113,6 @@ const EditorHeader = () => {
                 Save Project
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Export Video
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

@@ -38,9 +38,11 @@ const RecordPage = () => {
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    if (scene) scene.editMode = false;
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      if (scene) scene.editMode = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

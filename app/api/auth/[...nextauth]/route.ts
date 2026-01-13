@@ -7,10 +7,6 @@ import mongoClient from "@/lib/mongodb-client";
 import User from "@/lib/models/User";
 import bcrypt from "bcrypt";
 
-interface ExtendedSession extends Session {
-  user?: Session["user"] & { id?: string };
-}
-
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(mongoClient),
   session: {
@@ -71,11 +67,11 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     // 2. Pass the ID from the token into the session object for the client
-    async session({ session, token }): Promise<ExtendedSession> {
+    async session({ session, token }): Promise<Session> {
       if (session.user && token.id) {
         (session.user as { id: string }).id = token.id as string;
       }
-      return session as ExtendedSession;
+      return session;
     },
   },
 };
