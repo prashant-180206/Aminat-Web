@@ -28,7 +28,6 @@ export class KonvaRecorder {
     ) as HTMLCanvasElement;
 
     if (!canvas) {
-      console.error("Canvas element not found");
       return;
     }
 
@@ -41,7 +40,6 @@ export class KonvaRecorder {
         videoBitsPerSecond: 5000000,
       });
     } catch {
-      console.warn("MimeType not supported, falling back to default");
       this.mediaRecorder = new MediaRecorder(stream);
     }
 
@@ -52,7 +50,6 @@ export class KonvaRecorder {
     };
 
     this.mediaRecorder.start();
-    console.log("⏺️ Recording started...");
   }
 
   /**
@@ -61,9 +58,7 @@ export class KonvaRecorder {
   public pause(): void {
     if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
       this.mediaRecorder.pause();
-      console.log("⏸️ Recording paused.");
     } else {
-      console.warn("Recorder is not recording.");
     }
   }
 

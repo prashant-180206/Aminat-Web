@@ -5,6 +5,7 @@ import { createTimer, easings } from "animejs";
 import { ParametricCurve } from "../../mobjects/simple/curve";
 import { parse } from "mathjs";
 import { MDashedLine } from "../../mobjects/simple/dashedLine";
+import { Dot } from "../../mobjects/simple/dot";
 
 export class MobjectAnimAdder {
   /**
@@ -12,6 +13,8 @@ export class MobjectAnimAdder {
    * dashed line object by animating changes to its start and end points.
    * @param {MLine | MVector | MDashedLine} mobj - The `mobj` parameter in the `addLineAnimations`
    * function can be of type `MLine`, `MVector`, or `MDashedLine`.
+   *
+   * type and first parameter of func need to be same , for better serialization od scene
    */
   static addLineAnimations(mobj: MLine | MVector | MDashedLine) {
     mobj.animgetter.addAnimFunc("LineStart", {
@@ -234,6 +237,106 @@ export class MobjectAnimAdder {
           targetId: mobj.id(),
           type: "Functions",
           label: `Changing Range of ${mobj.id()} to (${TargetXFunc}, ${TargetYFunc})`,
+          animFuncInput: args,
+          anim: timer,
+          category: "Mobject",
+        };
+      },
+    });
+  }
+
+  /**
+   * The function `addLabelAnimations` adds animation functions for making labels appear and disappear
+   * on a given Mobject.
+   * @param {MLine | MVector | MDashedLine | ParametricCurve | Dot} mobj - The `mobj` parameter in the
+   * `addLabelAnimations` function is used to specify the target object to which the label animations
+   * will be applied. It can be of type `MLine`, `MVector`, `MDashedLine`, `ParametricCurve`, or `Dot`.
+   */
+  static addLabelAnimations(
+    mobj: MLine | MVector | MDashedLine | ParametricCurve | Dot
+  ) {
+    mobj.animgetter.addAnimFunc("LabelAppear", {
+      title: "Appear Label",
+      type: "LabelAppear",
+      targetId: mobj.id(),
+      input: {
+        duration: "number",
+        easing: "string",
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      func: (args: { [key: string]: any }) => {
+        const currentOpacity = mobj.properties.label.opacity;
+        const targetOpacity = 1;
+        const easefunc = args.easing
+          ? easings.eases[
+              easingMap[args.easing] as keyof typeof easings.eases.in
+            ]
+          : easings.eases.inOutQuad;
+        const timer = createTimer({
+          autoplay: false,
+          duration: args.duration * 1000 || 1000,
+          onUpdate: (t) => {
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const progress = easefunc(p);
+            const newOpacity =
+              currentOpacity + (targetOpacity - currentOpacity) * progress;
+            mobj.properties = {
+              label: {
+                ...mobj.properties.label,
+                opacity: newOpacity,
+              },
+            };
+          },
+        });
+        return {
+          id: `${mobj.id()}-showLabel`,
+          targetId: mobj.id(),
+          type: "Range",
+          label: `making label of ${mobj.id()} visible`,
+          animFuncInput: args,
+          anim: timer,
+          category: "Mobject",
+        };
+      },
+    });
+    mobj.animgetter.addAnimFunc("LabelDisappear", {
+      title: "Disappear Label",
+      type: "LabelDisappear",
+      targetId: mobj.id(),
+      input: {
+        duration: "number",
+        easing: "string",
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      func: (args: { [key: string]: any }) => {
+        const currentOpacity = mobj.properties.label.opacity;
+        const targetOpacity = 0;
+        const easefunc = args.easing
+          ? easings.eases[
+              easingMap[args.easing] as keyof typeof easings.eases.in
+            ]
+          : easings.eases.inOutQuad;
+        const timer = createTimer({
+          autoplay: false,
+          duration: args.duration * 1000 || 1000,
+          onUpdate: (t) => {
+            const p = t.reversed ? 1 - t.progress : t.progress;
+            const progress = easefunc(p);
+            const newOpacity =
+              currentOpacity + (targetOpacity - currentOpacity) * progress;
+            mobj.properties = {
+              label: {
+                ...mobj.properties.label,
+                opacity: newOpacity,
+              },
+            };
+          },
+        });
+        return {
+          id: `${mobj.id()}-showLabel`,
+          targetId: mobj.id(),
+          type: "Range",
+          label: `making label of ${mobj.id()} visible`,
           animFuncInput: args,
           anim: timer,
           category: "Mobject",

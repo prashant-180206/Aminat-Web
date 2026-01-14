@@ -5,6 +5,7 @@ import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { Colors } from "@/core/utils/colors";
+import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 // import { labelAble } from "./labelAble";
 // import type { Point } from './parametricCurve';
 
@@ -12,8 +13,8 @@ export class Dot extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
 
-  private circle: Konva.Circle;
-  private label: Konva.Text;
+  public circle: Konva.Circle;
+  public label: Konva.Text;
   private _properties: DotProperties = {
     position: { x: 0, y: 0 },
     color: Colors.PRIMARY,
@@ -29,6 +30,7 @@ export class Dot extends Konva.Group {
       fontsize: 32,
       color: Colors.TEXT,
       position: "center",
+      opacity: 1,
     },
     // ...config,
   };
@@ -69,6 +71,8 @@ export class Dot extends Konva.Group {
 
     this.properties = this._properties;
     this.name("Dot");
+
+    MobjectAnimAdder.addLabelAnimations(this);
     // this.className = "haveLabel";
   }
 

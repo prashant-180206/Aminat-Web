@@ -1,15 +1,18 @@
 export type Point = { x: number; y: number };
 
 export interface Label {
+  //done
   labelText: string;
   visible: boolean;
   offset: Point;
   fontsize: number;
   color: string;
   position: "start" | "center" | "end";
+  opacity: number;
 }
 
 export interface BaseProperties {
+  //done
   position: Point;
   color: string;
   scale: number;
@@ -19,6 +22,7 @@ export interface BaseProperties {
 }
 
 export interface CurveProperties extends BaseProperties {
+  //done
   parameterRange: [number, number];
   funcs: {
     Xfunc: string;
@@ -29,6 +33,7 @@ export interface CurveProperties extends BaseProperties {
 }
 
 export interface LineProperties extends BaseProperties {
+  //done
   lineEnds: {
     start: Point;
     end: Point;
@@ -38,20 +43,24 @@ export interface LineProperties extends BaseProperties {
 }
 
 export interface DashedLineProperties extends LineProperties {
+  //done
   dashRatio: number;
 }
 
 export interface VectorProperties extends LineProperties {
+  //done
   pointerSize: number;
 }
 
 export interface CircleProperties extends BaseProperties {
+  //done
   radius: number;
   bordercolor: string;
   thickness: number;
 }
 
 export interface RectangleProperties extends BaseProperties {
+  // done
   dimensions: {
     width: number;
     height: number;
@@ -62,6 +71,7 @@ export interface RectangleProperties extends BaseProperties {
 }
 
 export interface TextProperties extends BaseProperties {
+  // done
   textData: {
     content: string;
     fontsize: number;
@@ -91,17 +101,20 @@ export type LatexTextProperies = Omit<TextProperties, "textData"> & {
 };
 
 export interface PolygonProperties extends BaseProperties {
+  // done
   points: Point[];
   bordercolor: string;
   thickness: number;
 }
 
 export interface DotProperties extends BaseProperties {
+  //done
   radius: number;
   label: Label;
 }
 
 export interface PlaneProperties extends BaseProperties {
+  // done
   dimensions: {
     width: number;
     height: number;

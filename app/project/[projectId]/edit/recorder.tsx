@@ -15,6 +15,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/* This code defines a React functional component called `TinyRecorderScene`. Here's a breakdown of
+what the component does: */
 export const TinyRecorderScene = () => {
   const { scene } = useScene();
   const recorderRef = useRef<KonvaRecorder | null>(null);
@@ -22,6 +24,9 @@ export const TinyRecorderScene = () => {
   const [status, setStatus] = useState<"idle" | "recording" | "paused">("idle");
   const [seconds, setSeconds] = useState(0);
 
+  /* The `useEffect` hook in the code snippet is responsible for managing a timer that increments the
+ `seconds` state every second when the `status` is set to "recording". Here's a breakdown of what it
+ does: */
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (status === "recording") {
@@ -60,7 +65,7 @@ export const TinyRecorderScene = () => {
     if (!recorderRef.current) return;
     try {
       const videoUrl = await recorderRef.current.stop();
-      recorderRef.current.saveToDisk(videoUrl, `render-${Date.now()}.webm`);
+      recorderRef.current.saveToDisk(videoUrl, `AnimatVideo.webm`);
       toast.success("Recording exported");
     } catch {
       toast.error("Export failed");

@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input";
 import { ColorDisc } from "@/components/colordisc";
 import { Label } from "@/components/ui/label";
 import { PointInput } from "../input/pairInput";
-import { ParameterRangeInput } from "../input/paramrangeInput";
 import { PopoverSliderInput } from "../input/popoverSlider";
 import { SquareDashedTopSolid } from "lucide-react";
 import { NumberStepperInput } from "../input/numberInput";
 import { PROPERTY_REGISTRY } from "./registry";
+import { ParameterRangeInput } from "../input/paramrangeInput";
 
 type Props = {
   item: {
@@ -102,7 +102,7 @@ export const PropertyInput: React.FC<Props> = ({ item, refreshFunc }) => {
   if (type === "range") {
     return (
       <div className="flex">
-        <parameterRangeInput
+        <ParameterRangeInput
           value={value}
           // property={property}
           onChange={onChange}

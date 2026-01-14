@@ -13,7 +13,7 @@ import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoi
 export class MVector extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  protected arrow: Konva.Arrow;
+  public arrow: Konva.Arrow;
   private label: Konva.Text;
   private _properties: VectorProperties;
   private _TYPE: string;
@@ -55,6 +55,7 @@ export class MVector extends Konva.Group {
         fontsize: 32,
         color: Colors.TEXT,
         position: "center",
+        opacity: 1,
       },
       ...config,
     };
@@ -73,6 +74,7 @@ export class MVector extends Konva.Group {
     this.name("Vector");
     TrackerEndPointsAdder.addLinePointConnectors(this);
     MobjectAnimAdder.addLineAnimations(this);
+    MobjectAnimAdder.addLabelAnimations(this);
 
     // Initial sync
     this.properties = this._properties;
@@ -124,6 +126,7 @@ export class MVector extends Konva.Group {
       this.label.fill(value.label.color);
       this.setLabelPosition();
       this.label.visible(value.label.visible);
+      this.label.opacity(value.label.opacity);
     }
   }
 

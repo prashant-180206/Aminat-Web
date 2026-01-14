@@ -13,8 +13,8 @@ import { DEFAULT_SCALE } from "@/core/config";
 export class ParametricCurve extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private line: Konva.Line;
-  private label: Konva.Text;
+  public line: Konva.Line;
+  public label: Konva.Text;
   private _properties: CurveProperties = {
     position: { x: 0, y: 0 },
     color: Colors.PRIMARY,
@@ -35,6 +35,7 @@ export class ParametricCurve extends Konva.Group {
       fontsize: 32,
       color: Colors.TEXT,
       position: "center",
+      opacity: 1,
     },
   };
   private _TYPE: string;
@@ -69,6 +70,7 @@ export class ParametricCurve extends Konva.Group {
     this.add(this.label);
 
     MobjectAnimAdder.addCurveAnimations(this);
+    MobjectAnimAdder.addLabelAnimations(this);
 
     this.properties = this._properties;
 
@@ -115,9 +117,9 @@ export class ParametricCurve extends Konva.Group {
       this.label.fill(value.label.color);
       this.setLabelPosition();
       this.label.visible(value.label.visible);
+      this.label.opacity(value.label.opacity);
     }
     Object.assign(this._properties, value);
-    this.fire("propChange", c2p(this.position().x, this.position().y));
   }
   private setLabelPosition() {
     let position = { x: 0, y: 0 };
@@ -153,7 +155,7 @@ export class ParametricCurve extends Konva.Group {
     this._properties.rotation = this.rotation();
   }
 
-  private generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
+  generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
     const [tMin, tMax] = range;
     const samples = (tMax - tMin) * 30;
     const points: number[] = [];

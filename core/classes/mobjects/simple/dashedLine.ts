@@ -34,6 +34,7 @@ export class MDashedLine extends Konva.Group {
       fontsize: 32,
       color: Colors.TEXT,
       position: "center",
+      opacity: 1,
     },
   };
   private _TYPE: string;
@@ -71,6 +72,7 @@ export class MDashedLine extends Konva.Group {
     this.name("DashedLine");
     TrackerEndPointsAdder.addLinePointConnectors(this);
     MobjectAnimAdder.addLineAnimations(this);
+    MobjectAnimAdder.addLabelAnimations(this);
     this.properties = this._properties;
   }
 
@@ -125,6 +127,7 @@ export class MDashedLine extends Konva.Group {
       this.label.fill(value.label.color);
       this.setLabelPosition();
       this.label.visible(value.label.visible);
+      this.label.opacity(value.label.opacity);
     }
   }
 
