@@ -1,36 +1,24 @@
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { NumberLineProperties } from "@/core/types/properties";
-import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { Colors } from "@/core/utils/colors";
 import { DEFAULT_SCALE } from "@/core/config";
+import {
+  NumberLineProperties,
+  NumberLineProperty,
+} from "../../properties/numberLine";
 
 export class MNumberLine extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _TYPE: string;
 
-  private _properties: NumberLineProperties = {
-    position: { x: 0, y: 0 },
-    scale: 1,
-    rotation: 0,
-    opacity: 1,
-    zindex: 0,
-    range: [-5, 5, 1],
-    axissthickness: 4,
-    color: Colors.BORDER,
-    showlabels: true,
-    labelsize: 32,
-    labelcolor: Colors.TEXT,
-  };
+  private features: NumberLineProperty;
 
-  private axisGroup: Konva.Group;
-  private ticksGroup: Konva.Group;
-  private labelGroup: Konva.Group;
-
-  constructor(TYPE: string, config: Partial<NumberLineProperties> = {}) {
+  axisGroup: Konva.Group;
+  ticksGroup: Konva.Group;
+  labelGroup: Konva.Group;
+  constructor(TYPE: string) {
     super({
       draggable: true,
       name: "NumberLine",
@@ -48,7 +36,7 @@ export class MNumberLine extends Konva.Group {
     this.add(this.ticksGroup);
     this.add(this.labelGroup);
 
-    this.properties = { ...this._properties, ...config };
+    this.features = new NumberLineProperty(this);
   }
 
   type(): string {
@@ -56,60 +44,19 @@ export class MNumberLine extends Konva.Group {
   }
 
   get properties(): NumberLineProperties {
-    return { ...this._properties };
+    return { ...this.features.getData() };
   }
-
-  set properties(value: Partial<NumberLineProperties>) {
-    Object.assign(this._properties, value);
-
-    if (value.position) this.position(p2c(value.position.x, value.position.y));
-    if (value.scale) this.scale({ x: value.scale, y: value.scale });
-    if (value.rotation) this.rotation(value.rotation);
-    if (value.opacity) this.opacity(value.opacity);
-    if (this.parent && value.zindex) this.zIndex(value.zindex);
-
-    if (value.range) this.refreshNumberLine();
-
-    if (value.color) {
-      this.axisGroup.children.forEach((l) => {
-        if (l instanceof Konva.Line) l.stroke(value.color!);
-      });
-      this.ticksGroup.children.forEach((l) => {
-        if (l instanceof Konva.Line) l.stroke(value.color!);
-      });
-    }
-
-    if (value.axissthickness) {
-      this.axisGroup.children.forEach((l) => {
-        if (l instanceof Konva.Line) l.strokeWidth(value.axissthickness!);
-      });
-      this.ticksGroup.children.forEach((l) => {
-        if (l instanceof Konva.Line) l.strokeWidth(value.axissthickness!);
-      });
-    }
-
-    if (value.labelcolor) {
-      this.labelGroup.children.forEach((t) => {
-        if (t instanceof Konva.Text) t.fill(value.labelcolor!);
-      });
-    }
-
-    if (value.labelsize) {
-      this.labelGroup.children.forEach((t) => {
-        if (t instanceof Konva.Text) t.fontSize(value.labelsize!);
-      });
-    }
-
-    if (value.showlabels !== undefined) {
-      this.labelGroup.visible(value.showlabels);
-    }
+  getUIComponents(): {
+    name: string;
+    component: React.ReactNode;
+  }[] {
+    return this.features.getUIComponents();
   }
-
   /* ------------------------------------------------------- */
   /* Rendering                                               */
   /* ------------------------------------------------------- */
 
-  private refreshNumberLine() {
+  refreshNumberLine() {
     this.axisGroup.destroyChildren();
     this.ticksGroup.destroyChildren();
     this.labelGroup.destroyChildren();
@@ -117,17 +64,17 @@ export class MNumberLine extends Konva.Group {
     const {
       range: [min, max, step],
       color,
-      axissthickness,
+      axisthickness,
       labelsize,
       labelcolor,
-    } = this._properties;
+    } = this.features.getData();
 
     // Axis
     this.axisGroup.add(
       new Konva.Line({
         points: [min * DEFAULT_SCALE, 0, max * DEFAULT_SCALE, 0],
         stroke: color,
-        strokeWidth: axissthickness,
+        strokeWidth: axisthickness,
       })
     );
 
@@ -138,7 +85,7 @@ export class MNumberLine extends Konva.Group {
         new Konva.Line({
           points: [x * DEFAULT_SCALE, -TICK_SIZE, x * DEFAULT_SCALE, TICK_SIZE],
           stroke: color,
-          strokeWidth: axissthickness,
+          strokeWidth: axisthickness,
         })
       );
 
@@ -184,22 +131,15 @@ export class MNumberLine extends Konva.Group {
   /* Sync / Serialization                                   */
   /* ------------------------------------------------------- */
 
-  UpdateFromKonvaProperties() {
-    const pos = this.position();
-    this._properties.position = c2p(pos.x, pos.y);
-    this._properties.scale = this.scaleX();
-    this._properties.rotation = this.rotation();
-  }
-
   storeAsObj(): MobjectData {
     return {
-      properties: this._properties,
+      properties: this.features.getData(),
       id: this.id(),
     } as MobjectData;
   }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as NumberLineProperties;
-    this.UpdateFromKonvaProperties();
+    this.features.setData(obj.properties as NumberLineProperties);
+    this.features.refresh();
   }
 }

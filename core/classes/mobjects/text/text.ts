@@ -1,11 +1,8 @@
-// /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
-import { TextProperties } from "@/core/types/properties";
-import { c2p, p2c } from "@/core/utils/conversion";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { Colors } from "@/core/utils/colors";
+import { TextProperties, TextProperty } from "../../properties/text";
 
 export class MText extends Konva.Text {
   public animgetter: AnimGetter;
@@ -14,26 +11,10 @@ export class MText extends Konva.Text {
   private _textarea?: HTMLTextAreaElement;
   private _transformer?: Konva.Transformer;
   public cornerRadius: number = 4;
-  private paddingAmount: number = 5; // Internal padding for the "Bgrect" effect
+  private paddingAmount: number = 5;
+  private features: TextProperty;
 
-  private _properties: TextProperties = {
-    position: { x: 0, y: 0 },
-    scale: 1,
-    rotation: 0,
-    color: Colors.BG_SEC,
-    textData: {
-      color: Colors.TEXT,
-      content: "Hello World",
-      fontsize: 36,
-      fontfamily: "Arial",
-      bold: false,
-      italic: false,
-    },
-    zindex: 0,
-    opacity: 1,
-  };
-
-  constructor(TYPE: string, config: Partial<TextProperties> = {}) {
+  constructor(TYPE: string) {
     super({
       draggable: true,
       lineCap: "round",
@@ -43,42 +24,18 @@ export class MText extends Konva.Text {
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
     this._TYPE = TYPE;
-    this.properties = { ...this._properties, ...config };
+    this.features = new TextProperty(this);
     this.on("dblclick dbltap", () => this.startEditing());
   }
 
   get properties(): TextProperties {
-    return { ...this._properties };
+    return { ...this.features.getData() };
   }
-
-  set properties(val: Partial<TextProperties>) {
-    Object.assign(this._properties, val);
-    if (val.scale) this.scale({ x: val.scale, y: val.scale });
-    if (val.rotation) this.rotation(val.rotation);
-    if (val.textData) {
-      const { content, color, fontfamily, fontsize, italic, bold } =
-        val.textData;
-      this.setAttrs({
-        text: content,
-        fill: color,
-        fontFamily: fontfamily,
-        fontSize: fontsize,
-        fontStyle: `${italic ? "italic" : "normal"} ${
-          bold ? "bold" : "normal"
-        }`.trim(),
-      });
-      if (val.position) {
-        const p = p2c(val.position.x, val.position.y);
-        this.position({
-          x: p.x - this.width() / 2,
-          y: p.y - this.height() / 2,
-        });
-      }
-    }
+  getUIComponents() {
+    return this.features.getUIComponents();
   }
 
   setContent(content: string) {
-    this._properties.textData.content = content;
     this.text(content);
   }
 
@@ -95,7 +52,9 @@ export class MText extends Konva.Text {
         20,
         this.width() - this.padding() * 2 + this.paddingAmount * 3
       )}px`,
-      height: `${this._properties.textData.fontsize + this.paddingAmount}px`,
+      height: `${
+        this.features.getData().textData.fontsize + this.paddingAmount
+      }px`,
       transform: `rotateZ(${this.rotation()}deg) translateY(-2px)`,
     });
     this._textarea.style.height = this._textarea.scrollHeight + "px";
@@ -129,7 +88,7 @@ export class MText extends Konva.Text {
       zIndex: "1000",
       padding: `${this.paddingAmount}px`,
       borderRadius: `${this.cornerRadius}px`,
-      backgroundColor: this._properties.color,
+      backgroundColor: this.features.getData().textData.color,
       lineHeight: this.lineHeight().toString(),
       fontFamily: this.fontFamily(),
       fontSize: this.fontSize() + "px",
@@ -165,22 +124,13 @@ export class MText extends Konva.Text {
     setTimeout(() => window.addEventListener("click", clickHandler), 0);
   }
 
-  UpdateFromKonvaProperties() {
-    const pos = this.position();
-    this._properties.position = c2p(
-      pos.x + this.width() / 2,
-      pos.y + this.height() / 2
-    );
-    this._properties.scale = this.scaleX();
-  }
-
   storeAsObj(): MobjectData {
-    return { properties: this._properties, id: this.id() };
+    return { properties: this.features.getData(), id: this.id() };
   }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as TextProperties;
-    this.UpdateFromKonvaProperties();
+    this.features.setData(obj.properties as TextProperties);
+    this.features.refresh();
   }
 
   type() {

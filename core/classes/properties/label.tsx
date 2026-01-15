@@ -20,15 +20,6 @@ export class LabelProperty {
   protected position: "start" | "center" | "end" = "center";
   protected opacity: number = 1;
   protected mobj: Konva.Text;
-  protected positionCoordinate: {
-    start: { x: number; y: number };
-    end: { x: number; y: number };
-    center: { x: number; y: number };
-  } = {
-    start: { x: 0, y: 0 },
-    end: { x: 0, y: 0 },
-    center: { x: 0, y: 0 },
-  };
 
   constructor(mobj: Konva.Text) {
     this.mobj = mobj;
@@ -48,6 +39,9 @@ export class LabelProperty {
       this.visible = prop.visible;
       this.mobj.visible(this.visible);
     }
+    if (prop.position !== undefined) {
+      this.position = prop.position;
+    }
     if (prop.offset !== undefined) {
       this.offset = prop.offset;
       this.mobj.offset(this.offset);
@@ -60,39 +54,17 @@ export class LabelProperty {
       this.color = prop.color;
       this.mobj.fill(this.color);
     }
-    if (prop.position !== undefined) {
-      this.position = prop.position;
-      this.updateFromPosition();
-    }
     if (prop.opacity !== undefined) {
       this.opacity = prop.opacity;
       this.mobj.opacity(this.opacity);
     }
   }
 
-  private updateFromPosition() {
-    // This function can be used to update the label position based on some external data if needed
-    if (this.position === "start") {
-      this.mobj.position(this.positionCoordinate.start);
-    } else if (this.position === "end") {
-      this.mobj.position(this.positionCoordinate.end);
-    } else if (this.position === "center") {
-      this.mobj.position(this.positionCoordinate.center);
-    }
-  }
-
-  setLabelPosition(coordinates: {
-    start: { x: number; y: number };
-    end: { x: number; y: number };
-    center: { x: number; y: number };
-  }) {
-    this.positionCoordinate = coordinates;
-  }
-
   getUIComponent(): React.ReactNode {
     const components: React.ReactNode[] = [];
     components.push(
       <LabelPopover
+        key={"LabelPopover"}
         value={{
           labelText: this.labelText,
           visible: this.visible,

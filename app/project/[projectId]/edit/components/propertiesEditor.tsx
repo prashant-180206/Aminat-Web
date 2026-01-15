@@ -1,20 +1,12 @@
 "use client";
 
 import React from "react";
-import { usePropertyDescriptors } from "./propertyDescriptor";
-import { PropertyInput } from "./propertyCard";
 import { Button } from "@/components/ui/button";
 import { useScene } from "@/hooks/SceneContext";
 import { Trash2 } from "lucide-react";
-// import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 const PropertiesEditor = () => {
-  const properties = usePropertyDescriptors();
+  // const properties = usePropertyDescriptors();
   const { scene, setActiveMobject, setActiveMobjectId, activeMobject } =
     useScene();
 
@@ -39,23 +31,14 @@ const PropertiesEditor = () => {
           <div className="flex bg-card rounded-lg h-8 border px-4 items-center">
             ID : {activeMobject.id()}
           </div>
-          {properties.properties.map((item, index) => (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                {/* Non-interactive wrapper (important) */}
-                <div className="flex">
-                  <PropertyInput
-                    item={item}
-                    refreshFunc={properties.refreshFunc}
-                  />
-                </div>
-              </TooltipTrigger>
-
-              <TooltipContent side="bottom">
-                {item.property.charAt(0).toUpperCase() + item.property.slice(1)}
-              </TooltipContent>
-            </Tooltip>
-          ))}
+          <div className="flex flex-row gap-2">
+            {activeMobject.getUIComponents().map(({ name, component }) => (
+              <div key={name}>
+                <h3>{name}</h3>
+                {component}
+              </div>
+            ))}
+          </div>
           <Button
             variant="destructive"
             size="sm"

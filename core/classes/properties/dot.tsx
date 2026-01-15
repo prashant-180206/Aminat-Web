@@ -3,6 +3,7 @@ import { Dot } from "../mobjects/simple/dot";
 import { BaseProperties, BaseProperty } from "./base";
 import { Label, LabelProperty } from "./label";
 import SliderInput from "./input/sliderInput";
+import { c2p, p2c } from "@/core/utils/conversion";
 
 export interface DotProperties extends BaseProperties {
   radius: number;
@@ -11,12 +12,23 @@ export interface DotProperties extends BaseProperties {
 export class DotProperty extends BaseProperty {
   protected radius: number = 10;
   protected label: LabelProperty;
+  protected labelobj: Konva.Text;
   constructor(mobj: Dot) {
     super(mobj.circle);
+    mobj.circle.radius(this.radius);
+    this.labelobj = mobj.label;
     this.label = new LabelProperty(mobj.label);
   }
   override update(prop: Partial<DotProperties>): void {
     super.update(prop);
+    if (prop.position) {
+      this.mobj.position(p2c(prop.position.x, prop.position.y));
+      let txt = this.label.getData().labelText;
+      txt = txt.replace(/valx/g, this.position.x.toFixed(2));
+      txt = txt.replace(/valy/g, this.position.y.toFixed(2));
+      this.labelobj.text(txt);
+    }
+
     if (prop.radius !== undefined) {
       this.radius = prop.radius;
       if (this.mobj instanceof Konva.Circle) {
@@ -25,23 +37,34 @@ export class DotProperty extends BaseProperty {
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);
+      let txt = this.label.getData().labelText;
+      txt = txt.replace(/valx/g, this.position.x.toFixed(2));
+      txt = txt.replace(/valy/g, this.position.y.toFixed(2));
+      this.labelobj.text(txt);
     }
   }
 
-  override getUIComponents(): React.ReactNode[] {
+  override getUIComponents(): { name: string; component: React.ReactNode }[] {
     const components = super.getUIComponents();
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Radius",
-            value: this.radius,
-            onChange: (v) => this.update({ radius: v }),
-          },
-        ]}
-      />
-    );
-    components.push(this.label.getUIComponent());
+    components.push({
+      name: "Radius",
+      component: (
+        <SliderInput
+          key={"Radius"}
+          fields={[
+            {
+              label: "Radius",
+              value: this.radius,
+              onChange: (v) => this.update({ radius: v }),
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Label",
+      component: this.label.getUIComponent(),
+    });
     return components;
   }
   override getData(): DotProperties {
@@ -56,5 +79,17 @@ export class DotProperty extends BaseProperty {
     this.radius = data.radius;
     this.label.setData(data.label);
     this.update(data);
+  }
+
+  override refresh(): void {
+    const pos = this.mobj.position();
+    this.position = c2p(pos.x, pos.y);
+    let txt = this.label.getData().labelText;
+    txt = txt.replace(/valx/g, this.position.x.toFixed(2));
+    txt = txt.replace(/valy/g, this.position.y.toFixed(2));
+    this.labelobj.text(txt);
+
+    this.scale = this.mobj.scaleX();
+    this.rotation = this.mobj.rotation();
   }
 }

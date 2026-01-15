@@ -38,46 +38,58 @@ export class CircleProperty extends BaseProperty {
     }
   }
 
-  override getUIComponents(): React.ReactNode[] {
+  override getUIComponents(): { name: string; component: React.ReactNode }[] {
     const components = super.getUIComponents();
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Radius",
-            value: this.radius,
-            onChange: (v) => {
-              this.update({ radius: v });
+    components.push({
+      name: "Radius",
+      component: (
+        <SliderInput
+          key={"Radius"}
+          fields={[
+            {
+              label: "Radius",
+              value: this.radius,
+              onChange: (v) => {
+                this.update({ radius: v });
+              },
+              min: 0.1,
+              max: 10,
+              step: 0.1,
             },
-            min: 0.1,
-            max: 10,
-            step: 0.1,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <ColorDisc
-        value={this.bordercolor}
-        onChange={(val) => this.update({ bordercolor: val })}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Thickness",
-            value: this.thickness,
-            onChange: (v) => {
-              this.update({ thickness: v });
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Border Color",
+      component: (
+        <ColorDisc
+          key={"BorderColor"}
+          value={this.bordercolor}
+          onChange={(val) => this.update({ bordercolor: val })}
+        />
+      ),
+    });
+    components.push({
+      name: "Thickness",
+      component: (
+        <SliderInput
+          key={"Thickness"}
+          fields={[
+            {
+              label: "Thickness",
+              value: this.thickness,
+              onChange: (v) => {
+                this.update({ thickness: v });
+              },
+              min: 0,
+              max: 50,
+              step: 1,
             },
-            min: 0,
-            max: 50,
-            step: 1,
-          },
-        ]}
-      />
-    );
+          ]}
+        />
+      ),
+    });
 
     // Add Circle specific UI components here if needed
     return components;

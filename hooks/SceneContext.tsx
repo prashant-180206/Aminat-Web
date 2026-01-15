@@ -41,12 +41,10 @@ export function SceneProvider({ children }: { children: React.ReactNode }) {
       setScene(scene);
 
       scene.addMobjectFunction((mobj: Mobject) => {
-        mobj.on("dragmove", mobj.UpdateFromKonvaProperties);
         mobj.on("click", () => {
           scene.activeMobject = mobj;
           setActiveMobject(mobj);
           setActiveMobjectId(mobj.id());
-          mobj.UpdateFromKonvaProperties();
         });
         scene.activeMobject = mobj;
         setActiveMobject(mobj);

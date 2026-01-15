@@ -1,46 +1,23 @@
 // /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import { CurveProperties } from "@/core/types/properties";
-import { c2p, p2c } from "@/core/utils/conversion";
+import { p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { evaluate } from "mathjs";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { Colors } from "@/core/utils/colors";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
-import { DEFAULT_SCALE } from "@/core/config";
+import { CurveProperty } from "../../properties/curve";
 
 export class ParametricCurve extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   public line: Konva.Line;
   public label: Konva.Text;
-  private _properties: CurveProperties = {
-    position: { x: 0, y: 0 },
-    color: Colors.PRIMARY,
-    scale: 1,
-    rotation: 0,
-    parameterRange: [0, 2 * Math.PI],
-    funcs: {
-      Xfunc: "t",
-      Yfunc: "sin(t)",
-    },
-    thickness: 6,
-    opacity: 1,
-    zindex: 0,
-    label: {
-      labelText: "label",
-      visible: false,
-      offset: { x: 0, y: 0 },
-      fontsize: 32,
-      color: Colors.TEXT,
-      position: "center",
-      opacity: 1,
-    },
-  };
+  private features: CurveProperty;
   private _TYPE: string;
 
-  constructor(TYPE: string, config: Partial<CurveProperties> = {}) {
+  constructor(TYPE: string) {
     super();
     this.line = new Konva.Line({
       tension: 0.8,
@@ -51,28 +28,16 @@ export class ParametricCurve extends Konva.Group {
     this.add(this.line);
     this.line.position({ x: 0, y: 0 });
 
-    this._properties = { ...this._properties, ...config };
-
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
-    this.label = new Konva.Text({
-      text: this._properties.label.labelText,
-      fontSize: this._properties.label.fontsize,
-      fill: this._properties.label.color,
-      x: this._properties.label.offset.x,
-      y: this._properties.label.offset.y,
-      visible: this._properties.label.visible,
-      listening: false,
-    });
-
+    this.label = new Konva.Text({});
     this.add(this.label);
+    this.features = new CurveProperty(this);
 
     MobjectAnimAdder.addCurveAnimations(this);
     MobjectAnimAdder.addLabelAnimations(this);
-
-    this.properties = this._properties;
 
     this.name("Curve");
   }
@@ -83,66 +48,13 @@ export class ParametricCurve extends Konva.Group {
 
   // Getter/Setter for properties
   get properties(): CurveProperties {
-    return { ...this._properties };
+    return { ...this.features.getData() };
   }
-
-  set properties(value: Partial<CurveProperties>) {
-    if (value.funcs) {
-      this.generateCurve(
-        value.funcs.Xfunc,
-        value.funcs.Yfunc,
-        this._properties.parameterRange
-      );
-    }
-    if (value.parameterRange) {
-      this.generateCurve(
-        this._properties.funcs.Xfunc,
-        this._properties.funcs.Yfunc,
-        value.parameterRange
-      );
-    }
-    if (value.label) {
-      this.label.text(value.label.labelText);
-      this.label.fontSize(value.label.fontsize);
-      this.label.fill(value.label.color);
-      this.setLabelPosition();
-      this.label.visible(value.label.visible);
-      this.label.opacity(value.label.opacity);
-    }
-    Object.assign(this._properties, value);
-  }
-  private setLabelPosition() {
-    let position = { x: 0, y: 0 };
-    const [start, end] = this._properties.parameterRange;
-    const midX = (start + end) / 2;
-    const midY = (start + end) / 2;
-    if (this._properties.label.position === "start") {
-      position = {
-        x: evaluate(this._properties.funcs.Xfunc, { t: start }) as number,
-        y: evaluate(this._properties.funcs.Yfunc, { t: start }) as number,
-      };
-    } else if (this._properties.label.position === "end") {
-      position = {
-        x: evaluate(this._properties.funcs.Xfunc, { t: end }) as number,
-        y: evaluate(this._properties.funcs.Yfunc, { t: end }) as number,
-      };
-    } else if (this._properties.label.position === "center") {
-      position = {
-        x: evaluate(this._properties.funcs.Xfunc, { t: midX }) as number,
-        y: evaluate(this._properties.funcs.Yfunc, { t: midY }) as number,
-      };
-    }
-    this.label.position({
-      x: position.x * DEFAULT_SCALE + this._properties.label.offset.x,
-      y: -position.y * DEFAULT_SCALE + this._properties.label.offset.y,
-    });
-  }
-
-  UpdateFromKonvaProperties() {
-    const pos = this.position();
-    this._properties.position = c2p(pos.x, pos.y);
-    this._properties.scale = this.scaleX();
-    this._properties.rotation = this.rotation();
+  getUIComponents(): {
+    name: string;
+    component: React.ReactNode;
+  }[] {
+    return this.features.getUIComponents();
   }
 
   generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
@@ -179,32 +91,32 @@ export class ParametricCurve extends Konva.Group {
   updateFunctions(
     Xfunc: string,
     Yfunc: string,
-    range: [number, number] = this._properties.parameterRange
+    range: [number, number] = this.properties.parameterRange
   ) {
-    this._properties.funcs.Xfunc = Xfunc;
-    this._properties.funcs.Yfunc = Yfunc;
-    this._properties.parameterRange = range;
+    this.properties.funcs.Xfunc = Xfunc;
+    this.properties.funcs.Yfunc = Yfunc;
+    this.properties.parameterRange = range;
     this.generateCurve(Xfunc, Yfunc, range);
   }
 
   setParameterRange(range: [number, number]) {
-    this._properties.parameterRange = range;
+    this.properties.parameterRange = range;
     this.generateCurve(
-      this._properties.funcs.Xfunc,
-      this._properties.funcs.Yfunc,
+      this.properties.funcs.Xfunc,
+      this.properties.funcs.Yfunc,
       range
     );
   }
 
   storeAsObj() {
     return {
-      properties: this._properties,
+      properties: this.properties,
       id: this.id(),
     } as MobjectData;
   }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as CurveProperties;
-    this.UpdateFromKonvaProperties();
+    this.features.setData(obj.properties as CurveProperties);
+    this.features.refresh();
   }
 }

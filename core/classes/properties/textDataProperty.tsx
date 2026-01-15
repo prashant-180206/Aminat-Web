@@ -11,7 +11,6 @@ interface TextData {
 }
 
 export class TextDataProperty {
-  protected content: string = "Sample Text";
   protected fontsize: number = 16;
   protected fontfamily: string = "Arial";
   protected bold: boolean = false;
@@ -19,7 +18,7 @@ export class TextDataProperty {
   protected color: string = "#000000";
   protected mobj: Konva.Text;
   constructor(mobj: Konva.Text) {
-    mobj.text(this.content);
+    mobj.text("Sample Text");
     mobj.fontSize(this.fontsize);
     mobj.fontFamily(this.fontfamily);
     mobj.fontStyle(
@@ -67,9 +66,8 @@ export class TextDataProperty {
     );
   }
 
-  getData(): TextData {
+  getData(): Omit<TextData, "content"> {
     return {
-      content: this.content,
       fontsize: this.fontsize,
       fontfamily: this.fontfamily,
       bold: this.bold,
@@ -78,7 +76,6 @@ export class TextDataProperty {
     };
   }
   setData(data: TextData): void {
-    this.content = data.content;
     this.fontsize = data.fontsize;
     this.fontfamily = data.fontfamily;
     this.bold = data.bold;

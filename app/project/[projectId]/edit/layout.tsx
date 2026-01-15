@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import PropertiesEditor from "./components/propertyComponent/propertiesEditor";
+import PropertiesEditor from "./components/propertiesEditor";
 import dynamic from "next/dynamic";
 
 // import EditSidebar from "./components/sidebar";

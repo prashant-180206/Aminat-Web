@@ -26,24 +26,28 @@ export class VectorProperty extends LineProperty {
       }
     }
   }
-  override getUIComponents(): React.ReactNode[] {
+  override getUIComponents(): { name: string; component: React.ReactNode }[] {
     const components = super.getUIComponents();
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Pointer Size",
-            value: this.pointerSize,
-            onChange: (v) => {
-              this.update({ pointerSize: v });
+    components.push({
+      name: "Pointer Size",
+      component: (
+        <SliderInput
+          key={"PointerSize"}
+          fields={[
+            {
+              label: "Pointer Size",
+              value: this.pointerSize,
+              onChange: (v) => {
+                this.update({ pointerSize: v });
+              },
+              min: 1,
+              max: 50,
+              step: 1,
             },
-            min: 1,
-            max: 50,
-            step: 1,
-          },
-        ]}
-      />
-    );
+          ]}
+        />
+      ),
+    });
     return components;
   }
   override getData(): VectorProperties {

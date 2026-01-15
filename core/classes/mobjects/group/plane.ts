@@ -1,54 +1,25 @@
 // anim/classes/mobjects/simple/plane.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { PlaneProperties } from "@/core/types/properties";
-import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { Colors } from "@/core/utils/colors";
-import { DEFAULT_HEIGHT, DEFAULT_SCALE, DEFAULT_WIDTH } from "@/core/config";
+import { PlaneProperties, PlaneProperty } from "../../properties/plane";
+import { DEFAULT_SCALE } from "@/core/config";
 
 export class MPlane extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
   private _TYPE: string;
 
-  private _properties: PlaneProperties = {
-    position: { x: 0, y: 0 },
-    scale: 1,
-    color: Colors.GRIDCOLOR,
-    rotation: 0,
-    zindex: 0,
-    opacity: 1,
-    dimensions: { width: 10, height: 10 },
-    ranges: {
-      xrange: [
-        -DEFAULT_WIDTH / DEFAULT_SCALE / 2,
-        DEFAULT_WIDTH / DEFAULT_SCALE / 2,
-        1,
-      ],
-      yrange: [
-        -DEFAULT_HEIGHT / DEFAULT_SCALE / 2,
-        DEFAULT_HEIGHT / DEFAULT_SCALE / 2,
-        1,
-      ],
-    },
-    gridthickness: 4,
-    axissthickness: 4,
-    axiscolor: Colors.BORDER,
-    showgrid: true,
-    showlabels: true,
-    labelsize: 36,
-    labelcolor: Colors.TEXT,
-  };
+  private features: PlaneProperty;
 
   // Sub-groups for organization
-  private gridGroup: Konva.Group;
-  private axesGroup: Konva.Group;
-  private labelGroup: Konva.Group;
-  private ticksGroup: Konva.Group;
+  gridGroup: Konva.Group;
+  axesGroup: Konva.Group;
+  labelGroup: Konva.Group;
+  ticksGroup: Konva.Group;
 
-  constructor(TYPE: string, config: Partial<PlaneProperties> = {}) {
+  constructor(TYPE: string) {
     super({
       draggable: true,
       name: "Plane",
@@ -69,7 +40,7 @@ export class MPlane extends Konva.Group {
     this.add(this.ticksGroup);
     this.add(this.labelGroup);
 
-    this.properties = { ...this._properties, ...config };
+    this.features = new PlaneProperty(this);
   }
 
   type(): string {
@@ -77,71 +48,15 @@ export class MPlane extends Konva.Group {
   }
 
   get properties(): PlaneProperties {
-    return { ...this._properties };
+    return { ...this.features.getData() };
   }
-
-  set properties(value: Partial<PlaneProperties>) {
-    Object.assign(this._properties, value);
-
-    // Standard transformations
-    if (value.position) this.position(p2c(value.position.x, value.position.y));
-    if (value.scale) this.scale({ x: value.scale, y: value.scale });
-    if (value.rotation) this.rotation(value.rotation);
-    if (value.opacity) this.opacity(value.opacity);
-    if (this.parent && value.zindex) this.zIndex(value.zindex);
-    if (value.ranges) this.refreshPlane();
-
-    if (value.color) {
-      this.gridGroup.children.forEach((line) => {
-        if (line instanceof Konva.Line) line.stroke(value.color!);
-      });
-    }
-
-    if (value.axiscolor) {
-      this.axesGroup.children.forEach((line) => {
-        if (line instanceof Konva.Line) line.stroke(value.axiscolor!);
-      });
-
-      this.ticksGroup.children.forEach((line) => {
-        if (line instanceof Konva.Line) line.stroke(value.axiscolor!);
-      });
-    }
-
-    if (value.axissthickness) {
-      this.axesGroup.children.forEach((line) => {
-        if (line instanceof Konva.Line) line.strokeWidth(value.axissthickness!);
-      });
-
-      this.ticksGroup.children.forEach((line) => {
-        if (line instanceof Konva.Line) line.strokeWidth(value.axissthickness!);
-      });
-    }
-
-    if (value.labelcolor) {
-      this.labelGroup.children.forEach((text) => {
-        if (text instanceof Konva.Text) text.fill(value.labelcolor!);
-      });
-    }
-    if (value.labelsize) {
-      this.labelGroup.children.forEach((text) => {
-        if (text instanceof Konva.Text) text.fontSize(value.labelsize!);
-      });
-    }
-    if (value.gridthickness) {
-      this.gridGroup.children.forEach((line) => {
-        if (line instanceof Konva.Line) line.strokeWidth(value.gridthickness!);
-      });
-    }
-
-    if (value.showgrid !== undefined) {
-      this.gridGroup.visible(value.showgrid);
-    }
-    if (value.showlabels !== undefined) {
-      this.labelGroup.visible(value.showlabels);
-    }
+  getUIComponents(): {
+    name: string;
+    component: React.ReactNode;
+  }[] {
+    return this.features.getUIComponents();
   }
-
-  private refreshPlane() {
+  refreshPlane() {
     this.gridGroup.destroyChildren();
     this.axesGroup.destroyChildren();
     this.labelGroup.destroyChildren();
@@ -150,7 +65,9 @@ export class MPlane extends Konva.Group {
     const {
       ranges: { xrange, yrange },
       labelsize,
-    } = this._properties;
+      axiscolor,
+      axisthickness,
+    } = this.features.getData();
 
     const drawAxis = (points: number[]) =>
       this.axesGroup.add(
@@ -197,8 +114,8 @@ export class MPlane extends Konva.Group {
       this.ticksGroup.add(
         new Konva.Line({
           points: [x * DEFAULT_SCALE, -TICK_SIZE, x * DEFAULT_SCALE, TICK_SIZE],
-          stroke: this._properties.axiscolor,
-          strokeWidth: this._properties.axissthickness,
+          stroke: axiscolor,
+          strokeWidth: axisthickness,
           opacity: 1,
         })
       );
@@ -212,8 +129,8 @@ export class MPlane extends Konva.Group {
             TICK_SIZE,
             -y * DEFAULT_SCALE,
           ],
-          stroke: this._properties.axiscolor,
-          strokeWidth: this._properties.axissthickness,
+          stroke: axiscolor,
+          strokeWidth: axisthickness,
           opacity: 1,
         })
       );
@@ -283,22 +200,15 @@ export class MPlane extends Konva.Group {
     this.getLayer()?.batchDraw();
   }
 
-  UpdateFromKonvaProperties() {
-    const pos = this.position();
-    this._properties.position = c2p(pos.x, pos.y);
-    this._properties.scale = this.scaleX();
-    this._properties.rotation = this.rotation();
-  }
-
   storeAsObj(): MobjectData {
     return {
-      properties: this._properties,
+      properties: this.features.getData(),
       id: this.id(),
     } as MobjectData;
   }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as PlaneProperties;
-    this.UpdateFromKonvaProperties();
+    this.features.setData(obj.properties as PlaneProperties);
+    this.features.refresh();
   }
 }

@@ -73,7 +73,7 @@ export interface RectangleProperties extends BaseProperties {
 export interface TextProperties extends BaseProperties {
   // done
   textData: {
-    content: string;
+    // content: string;
     fontsize: number;
     fontfamily: string;
     bold: boolean;

@@ -3,6 +3,7 @@ import { BaseProperties, BaseProperty } from "./base";
 import PointsInput from "./input/pointsInput";
 import { ColorDisc } from "./input/colordisc";
 import SliderInput from "./input/sliderInput";
+import { DEFAULT_SCALE } from "@/core/config";
 
 type Point = {
   x: number;
@@ -18,47 +19,97 @@ export interface PolygonProperties extends BaseProperties {
 export class PolygonProperty extends BaseProperty {
   protected points: Point[] = [
     { x: 0, y: 0 },
-    { x: 100, y: 0 },
-    { x: 100, y: 100 },
-    { x: 0, y: 100 },
+    { x: 1, y: 0 },
+    { x: 1, y: 1 },
+    { x: 0, y: 1 },
   ];
   protected bordercolor: string = "#000000";
   protected thickness: number = 2;
+  private localPoints: { x: number; y: number }[] = [];
 
-  constructor(mobj: Konva.Line) {
+  constructor(mobj: Konva.Shape) {
     super(mobj);
   }
   override update(prop: Partial<PolygonProperties>): void {
     super.update(prop);
+    if (prop.points) {
+      this.points = prop.points;
+      this.localPoints = prop.points.map((pt) => {
+        return { x: pt.x * DEFAULT_SCALE, y: -pt.y * DEFAULT_SCALE };
+      });
+      this.setUpGeometry();
+    }
   }
-  override getUIComponents(): React.ReactNode[] {
+
+  private setUpGeometry() {
+    if (!(this.mobj instanceof Konva.Shape)) return;
+    this.mobj.sceneFunc((context, shape) => {
+      if (this.localPoints.length < 3) return;
+      context.beginPath();
+      context.moveTo(this.localPoints[0].x, this.localPoints[0].y);
+      for (let i = 1; i < this.localPoints.length; i++) {
+        context.lineTo(this.localPoints[i].x, this.localPoints[i].y);
+      }
+      context.closePath();
+      context.fillStyle = this.color;
+      context.fill();
+      context.lineWidth = this.thickness;
+      context.strokeStyle = this.bordercolor || this.color;
+      context.stroke();
+      context.fillStrokeShape(shape);
+    });
+
+    this.mobj.hitFunc((context, shape) => {
+      if (this.localPoints.length < 3) return;
+      context.beginPath();
+      context.moveTo(this.localPoints[0].x, this.localPoints[0].y);
+      for (let i = 1; i < this.localPoints.length; i++) {
+        context.lineTo(this.localPoints[i].x, this.localPoints[i].y);
+      }
+      context.closePath();
+      context.fillStrokeShape(shape);
+    });
+  }
+  override getUIComponents(): { name: string; component: React.ReactNode }[] {
     const components = super.getUIComponents();
-    components.push(
-      <PointsInput
-        points={this.points}
-        onChange={(points) => this.update({ points })}
-      />
-    );
-    components.push(
-      <ColorDisc
-        value={this.bordercolor}
-        onChange={(v) => this.update({ bordercolor: v })}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Thickness",
-            value: this.thickness,
-            onChange: (v) => this.update({ thickness: v }),
-            min: 1,
-            max: 20,
-            step: 1,
-          },
-        ]}
-      />
-    );
+    components.push({
+      name: "Points",
+      component: (
+        <PointsInput
+          key={"Points"}
+          points={this.points}
+          onChange={(points) => this.update({ points })}
+        />
+      ),
+    });
+    components.push({
+      name: "Border Color",
+      component: (
+        <ColorDisc
+          key={"BorderColor"}
+          value={this.bordercolor}
+          onChange={(v) => this.update({ bordercolor: v })}
+        />
+      ),
+    });
+    components.push({
+      name: "Thickness",
+      component: (
+        <SliderInput
+          key={"Thickness"}
+          fields={[
+            {
+              label: "Thickness",
+              value: this.thickness,
+              onChange: (v) => this.update({ thickness: v }),
+              min: 1,
+              max: 20,
+              step: 1,
+            },
+          ]}
+        />
+      ),
+    });
     return components;
   }
 

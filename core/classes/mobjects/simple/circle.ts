@@ -32,7 +32,10 @@ class MCircle extends Konva.Circle {
     return { ...this.features.getData() };
   }
 
-  getUIComponents(): React.ReactNode[] {
+  getUIComponents(): {
+    name: string;
+    component: React.ReactNode;
+  }[] {
     return this.features.getUIComponents();
   }
 

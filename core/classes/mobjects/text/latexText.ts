@@ -2,32 +2,16 @@ import katex from "katex";
 import Konva from "@/lib/konva";
 import { AnimGetter } from "../../animation/animgetter";
 import { TrackerConnector } from "../../Tracker/helpers/TrackerConnector";
-import { BaseProperties, LatexTextProperies } from "@/core/types/properties";
 import { Colors } from "@/core/utils/colors";
 import { MobjectData } from "@/core/types/file";
-import { c2p, p2c } from "@/core/utils/conversion";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
+import { LatexTextProperties, LatexTextProperty } from "../../properties/latex";
 
 export class LatexText extends Konva.Image {
   private isRendering = false;
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: LatexTextProperies = {
-    position: { x: 0, y: 0 },
-    scale: 1,
-    rotation: 0,
-    color: Colors.BG,
-    textData: {
-      color: Colors.TEXT,
-      fontsize: 60,
-      fontfamily: "Arial",
-      bold: false,
-      italic: false,
-    },
-    zindex: 0,
-    opacity: 1,
-    LatexContent: "\\int_0^\\infty x^2 dx",
-  };
+  private features: LatexTextProperty;
 
   private _TYPE: string;
 
@@ -40,6 +24,7 @@ export class LatexText extends Konva.Image {
     this._TYPE = type;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
+    this.features = new LatexTextProperty(this);
     // this.UpdateFromKonvaProperties();
     this.refresh();
     this.position({
@@ -57,7 +42,7 @@ export class LatexText extends Konva.Image {
 
   /* ---------------- Core Logic ---------------- */
 
-  private async refresh() {
+  async refresh() {
     if (this.isRendering) return;
     this.isRendering = true;
 
@@ -74,7 +59,7 @@ export class LatexText extends Konva.Image {
   }
 
   private renderToSVG(): string {
-    const rawSvg = katex.renderToString(this._properties.LatexContent, {
+    const rawSvg = katex.renderToString(this.features.getLatex(), {
       output: "mathml",
       displayMode: true,
       throwOnError: false,
@@ -84,8 +69,8 @@ export class LatexText extends Konva.Image {
     console.log("Measured dimensions:", { w, h });
 
     const { newh, neww } = {
-      newh: h * (this._properties.textData.fontsize / 18),
-      neww: w * (this._properties.textData.fontsize / 18),
+      newh: h * (this.features.getTextData().fontsize / 18),
+      neww: w * (this.features.getTextData().fontsize / 18),
     }; // scale based on font size
     this.width(neww);
     this.height(newh);
@@ -95,17 +80,19 @@ export class LatexText extends Konva.Image {
       <svg xmlns="http://www.w3.org/2000/svg" width='${neww}pt' height='${newh}pt'>
         <foreignObject width="${neww}pt" height="${newh}pt">
           <span xmlns="http://www.w3.org/1999/xhtml" style="
-            font-size: ${this._properties.textData.fontsize}px; 
-            color: ${this._properties.textData.color};
+            font-size: ${this.features.getTextData().fontsize}px; 
+            color: ${this.features.getTextData().color};
             width:100%;
             height:100% ;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: '${this._properties.textData.fontfamily}';
-            font-weight: ${this._properties.textData.bold ? "bold" : "lighter"};
+            font-family: '${this.features.getTextData().fontfamily}';
+            font-weight: ${
+              this.features.getTextData().bold ? "bold" : "lighter"
+            };
             font-style: ${
-              this._properties.textData.italic ? "italic" : "normal"
+              this.features.getTextData().italic ? "italic" : "normal"
             };
           ">
             ${rawSvg}
@@ -153,56 +140,23 @@ export class LatexText extends Konva.Image {
 
   /* ---------------- Public API ---------------- */
 
-  UpdateFromKonvaProperties() {
-    const pos = this.position();
-    this._properties.position = c2p(pos.x, pos.y);
-    this._properties.scale = this.scaleX();
-    this._properties.rotation = this.rotation();
-  }
-
   // Object getter - returns copy to prevent mutation
-  get properties(): LatexTextProperies {
-    return { ...this._properties };
-  }
-
-  // Object setter - accepts full or partial properties object
-  set properties(value: Partial<LatexTextProperies>) {
-    Object.assign(this._properties, value);
-    if (value.color !== undefined) this.fill(value.color);
-    if (value.position !== undefined) {
-      const newpos = p2c(
-        value.position.x ?? this._properties.position.x,
-        value.position.y ?? this._properties.position.y
-      );
-      this.position({
-        x: newpos.x - this.width() / 2,
-        y: newpos.y - this.height() / 2,
-      });
-    }
-    if (value.opacity !== undefined) this.opacity(value.opacity);
-    if (value.scale !== undefined)
-      this.scale({ x: value.scale, y: value.scale });
-    if (value.rotation !== undefined) this.rotation(value.rotation);
-    if (value.zindex !== undefined && this.parent) this.zIndex(value.zindex);
-    if (value.textData !== undefined) {
-      Object.assign(this._properties.textData, value.textData);
-      this.refresh();
-    }
-    if (value.LatexContent !== undefined) {
-      this._properties.LatexContent = value.LatexContent;
-      this.refresh();
-    }
+  get properties(): LatexTextProperties {
+    return { ...this.features.getData() };
   }
 
   storeAsObj(): MobjectData {
     return {
-      properties: this._properties,
+      properties: this.features.getData(),
       id: this.id(),
     };
   }
+  getUIComponents() {
+    return this.features.getUIComponents();
+  }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as BaseProperties;
-    this.UpdateFromKonvaProperties();
+    this.features.setData(obj.properties as LatexTextProperties);
+    this.features.refresh();
   }
 }

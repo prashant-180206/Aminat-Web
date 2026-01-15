@@ -3,6 +3,8 @@ import { BaseProperties, BaseProperty } from "./base";
 import { NumberInputs } from "./input/dualInput";
 import SliderInput from "./input/sliderInput";
 import { ColorDisc } from "./input/colordisc";
+import { DEFAULT_SCALE } from "@/core/config";
+import { c2p } from "@/core/utils/conversion";
 
 export interface RectangleProperties extends BaseProperties {
   dimensions: {
@@ -35,8 +37,8 @@ export class RectangleProperty extends BaseProperty {
     super.update(prop);
     if (prop.dimensions !== undefined) {
       this.dimensions = prop.dimensions;
-      (this.mobj as Konva.Rect).width(this.dimensions.width);
-      (this.mobj as Konva.Rect).height(this.dimensions.height);
+      (this.mobj as Konva.Rect).width(this.dimensions.width * DEFAULT_SCALE);
+      (this.mobj as Konva.Rect).height(this.dimensions.height * DEFAULT_SCALE);
     }
     if (prop.bordercolor !== undefined) {
       this.bordercolor = prop.bordercolor;
@@ -52,71 +54,87 @@ export class RectangleProperty extends BaseProperty {
       (this.mobj as Konva.Rect).cornerRadius(this.cornerRadius);
     }
   }
-  override getUIComponents(): React.ReactNode[] {
+  override getUIComponents(): { name: string; component: React.ReactNode }[] {
     const components = super.getUIComponents();
-    components.push(
-      <NumberInputs
-        inputs={[
-          {
-            label: "Width",
-            value: this.dimensions.width,
-            onChange: (v) =>
-              this.update({
-                dimensions: {
-                  width: v,
-                  height: this.dimensions.height,
-                },
-              }),
-          },
-          {
-            label: "Height",
-            value: this.dimensions.height,
-            onChange: (v) =>
-              this.update({
-                dimensions: {
-                  width: this.dimensions.width,
-                  height: v,
-                },
-              }),
-          },
-        ]}
-        icon={<>H</>}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Thickness",
-            value: this.thickness,
-            onChange: (v) => this.update({ thickness: v }),
-            min: 1,
-            max: 20,
-            step: 1,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Corner Radius",
-            value: this.cornerRadius,
-            onChange: (v) => this.update({ cornerRadius: v }),
-            min: 0,
-            max: 50,
-            step: 1,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <ColorDisc
-        value={this.color}
-        onChange={(val) => this.update({ color: val })}
-      />
-    );
+    components.push({
+      name: "Dimensions",
+      component: (
+        <NumberInputs
+          key={"Dimensions"}
+          inputs={[
+            {
+              label: "Width",
+              value: this.dimensions.width,
+              onChange: (v) =>
+                this.update({
+                  dimensions: {
+                    width: v,
+                    height: this.dimensions.height,
+                  },
+                }),
+            },
+            {
+              label: "Height",
+              value: this.dimensions.height,
+              onChange: (v) =>
+                this.update({
+                  dimensions: {
+                    width: this.dimensions.width,
+                    height: v,
+                  },
+                }),
+            },
+          ]}
+          icon={<>H</>}
+        />
+      ),
+    });
+    components.push({
+      name: "Thickness",
+      component: (
+        <SliderInput
+          key={"Thickness"}
+          fields={[
+            {
+              label: "Thickness",
+              value: this.thickness,
+              onChange: (v) => this.update({ thickness: v }),
+              min: 1,
+              max: 20,
+              step: 1,
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Corner Radius",
+      component: (
+        <SliderInput
+          key={"CornerRadius"}
+          fields={[
+            {
+              label: "Corner Radius",
+              value: this.cornerRadius,
+              onChange: (v) => this.update({ cornerRadius: v }),
+              min: 0,
+              max: 50,
+              step: 1,
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Border Color",
+      component: (
+        <ColorDisc
+          key={"BorderColor"}
+          value={this.color}
+          onChange={(val) => this.update({ color: val })}
+        />
+      ),
+    });
     return components;
   }
   override getData(): RectangleProperties {
@@ -136,5 +154,16 @@ export class RectangleProperty extends BaseProperty {
     this.thickness = data.thickness;
     this.cornerRadius = data.cornerRadius;
     this.update(data);
+  }
+
+  override refresh(): void {
+    super.refresh();
+    const pos = this.mobj.position();
+    this.position = c2p(
+      pos.x + this.mobj.width() / 2,
+      pos.y + this.mobj.height() / 2
+    );
+    this.dimensions.width = this.mobj.width() / DEFAULT_SCALE;
+    this.dimensions.height = this.mobj.height() / DEFAULT_SCALE;
   }
 }

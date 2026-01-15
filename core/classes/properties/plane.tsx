@@ -4,6 +4,7 @@ import SliderInput from "./input/sliderInput";
 import { Label } from "@/components/ui/label";
 import { ColorDisc } from "./input/colordisc";
 import Konva from "@/lib/konva";
+import { MPlane } from "../mobjects/group/plane";
 
 export interface PlaneProperties extends BaseProperties {
   // done
@@ -40,197 +41,277 @@ export class PlaneProperty extends BaseProperty {
   protected labelsize: number = 12;
   protected labelcolor: string = "#000000";
 
-  constructor(mobj: Konva.Group) {
+  constructor(mobj: MPlane) {
     super(mobj);
   }
 
   override update(prop: Partial<PlaneProperties>): void {
     super.update(prop);
-  }
-  override getUIComponents(): React.ReactNode[] {
-    const components = super.getUIComponents();
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Width",
-            value: this.dimensions.width,
-            onChange: (v) =>
-              this.update({
-                dimensions: { width: v, height: this.dimensions.height },
-              }),
-          },
-          {
-            label: "Height",
-            value: this.dimensions.height,
-            onChange: (v) =>
-              this.update({
-                dimensions: { width: this.dimensions.width, height: v },
-              }),
-          },
-        ]}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Min X Range",
-            value: this.ranges.xrange[0],
-            onChange: (v) =>
-              this.update({
-                ranges: {
-                  xrange: [v, this.ranges.xrange[1], this.ranges.xrange[2]],
-                  yrange: this.ranges.yrange,
-                },
-              }),
-          },
-          {
-            label: "Max X Range",
-            value: this.ranges.xrange[1],
-            onChange: (v) =>
-              this.update({
-                ranges: {
-                  xrange: [this.ranges.xrange[0], v, this.ranges.xrange[2]],
-                  yrange: this.ranges.yrange,
-                },
-              }),
-          },
-          {
-            label: "X step",
-            value: this.ranges.xrange[2],
-            onChange: (v) =>
-              this.update({
-                ranges: {
-                  xrange: [this.ranges.xrange[0], this.ranges.xrange[1], v],
-                  yrange: this.ranges.yrange,
-                },
-              }),
-          },
+    if (!(this.mobj instanceof MPlane)) return;
+    if (prop.ranges) this.mobj.refreshPlane();
 
-          {
-            label: "Min Y Range",
-            value: this.ranges.yrange[0],
-            onChange: (v) =>
-              this.update({
-                ranges: {
-                  xrange: [
-                    this.ranges.xrange[0],
-                    this.ranges.xrange[1],
-                    this.ranges.xrange[2],
-                  ],
-                  yrange: [v, this.ranges.yrange[1], this.ranges.yrange[2]],
-                },
-              }),
-          },
-          {
-            label: "Max Y Range",
-            value: this.ranges.yrange[1],
-            onChange: (v) =>
-              this.update({
-                ranges: {
-                  xrange: [
-                    this.ranges.xrange[0],
-                    this.ranges.xrange[1],
-                    this.ranges.xrange[2],
-                  ],
-                  yrange: [this.ranges.yrange[0], v, this.ranges.yrange[2]],
-                },
-              }),
-          },
-          {
-            label: "Y step",
-            value: this.ranges.yrange[2],
-            onChange: (v) =>
-              this.update({
-                ranges: {
-                  xrange: [
-                    this.ranges.xrange[0],
-                    this.ranges.xrange[1],
-                    this.ranges.xrange[2],
-                  ],
-                  yrange: [this.ranges.yrange[0], this.ranges.yrange[1], v],
-                },
-              }),
-          },
-        ]}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Grid Thickness",
-            value: this.gridthickness,
-            onChange: (v) => {
-              this.update({ gridthickness: v });
+    if (prop.color) {
+      this.mobj.gridGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.stroke(prop.color!);
+      });
+    }
+
+    if (prop.axiscolor) {
+      this.mobj.axesGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.stroke(prop.axiscolor!);
+      });
+
+      this.mobj.ticksGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.stroke(prop.axiscolor!);
+      });
+    }
+
+    if (prop.axisthickness) {
+      this.mobj.axesGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.strokeWidth(prop.axisthickness!);
+      });
+
+      this.mobj.ticksGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.strokeWidth(prop.axisthickness!);
+      });
+    }
+
+    if (prop.labelcolor) {
+      this.mobj.labelGroup.children.forEach((text) => {
+        if (text instanceof Konva.Text) text.fill(prop.labelcolor!);
+      });
+    }
+    if (prop.labelsize) {
+      this.mobj.labelGroup.children.forEach((text) => {
+        if (text instanceof Konva.Text) text.fontSize(prop.labelsize!);
+      });
+    }
+    if (prop.gridthickness) {
+      this.mobj.gridGroup.children.forEach((line) => {
+        if (line instanceof Konva.Line) line.strokeWidth(prop.gridthickness!);
+      });
+    }
+
+    if (prop.showgrid !== undefined) {
+      this.mobj.gridGroup.visible(prop.showgrid);
+    }
+    if (prop.showlabels !== undefined) {
+      this.mobj.labelGroup.visible(prop.showlabels);
+    }
+  }
+  override getUIComponents(): { name: string; component: React.ReactNode }[] {
+    const components = super.getUIComponents();
+    components.push({
+      name: "Dimensions",
+      component: (
+        <SliderInput
+          key={"Dimensions"}
+          fields={[
+            {
+              label: "Width",
+              value: this.dimensions.width,
+              onChange: (v) =>
+                this.update({
+                  dimensions: { width: v, height: this.dimensions.height },
+                }),
             },
-            min: 1,
-            max: 30,
-            step: 1,
-          },
-          {
-            label: "Axis Thickness",
-            value: this.axisthickness,
-            onChange: (v) => {
-              this.update({ axisthickness: v });
+            {
+              label: "Height",
+              value: this.dimensions.height,
+              onChange: (v) =>
+                this.update({
+                  dimensions: { width: this.dimensions.width, height: v },
+                }),
             },
-            min: 1,
-            max: 30,
-            step: 1,
-          },
-          {
-            label: "Label Size",
-            value: this.labelsize,
-            onChange: (v) => {
-              this.update({ labelsize: v });
-            },
-            min: 1,
-            max: 30,
-            step: 1,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id={`my-checkbox-showgrid`}
-          defaultChecked={this.showgrid}
-          onCheckedChange={(v) => this.update({ showgrid: v as boolean })}
+          ]}
         />
-        <Label htmlFor={`my-checkbox-showgrid`} className="text-sm font-medium">
-          Grid
-        </Label>
-      </div>
-    );
-    components.push(
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id={`my-checkbox-showlabels`}
-          defaultChecked={this.showlabels}
-          onCheckedChange={(v) => this.update({ showlabels: v as boolean })}
+      ),
+    });
+    components.push({
+      name: "Ranges",
+      component: (
+        <SliderInput
+          key={"Ranges"}
+          fields={[
+            {
+              label: "Min X Range",
+              value: this.ranges.xrange[0],
+              onChange: (v) =>
+                this.update({
+                  ranges: {
+                    xrange: [v, this.ranges.xrange[1], this.ranges.xrange[2]],
+                    yrange: this.ranges.yrange,
+                  },
+                }),
+            },
+            {
+              label: "Max X Range",
+              value: this.ranges.xrange[1],
+              onChange: (v) =>
+                this.update({
+                  ranges: {
+                    xrange: [this.ranges.xrange[0], v, this.ranges.xrange[2]],
+                    yrange: this.ranges.yrange,
+                  },
+                }),
+            },
+            {
+              label: "X step",
+              value: this.ranges.xrange[2],
+              onChange: (v) =>
+                this.update({
+                  ranges: {
+                    xrange: [this.ranges.xrange[0], this.ranges.xrange[1], v],
+                    yrange: this.ranges.yrange,
+                  },
+                }),
+            },
+
+            {
+              label: "Min Y Range",
+              value: this.ranges.yrange[0],
+              onChange: (v) =>
+                this.update({
+                  ranges: {
+                    xrange: [
+                      this.ranges.xrange[0],
+                      this.ranges.xrange[1],
+                      this.ranges.xrange[2],
+                    ],
+                    yrange: [v, this.ranges.yrange[1], this.ranges.yrange[2]],
+                  },
+                }),
+            },
+            {
+              label: "Max Y Range",
+              value: this.ranges.yrange[1],
+              onChange: (v) =>
+                this.update({
+                  ranges: {
+                    xrange: [
+                      this.ranges.xrange[0],
+                      this.ranges.xrange[1],
+                      this.ranges.xrange[2],
+                    ],
+                    yrange: [this.ranges.yrange[0], v, this.ranges.yrange[2]],
+                  },
+                }),
+            },
+            {
+              label: "Y step",
+              value: this.ranges.yrange[2],
+              onChange: (v) =>
+                this.update({
+                  ranges: {
+                    xrange: [
+                      this.ranges.xrange[0],
+                      this.ranges.xrange[1],
+                      this.ranges.xrange[2],
+                    ],
+                    yrange: [this.ranges.yrange[0], this.ranges.yrange[1], v],
+                  },
+                }),
+            },
+          ]}
         />
-        <Label
-          htmlFor={`my-checkbox-showlabels`}
-          className="text-sm font-medium"
-        >
-          Labels
-        </Label>
-      </div>
-    );
-    components.push(
-      <ColorDisc
-        value={this.axiscolor}
-        onChange={(v) => this.update({ axiscolor: v })}
-      />
-    );
-    components.push(
-      <ColorDisc
-        value={this.labelcolor}
-        onChange={(v) => this.update({ labelcolor: v })}
-      />
-    );
+      ),
+    });
+    components.push({
+      name: "Line Thickness",
+      component: (
+        <SliderInput
+          key={"LineThickness"}
+          fields={[
+            {
+              label: "Grid Thickness",
+              value: this.gridthickness,
+              onChange: (v) => {
+                this.update({ gridthickness: v });
+              },
+              min: 1,
+              max: 30,
+              step: 1,
+            },
+            {
+              label: "Axis Thickness",
+              value: this.axisthickness,
+              onChange: (v) => {
+                this.update({ axisthickness: v });
+              },
+              min: 1,
+              max: 30,
+              step: 1,
+            },
+            {
+              label: "Label Size",
+              value: this.labelsize,
+              onChange: (v) => {
+                this.update({ labelsize: v });
+              },
+              min: 1,
+              max: 30,
+              step: 1,
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Show Grid",
+      component: (
+        <div key={"ShowGrid"} className="flex items-center gap-2">
+          <Checkbox
+            id={`my-checkbox-showgrid`}
+            defaultChecked={this.showgrid}
+            onCheckedChange={(v) => this.update({ showgrid: v as boolean })}
+          />
+          <Label
+            htmlFor={`my-checkbox-showgrid`}
+            className="text-sm font-medium"
+          >
+            Grid
+          </Label>
+        </div>
+      ),
+    });
+    components.push({
+      name: "Show Labels",
+      component: (
+        <div key={"ShowLabels"} className="flex items-center gap-2">
+          <Checkbox
+            id={`my-checkbox-showlabels`}
+            defaultChecked={this.showlabels}
+            onCheckedChange={(v) => this.update({ showlabels: v as boolean })}
+          />
+          <Label
+            htmlFor={`my-checkbox-showlabels`}
+            className="text-sm font-medium"
+          >
+            Labels
+          </Label>
+        </div>
+      ),
+    });
+    components.push({
+      name: "Axis Color",
+      component: (
+        <ColorDisc
+          key={"AxisColor"}
+          value={this.axiscolor}
+          onChange={(v) => this.update({ axiscolor: v })}
+        />
+      ),
+    });
+    components.push({
+      name: "Label Color",
+      component: (
+        <ColorDisc
+          key={"LabelColor"}
+          value={this.labelcolor}
+          onChange={(v) => this.update({ labelcolor: v })}
+        />
+      ),
+    });
 
     return components;
   }

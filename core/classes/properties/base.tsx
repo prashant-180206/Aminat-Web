@@ -28,14 +28,14 @@ export class BaseProperty {
   protected mobj: Konva.Node;
 
   constructor(mobj: Konva.Node) {
+    this.mobj = mobj;
     mobj.position(c2p(this.position.x, this.position.y));
     if (mobj instanceof Konva.Shape) mobj.fill(this.color);
     mobj.scale({ x: this.scale, y: this.scale });
     mobj.rotation(this.rotation);
     mobj.opacity(this.opacity);
     mobj.zIndex(this.zindex);
-    this.mobj = mobj;
-    mobj.on("dragmove", this.refresh.bind(this));
+    this.mobj.on("dragmove", this.refresh.bind(this));
   }
   update(prop: Partial<BaseProperties>) {
     if (prop.position !== undefined) {
@@ -44,6 +44,7 @@ export class BaseProperty {
         prop.position.y ?? this.position.y
       );
       this.mobj.position({ x: newpos.x, y: newpos.y });
+      this.position = prop.position;
     }
     if (prop.color !== undefined) {
       this.color = prop.color;
@@ -67,85 +68,108 @@ export class BaseProperty {
     }
   }
 
-  getUIComponents(): React.ReactNode[] {
-    const components: React.ReactNode[] = [];
+  getUIComponents(): { name: string; component: React.ReactNode }[] {
+    const components: { name: string; component: React.ReactNode }[] = [];
 
-    components.push(
-      <NumberInputs
-        inputs={[
-          {
-            label: "X",
-            value: this.position.x,
-            onChange: (v) =>
-              this.update({ position: { ...this.position, x: v } }),
-          },
-          {
-            label: "Y",
-            value: this.position.y,
-            onChange: (v) =>
-              this.update({ position: { ...this.position, y: v } }),
-          },
-        ]}
-        icon={<Move className="h-4 w-4" />}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Scale",
-            value: this.scale,
-            onChange: (v) => this.update({ scale: v }),
-            min: 0.1,
-            max: 5,
-            step: 0.1,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <ColorDisc
-        value={this.color}
-        onChange={(val) => this.update({ color: val })}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Rotation",
-            value: this.rotation,
-            onChange: (v) => this.update({ rotation: v }),
-            min: 0,
-            max: 360,
-            step: 1,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Opacity",
-            value: this.opacity,
-            onChange: (v) => this.update({ opacity: v }),
-            min: 0,
-            max: 1,
-            step: 0.01,
-          },
-        ]}
-      />
-    );
-    components.push(
-      <NumberStepperInput
-        value={this.zindex}
-        onChange={(v) => this.update({ zindex: v })}
-        min={0}
-        step={1}
-        max={50}
-      />
-    );
+    components.push({
+      name: "Position",
+      component: (
+        <NumberInputs
+          key={"Position"}
+          inputs={[
+            {
+              label: "X",
+              value: this.position.x,
+              onChange: (v) =>
+                this.update({ position: { ...this.position, x: v } }),
+            },
+            {
+              label: "Y",
+              value: this.position.y,
+              onChange: (v) =>
+                this.update({ position: { ...this.position, y: v } }),
+            },
+          ]}
+          icon={<Move className="h-4 w-4" />}
+        />
+      ),
+    });
+    components.push({
+      name: "Scale",
+      component: (
+        <SliderInput
+          key={"Scale"}
+          fields={[
+            {
+              label: "Scale",
+              value: this.scale,
+              onChange: (v) => this.update({ scale: v }),
+              min: 0.1,
+              max: 5,
+              step: 0.1,
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Color",
+      component: (
+        <ColorDisc
+          value={this.color}
+          onChange={(val) => this.update({ color: val })}
+        />
+      ),
+    });
+    components.push({
+      name: "Rotation",
+      component: (
+        <SliderInput
+          key={"Rotation"}
+          fields={[
+            {
+              label: "Rotation",
+              value: this.rotation,
+              onChange: (v) => this.update({ rotation: v }),
+              min: 0,
+              max: 360,
+              step: 1,
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Opacity",
+      component: (
+        <SliderInput
+          key={"Opacity"}
+          fields={[
+            {
+              label: "Opacity",
+              value: this.opacity,
+              onChange: (v) => this.update({ opacity: v }),
+              min: 0,
+              max: 1,
+              step: 0.01,
+            },
+          ]}
+        />
+      ),
+    });
+    components.push({
+      name: "Z-Index",
+      component: (
+        <NumberStepperInput
+          key={"ZIndex"}
+          value={this.zindex}
+          onChange={(v) => this.update({ zindex: v })}
+          min={0}
+          step={1}
+          max={50}
+        />
+      ),
+    });
     return components;
   }
 
@@ -165,11 +189,17 @@ export class BaseProperty {
 
   refresh() {
     const pos = this.mobj.position();
-    this.update({
-      position: c2p(pos.x, pos.y),
-      scale: this.mobj.scaleX(),
-      rotation: this.mobj.rotation(),
-      opacity: this.mobj.opacity(),
-    });
+
+    this.position = c2p(pos.x, pos.y);
+    this.scale = this.mobj.scaleX();
+    this.rotation = this.mobj.rotation();
+    this.opacity = this.mobj.opacity();
+
+    // this.update({
+    //   position: c2p(pos.x, pos.y),
+    //   scale: this.mobj.scaleX(),
+    //   rotation: this.mobj.rotation(),
+    //   opacity: this.mobj.opacity(),
+    // });
   }
 }

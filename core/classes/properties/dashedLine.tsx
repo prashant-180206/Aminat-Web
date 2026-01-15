@@ -17,24 +17,32 @@ export class DashedLineProperty extends LineProperty {
       if (this.mobj instanceof Konva.Line) this.mobj.dash([dash, dash]);
     }
   }
-  override getUIComponents(): React.ReactNode[] {
+  override getUIComponents(): {
+    name: string;
+    component: React.ReactNode;
+  }[] {
     const components = super.getUIComponents();
-    components.push(
-      <SliderInput
-        fields={[
-          {
-            label: "Dash Ratio",
-            value: this.dashRatio,
-            onChange: (v) => {
-              this.update({ dashRatio: v });
+    components.push({
+      name: "Dash Ratio",
+
+      component: (
+        <SliderInput
+          key={"Dash Ratio"}
+          fields={[
+            {
+              label: "Dash Ratio",
+              value: this.dashRatio,
+              onChange: (v) => {
+                this.update({ dashRatio: v });
+              },
+              min: 1,
+              max: 20,
+              step: 1,
             },
-            min: 1,
-            max: 20,
-            step: 1,
-          },
-        ]}
-      />
-    );
+          ]}
+        />
+      ),
+    });
     return components;
   }
 
