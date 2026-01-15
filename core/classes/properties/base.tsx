@@ -1,5 +1,5 @@
 import { Colors } from "@/core/utils/colors";
-import { c2p } from "@/core/utils/conversion";
+import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import React from "react";
 import { Move } from "lucide-react";
@@ -35,11 +35,15 @@ export class BaseProperty {
     mobj.opacity(this.opacity);
     mobj.zIndex(this.zindex);
     this.mobj = mobj;
+    mobj.on("dragmove", this.refresh.bind(this));
   }
   update(prop: Partial<BaseProperties>) {
     if (prop.position !== undefined) {
-      this.position = prop.position;
-      this.mobj.position(c2p(this.position.x, this.position.y));
+      const newpos = p2c(
+        prop.position.x ?? this.position.x,
+        prop.position.y ?? this.position.y
+      );
+      this.mobj.position({ x: newpos.x, y: newpos.y });
     }
     if (prop.color !== undefined) {
       this.color = prop.color;
@@ -143,5 +147,29 @@ export class BaseProperty {
       />
     );
     return components;
+  }
+
+  getData(): BaseProperties {
+    return {
+      position: this.position,
+      color: this.color,
+      scale: this.scale,
+      rotation: this.rotation,
+      opacity: this.opacity,
+      zindex: this.zindex,
+    };
+  }
+  setData(data: BaseProperties) {
+    this.update(data);
+  }
+
+  refresh() {
+    const pos = this.mobj.position();
+    this.update({
+      position: c2p(pos.x, pos.y),
+      scale: this.mobj.scaleX(),
+      rotation: this.mobj.rotation(),
+      opacity: this.mobj.opacity(),
+    });
   }
 }

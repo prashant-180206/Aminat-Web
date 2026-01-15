@@ -1,27 +1,17 @@
-import { DEFAULT_SCALE } from "@/core/config";
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 // import Konva from "konva";
-import { c2p, p2c } from "@/core/utils/conversion";
+import { p2c } from "@/core/utils/conversion";
 import { CircleProperties } from "@/core/types/properties";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { Konva } from "@/lib/konva";
 import { MobjectData } from "@/core/types/file";
-import { Colors } from "@/core/utils/colors";
+import { CircleProperty } from "../../properties/circle";
 
 class MCircle extends Konva.Circle {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private _properties: CircleProperties = {
-    radius: 1,
-    color: Colors.FILL,
-    bordercolor: Colors.BORDER,
-    thickness: 10,
-    position: { x: 0, y: 0 },
-    scale: 1,
-    rotation: 0,
-    opacity: 1,
-    zindex: 0,
-  };
+  protected features: CircleProperty;
+
   private _TYPE: string;
 
   constructor(TYPE: string, config?: Konva.CircleConfig) {
@@ -29,70 +19,36 @@ class MCircle extends Konva.Circle {
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
-    this.radius(this._properties.radius * DEFAULT_SCALE);
-    this.fill(this._properties.color);
-    this.stroke(this._properties.bordercolor);
-    this.strokeWidth(this._properties.thickness);
+    this.features = new CircleProperty(this);
     this.position(p2c(0, 0));
     this.name("Circle");
-
-    this.trackerconnector.addConnectorFunc("radius", (value: number) => {
-      this.properties = { radius: value };
-    });
   }
 
   type(): string {
     return this._TYPE;
   }
-
-  UpdateFromKonvaProperties() {
-    const pos = this.position();
-    this._properties.position = c2p(pos.x, pos.y);
-    this._properties.radius = this.radius() / DEFAULT_SCALE;
-    this._properties.scale = this.scaleX();
-    this._properties.rotation = this.rotation();
-  }
-
   // Object getter - returns copy to prevent mutation
   get properties(): CircleProperties {
-    return { ...this._properties };
+    return { ...this.features.getData() };
   }
 
-  // Object setter - accepts full or partial properties object
-  set properties(value: Partial<CircleProperties>) {
-    Object.assign(this._properties, value);
+  getUIComponents(): React.ReactNode[] {
+    return this.features.getUIComponents();
+  }
 
-    // Sync Konva properties
-    if (value.radius) {
-      this.radius(value.radius * DEFAULT_SCALE);
-    }
-    if (value.color) this.fill(value.color);
-    if (value.bordercolor) this.stroke(value.bordercolor);
-    if (value.thickness) this.strokeWidth(value.thickness);
-    if (value.position) {
-      const newpos = p2c(
-        value.position.x ?? this._properties.position.x,
-        value.position.y ?? this._properties.position.y
-      );
-      this.position({ x: newpos.x, y: newpos.y });
-    }
-    if (value.opacity !== undefined) this.opacity(value.opacity);
-    if (value.scale !== undefined)
-      this.scale({ x: value.scale, y: value.scale });
-    if (value.rotation !== undefined) this.rotation(value.rotation);
-    if (value.zindex !== undefined && this.parent) this.zIndex(value.zindex);
+  update(value: Partial<CircleProperties>) {
+    this.features.update(value);
   }
 
   storeAsObj(): MobjectData {
     return {
-      properties: this._properties,
+      properties: this.features.getData(),
       id: this.id(),
     };
   }
 
   loadFromObj(obj: MobjectData) {
-    this.properties = obj.properties as CircleProperties;
-    this.UpdateFromKonvaProperties();
+    this.features.setData(obj.properties);
   }
 }
 

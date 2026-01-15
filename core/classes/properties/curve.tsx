@@ -4,6 +4,7 @@ import { ParametricCurve } from "../mobjects/simple/curve";
 import SliderInput from "./input/sliderInput";
 import { StringInputs } from "./input/stringInput";
 import { toast } from "sonner";
+import Konva from "@/lib/konva";
 import { parse } from "mathjs";
 
 export interface CurveProperties extends BaseProperties {
@@ -16,7 +17,7 @@ export interface CurveProperties extends BaseProperties {
   label: Label;
 }
 
-export class Curveproperties extends BaseProperty {
+export class CurveProperty extends BaseProperty {
   protected parameterRange: [number, number] = [-5, 5];
   protected funcs: {
     Xfunc: string;
@@ -53,11 +54,20 @@ export class Curveproperties extends BaseProperty {
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      this.mobj.strokeWidth(this.thickness);
+      if (this.mobj instanceof Konva.Line)
+        this.mobj.strokeWidth(this.thickness);
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);
     }
+  }
+
+  setlabelPosition(prop: {
+    start: { x: number; y: number };
+    end: { x: number; y: number };
+    center: { x: number; y: number };
+  }) {
+    this.label.setLabelPosition(prop);
   }
 
   override getUIComponents(): React.ReactNode[] {
@@ -135,5 +145,23 @@ export class Curveproperties extends BaseProperty {
     );
     components.push(this.label.getUIComponent());
     return components;
+  }
+
+  override getData(): CurveProperties {
+    return {
+      ...super.getData(),
+      parameterRange: this.parameterRange,
+      funcs: this.funcs,
+      thickness: this.thickness,
+      label: this.label.getData(),
+    };
+  }
+
+  override setData(data: CurveProperties): void {
+    super.setData(data);
+    const curveData = data;
+    this.update(curveData);
+    this.label.setData(curveData.label);
+    this.update(data);
   }
 }

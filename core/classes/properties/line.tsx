@@ -38,7 +38,8 @@ export class LineProperty extends BaseProperty {
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      this.mobj.strokeWidth(this.thickness);
+      if (this.mobj instanceof Konva.Line)
+        this.mobj.strokeWidth(this.thickness);
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);
@@ -92,5 +93,20 @@ export class LineProperty extends BaseProperty {
     );
     components.push(this.label.getUIComponent());
     return components;
+  }
+
+  override getData(): LineProperties {
+    return {
+      ...super.getData(),
+      lineEnds: this.lineEnds,
+      thickness: this.thickness,
+      label: this.label.getData(),
+    };
+  }
+
+  override setData(data: LineProperties): void {
+    super.setData(data);
+    const lineData = data;
+    this.update(lineData);
   }
 }

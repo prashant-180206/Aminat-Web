@@ -234,4 +234,31 @@ export class PlaneProperty extends BaseProperty {
 
     return components;
   }
+  override getData(): PlaneProperties {
+    return {
+      ...super.getData(),
+      dimensions: this.dimensions,
+      ranges: this.ranges,
+      gridthickness: this.gridthickness,
+      axisthickness: this.axisthickness,
+      axiscolor: this.axiscolor,
+      showgrid: this.showgrid,
+      showlabels: this.showlabels,
+      labelsize: this.labelsize,
+      labelcolor: this.labelcolor,
+    };
+  }
+  override setData(data: PlaneProperties): void {
+    super.setData(data);
+    this.dimensions = data.dimensions;
+    this.ranges = data.ranges;
+    this.gridthickness = data.gridthickness;
+    this.axisthickness = data.axisthickness;
+    this.axiscolor = data.axiscolor;
+    this.showgrid = data.showgrid;
+    this.showlabels = data.showlabels;
+    this.labelsize = data.labelsize;
+    this.labelcolor = data.labelcolor;
+    this.update(data);
+  }
 }

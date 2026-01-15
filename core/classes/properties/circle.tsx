@@ -3,6 +3,7 @@ import { BaseProperties, BaseProperty } from "./base";
 import Konva from "@/lib/konva";
 import SliderInput from "./input/sliderInput";
 import { ColorDisc } from "./input/colordisc";
+import { DEFAULT_SCALE } from "@/core/config";
 
 export interface CircleProperties extends BaseProperties {
   radius: number;
@@ -10,8 +11,10 @@ export interface CircleProperties extends BaseProperties {
   thickness: number;
 }
 
+/* The CircleProperty class in TypeScript React manages properties for a Konva Circle shape, allowing
+for updates and UI components customization. */
 export class CircleProperty extends BaseProperty {
-  protected radius: number = 10;
+  protected radius: number = 1;
   protected bordercolor: string = Colors.BORDER;
   protected thickness: number = 1;
   constructor(mobj: Konva.Circle) {
@@ -21,7 +24,8 @@ export class CircleProperty extends BaseProperty {
     super.update(prop);
     if (prop.radius !== undefined) {
       this.radius = prop.radius;
-      if (this.mobj instanceof Konva.Circle) this.mobj.radius(this.radius);
+      if (this.mobj instanceof Konva.Circle)
+        this.mobj.radius(this.radius * DEFAULT_SCALE);
     }
     if (prop.bordercolor !== undefined) {
       this.bordercolor = prop.bordercolor;
@@ -77,5 +81,19 @@ export class CircleProperty extends BaseProperty {
 
     // Add Circle specific UI components here if needed
     return components;
+  }
+
+  override getData(): CircleProperties {
+    return {
+      ...super.getData(),
+      radius: this.radius,
+      bordercolor: this.bordercolor,
+      thickness: this.thickness,
+    };
+  }
+  override setData(data: BaseProperties): void {
+    super.setData(data);
+    const circleData = data as CircleProperties;
+    this.update(circleData);
   }
 }

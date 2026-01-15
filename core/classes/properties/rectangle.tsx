@@ -40,11 +40,12 @@ export class RectangleProperty extends BaseProperty {
     }
     if (prop.bordercolor !== undefined) {
       this.bordercolor = prop.bordercolor;
-      this.mobj.stroke(this.bordercolor);
+      if (this.mobj instanceof Konva.Rect) this.mobj.stroke(this.bordercolor);
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      this.mobj.strokeWidth(this.thickness);
+      if (this.mobj instanceof Konva.Rect)
+        this.mobj.strokeWidth(this.thickness);
     }
     if (prop.cornerRadius !== undefined) {
       this.cornerRadius = prop.cornerRadius;
@@ -117,5 +118,23 @@ export class RectangleProperty extends BaseProperty {
       />
     );
     return components;
+  }
+  override getData(): RectangleProperties {
+    return {
+      ...super.getData(),
+      dimensions: this.dimensions,
+      bordercolor: this.bordercolor,
+      thickness: this.thickness,
+      cornerRadius: this.cornerRadius,
+    };
+  }
+
+  override setData(data: RectangleProperties): void {
+    super.setData(data);
+    this.dimensions = data.dimensions;
+    this.bordercolor = data.bordercolor;
+    this.thickness = data.thickness;
+    this.cornerRadius = data.cornerRadius;
+    this.update(data);
   }
 }

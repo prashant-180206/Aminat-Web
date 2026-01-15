@@ -87,16 +87,6 @@ export class ParametricCurve extends Konva.Group {
   }
 
   set properties(value: Partial<CurveProperties>) {
-    if (value.color) this.line.stroke(value.color);
-    if (value.thickness) this.line.strokeWidth(value.thickness);
-    if (value.scale) this.scale({ x: value.scale, y: value.scale });
-    if (value.rotation) this.rotation(value.rotation);
-    if (value.opacity) this.opacity(value.opacity);
-    if (this.parent && value.zindex) this.zIndex(value.zindex);
-    if (value.position) {
-      this.position(p2c(value.position.x, value.position.y));
-      this.setLabelPosition();
-    }
     if (value.funcs) {
       this.generateCurve(
         value.funcs.Xfunc,

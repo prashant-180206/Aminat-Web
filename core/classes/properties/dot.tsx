@@ -44,4 +44,17 @@ export class DotProperty extends BaseProperty {
     components.push(this.label.getUIComponent());
     return components;
   }
+  override getData(): DotProperties {
+    return {
+      ...super.getData(),
+      radius: this.radius,
+      label: this.label.getData(),
+    };
+  }
+  override setData(data: DotProperties): void {
+    super.setData(data);
+    this.radius = data.radius;
+    this.label.setData(data.label);
+    this.update(data);
+  }
 }

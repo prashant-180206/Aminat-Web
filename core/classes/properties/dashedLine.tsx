@@ -14,7 +14,7 @@ export class DashedLineProperty extends LineProperty {
     super.update(prop);
     if (prop.dashRatio !== undefined) {
       const dash = Math.max(1, prop.dashRatio);
-      this.mobj.dash([dash, dash]);
+      if (this.mobj instanceof Konva.Line) this.mobj.dash([dash, dash]);
     }
   }
   override getUIComponents(): React.ReactNode[] {
@@ -36,5 +36,17 @@ export class DashedLineProperty extends LineProperty {
       />
     );
     return components;
+  }
+
+  override getData(): DashedLineProperties {
+    return {
+      ...super.getData(),
+      dashRatio: this.dashRatio,
+    };
+  }
+  override setData(data: DashedLineProperties): void {
+    super.setData(data);
+    this.dashRatio = data.dashRatio;
+    this.update(data);
   }
 }

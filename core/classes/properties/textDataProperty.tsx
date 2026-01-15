@@ -66,4 +66,24 @@ export class TextDataProperty {
       />
     );
   }
+
+  getData(): TextData {
+    return {
+      content: this.content,
+      fontsize: this.fontsize,
+      fontfamily: this.fontfamily,
+      bold: this.bold,
+      italic: this.italic,
+      color: this.color,
+    };
+  }
+  setData(data: TextData): void {
+    this.content = data.content;
+    this.fontsize = data.fontsize;
+    this.fontfamily = data.fontfamily;
+    this.bold = data.bold;
+    this.italic = data.italic;
+    this.color = data.color;
+    this.update(data);
+  }
 }

@@ -30,4 +30,16 @@ export class TextProperty extends BaseProperty {
   override getUIComponents(): React.ReactNode[] {
     return [...super.getUIComponents(), this.textData.getUIComponent()];
   }
+
+  override getData(): TextProperties {
+    return {
+      ...super.getData(),
+      textData: this.textData.getData(),
+    };
+  }
+  override setData(data: TextProperties): void {
+    super.setData(data);
+    this.textData.setData(data.textData);
+    this.update(data);
+  }
 }

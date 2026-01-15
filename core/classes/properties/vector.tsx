@@ -46,4 +46,15 @@ export class VectorProperty extends LineProperty {
     );
     return components;
   }
+  override getData(): VectorProperties {
+    return {
+      ...super.getData(),
+      pointerSize: this.pointerSize,
+    };
+  }
+  override setData(data: VectorProperties): void {
+    super.setData(data);
+    this.pointerSize = data.pointerSize;
+    this.update(data);
+  }
 }

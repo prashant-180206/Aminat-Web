@@ -109,4 +109,23 @@ export class NumberLineProperty extends BaseProperty {
     />;
     return components;
   }
+  override getData(): NumberLineProperties {
+    return {
+      ...super.getData(),
+      range: this.range,
+      axisthickness: this.axisthickness,
+      showlabels: this.showlabels,
+      labelsize: this.labelsize,
+      labelcolor: this.labelcolor,
+    };
+  }
+  override setData(data: NumberLineProperties): void {
+    super.setData(data);
+    this.range = data.range;
+    this.axisthickness = data.axisthickness;
+    this.showlabels = data.showlabels;
+    this.labelsize = data.labelsize;
+    this.labelcolor = data.labelcolor;
+    this.update(data);
+  }
 }

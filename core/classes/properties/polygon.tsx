@@ -61,4 +61,20 @@ export class PolygonProperty extends BaseProperty {
     );
     return components;
   }
+
+  override getData(): PolygonProperties {
+    return {
+      ...super.getData(),
+      points: this.points,
+      bordercolor: this.bordercolor,
+      thickness: this.thickness,
+    };
+  }
+  override setData(data: PolygonProperties): void {
+    super.setData(data);
+    this.points = data.points;
+    this.bordercolor = data.bordercolor;
+    this.thickness = data.thickness;
+    this.update(data);
+  }
 }
