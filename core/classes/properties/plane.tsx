@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { ColorDisc } from "./input/colordisc";
 import Konva from "@/lib/konva";
 import { MPlane } from "../mobjects/group/plane";
+import { Colors } from "@/core/utils/colors";
 
 export interface PlaneProperties extends BaseProperties {
   // done
@@ -33,13 +34,13 @@ export class PlaneProperty extends BaseProperty {
     xrange: [number, number, number];
     yrange: [number, number, number];
   } = { xrange: [-10, 10, 1], yrange: [-10, 10, 1] };
-  protected gridthickness: number = 1;
-  protected axisthickness: number = 2;
-  protected axiscolor: string = "#000000";
+  protected gridthickness: number = 2;
+  protected axisthickness: number = 6;
+  protected axiscolor: string = Colors.FILL;
   protected showgrid: boolean = true;
   protected showlabels: boolean = true;
   protected labelsize: number = 12;
-  protected labelcolor: string = "#000000";
+  protected labelcolor: string = Colors.TEXT;
 
   constructor(mobj: MPlane) {
     super(mobj);
@@ -47,56 +48,56 @@ export class PlaneProperty extends BaseProperty {
 
   override update(prop: Partial<PlaneProperties>): void {
     super.update(prop);
-    if (!(this.mobj instanceof MPlane)) return;
-    if (prop.ranges) this.mobj.refreshPlane();
+    if (!(this.shapemobj instanceof MPlane)) return;
+    if (prop.ranges) this.shapemobj.refreshPlane();
 
     if (prop.color) {
-      this.mobj.gridGroup.children.forEach((line) => {
+      this.shapemobj.gridGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.stroke(prop.color!);
       });
     }
 
     if (prop.axiscolor) {
-      this.mobj.axesGroup.children.forEach((line) => {
+      this.shapemobj.axesGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.stroke(prop.axiscolor!);
       });
 
-      this.mobj.ticksGroup.children.forEach((line) => {
+      this.shapemobj.ticksGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.stroke(prop.axiscolor!);
       });
     }
 
     if (prop.axisthickness) {
-      this.mobj.axesGroup.children.forEach((line) => {
+      this.shapemobj.axesGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.strokeWidth(prop.axisthickness!);
       });
 
-      this.mobj.ticksGroup.children.forEach((line) => {
+      this.shapemobj.ticksGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.strokeWidth(prop.axisthickness!);
       });
     }
 
     if (prop.labelcolor) {
-      this.mobj.labelGroup.children.forEach((text) => {
+      this.shapemobj.labelGroup.children.forEach((text) => {
         if (text instanceof Konva.Text) text.fill(prop.labelcolor!);
       });
     }
     if (prop.labelsize) {
-      this.mobj.labelGroup.children.forEach((text) => {
+      this.shapemobj.labelGroup.children.forEach((text) => {
         if (text instanceof Konva.Text) text.fontSize(prop.labelsize!);
       });
     }
     if (prop.gridthickness) {
-      this.mobj.gridGroup.children.forEach((line) => {
+      this.shapemobj.gridGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.strokeWidth(prop.gridthickness!);
       });
     }
 
     if (prop.showgrid !== undefined) {
-      this.mobj.gridGroup.visible(prop.showgrid);
+      this.shapemobj.gridGroup.visible(prop.showgrid);
     }
     if (prop.showlabels !== undefined) {
-      this.mobj.labelGroup.visible(prop.showlabels);
+      this.shapemobj.labelGroup.visible(prop.showlabels);
     }
   }
   override getUIComponents(): { name: string; component: React.ReactNode }[] {

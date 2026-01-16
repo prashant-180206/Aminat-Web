@@ -1,20 +1,24 @@
 import Konva from "konva";
 import { LineProperties, LineProperty } from "./line";
 import SliderInput from "./input/sliderInput";
+import { MDashedLine } from "../mobjects/simple/dashedLine";
 
 export interface DashedLineProperties extends LineProperties {
   dashRatio: number;
 }
 export class DashedLineProperty extends LineProperty {
-  protected dashRatio: number = 0.5;
-  constructor(mobj: Konva.Line, labelObj: Konva.Text) {
-    super(mobj, labelObj);
+  protected dashRatio: number = 5;
+  constructor(mobj: MDashedLine) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    super(mobj as any);
+    this.update({ dashRatio: this.dashRatio });
   }
   override update(prop: Partial<DashedLineProperties>) {
     super.update(prop);
     if (prop.dashRatio !== undefined) {
       const dash = Math.max(1, prop.dashRatio);
-      if (this.mobj instanceof Konva.Line) this.mobj.dash([dash, dash]);
+      if (this.shapemobj instanceof Konva.Line)
+        this.shapemobj.dash([dash, dash]);
     }
   }
   override getUIComponents(): {

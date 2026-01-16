@@ -12,7 +12,7 @@ export class MText extends Konva.Text {
   private _transformer?: Konva.Transformer;
   public cornerRadius: number = 4;
   private paddingAmount: number = 5;
-  private features: TextProperty;
+  public features: TextProperty;
 
   constructor(TYPE: string) {
     super({

@@ -14,7 +14,7 @@ export class ParametricCurve extends Konva.Group {
   public trackerconnector: TrackerConnector;
   public line: Konva.Line;
   public label: Konva.Text;
-  private features: CurveProperty;
+  public features: CurveProperty;
   private _TYPE: string;
 
   constructor(TYPE: string) {
@@ -82,9 +82,7 @@ export class ParametricCurve extends Konva.Group {
 
       points.push(canvasX, canvasY);
     }
-
     this.line.points(points);
-    // this.draw();
   }
 
   // Convenience methods

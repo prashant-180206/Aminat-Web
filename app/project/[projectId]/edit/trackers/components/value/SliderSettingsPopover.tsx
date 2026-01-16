@@ -9,7 +9,8 @@ import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { toast } from "sonner";
 import { useScene } from "@/hooks/SceneContext";
-import { NumberStepperInput } from "@/app/scene/edit/components/input/numberInput";
+import { NumberStepperInput } from "@/core/classes/properties/input/numberstepper";
+// import { NumberStepperInput } from "@/app/scene/edit/components/input/numberInput";
 
 interface SliderSettingsPopoverProps {
   trackerId: string;

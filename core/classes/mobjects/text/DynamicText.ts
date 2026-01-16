@@ -14,7 +14,7 @@ export class DynamicText extends Konva.Text {
   private _transformer?: Konva.Transformer;
   public cornerRadius: number = 4;
   private paddingAmount: number = 5; // Internal padding for the "Bgrect" effect
-  private features: TextProperty;
+  public features: TextProperty;
   private _dynamicContent: {
     val1: number;
     val2: number;

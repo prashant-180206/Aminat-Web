@@ -27,7 +27,7 @@ export class LatexTextProperty extends BaseProperty {
     fontfamily: "Arial",
     bold: false,
     italic: false,
-    color: "#000000",
+    color: "#ff0000",
   };
   protected LatexContent: string = "\\int_0^\\infty x^2 dx";
 
@@ -37,20 +37,21 @@ export class LatexTextProperty extends BaseProperty {
 
   override update(prop: Partial<LatexTextProperties>): void {
     super.update(prop);
-    if (!(this.mobj instanceof LatexText)) return;
+    if (!(this.shapemobj instanceof LatexText)) return;
     if (prop.position) {
       const p = p2c(prop.position.x, prop.position.y);
-      this.mobj.position({
-        x: p.x - this.mobj.width() / 2,
-        y: p.y - this.mobj.height() / 2,
+      this.shapemobj.position({
+        x: p.x,
+        y: p.y,
       });
     }
     if (prop.textData !== undefined) {
       this.textData = { ...this.textData, ...prop.textData };
-      this.mobj.refresh();
+      this.shapemobj.refresh();
     }
     if (prop.LatexContent !== undefined) {
       this.LatexContent = prop.LatexContent;
+      this.shapemobj.refresh();
     }
   }
   override getUIComponents(): { name: string; component: React.ReactNode }[] {
@@ -96,11 +97,8 @@ export class LatexTextProperty extends BaseProperty {
   }
   override refresh(): void {
     super.refresh();
-    const pos = this.mobj.position();
-    this.position = c2p(
-      pos.x + this.mobj.width() / 2,
-      pos.y + this.mobj.height() / 2
-    );
+    const pos = this.shapemobj.position();
+    this.position = c2p(pos.x, pos.y);
   }
 
   getTextData() {

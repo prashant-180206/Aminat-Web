@@ -25,9 +25,9 @@ export class TextProperty extends BaseProperty {
     super.update(prop);
     if (prop.position) {
       const p = p2c(prop.position.x, prop.position.y);
-      this.mobj.position({
-        x: p.x - this.mobj.width() / 2,
-        y: p.y - this.mobj.height() / 2,
+      this.shapemobj.position({
+        x: p.x,
+        y: p.y,
       });
     }
     if (prop.textData !== undefined) {
@@ -37,7 +37,10 @@ export class TextProperty extends BaseProperty {
   override getUIComponents(): { name: string; component: React.ReactNode }[] {
     return [
       ...super.getUIComponents(),
-      { name: "Text Style", component: this.textData.getUIComponent() },
+      {
+        name: "Text Style",
+        component: <div>{this.textData.getUIComponent()}</div>,
+      },
     ];
   }
 
@@ -53,10 +56,7 @@ export class TextProperty extends BaseProperty {
   }
   override refresh(): void {
     super.refresh();
-    const pos = this.mobj.position();
-    this.position = c2p(
-      pos.x + this.mobj.width() / 2,
-      pos.y + this.mobj.height() / 2
-    );
+    const pos = this.shapemobj.position();
+    this.position = c2p(pos.x, pos.y);
   }
 }

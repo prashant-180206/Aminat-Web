@@ -4,10 +4,17 @@ import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+const DropdownMenuTrigger = dynamic(
+  () =>
+    import("@/components/ui/dropdown-menu").then(
+      (mod) => mod.DropdownMenuTrigger
+    ),
+  { ssr: false }
+);
 import { useScene } from "@/hooks/SceneContext";
 import { FolderOpen, Save } from "lucide-react";
+import dynamic from "next/dynamic";
 import React from "react";
 import { toast } from "sonner";
 

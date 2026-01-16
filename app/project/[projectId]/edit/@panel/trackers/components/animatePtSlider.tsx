@@ -8,10 +8,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { NumberStepperInput } from "../../../components/input/numberInput";
+// import { NumberStepperInput } from "../../../components/input/numberInput";
 import { CirclePlay } from "lucide-react";
 import { Combobox } from "@/components/combobox";
 import { easingMap } from "@/core/maps/easingMap";
+import { NumberStepperInput } from "@/core/classes/properties/input/numberstepper";
 
 type Props = {
   onApply: (data: {

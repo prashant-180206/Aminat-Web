@@ -5,6 +5,7 @@ import { NumberInputs } from "./input/dualInput";
 import SliderInput from "./input/sliderInput";
 import { DEFAULT_SCALE } from "@/core/config";
 import { c2p } from "@/core/utils/conversion";
+import { MLine } from "../mobjects/simple/line";
 
 export interface LineProperties extends BaseProperties {
   lineEnds: {
@@ -19,21 +20,26 @@ export class LineProperty extends BaseProperty {
   protected lineEnds: {
     start: { x: number; y: number };
     end: { x: number; y: number };
-  } = { start: { x: 0, y: 0 }, end: { x: 100, y: 0 } };
-  protected thickness: number = 2;
+  } = { start: { x: 0, y: 0 }, end: { x: 1, y: 0 } };
+  protected thickness: number = 6;
   protected label: LabelProperty;
   protected labelobj: Konva.Text;
 
-  constructor(mobj: Konva.Line, labelObj: Konva.Text) {
-    super(mobj);
-    this.labelobj = labelObj;
-    this.label = new LabelProperty(labelObj);
+  constructor(mobj: MLine) {
+    super(mobj.line, mobj);
+    this.labelobj = mobj.label;
+    this.label = new LabelProperty(mobj.label);
+    this.update({
+      lineEnds: this.lineEnds,
+      thickness: this.thickness,
+      label: this.label.getData(),
+    });
   }
   override update(prop: Partial<LineProperties>) {
     super.update(prop);
     if (prop.lineEnds !== undefined) {
       this.lineEnds = prop.lineEnds;
-      (this.mobj as Konva.Line).points([
+      (this.shapemobj as Konva.Line).points([
         this.lineEnds.start.x * DEFAULT_SCALE,
         this.lineEnds.start.y * -DEFAULT_SCALE,
         this.lineEnds.end.x * DEFAULT_SCALE,
@@ -42,8 +48,8 @@ export class LineProperty extends BaseProperty {
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      if (this.mobj instanceof Konva.Line)
-        this.mobj.strokeWidth(this.thickness);
+      if (this.shapemobj instanceof Konva.Line)
+        this.shapemobj.strokeWidth(this.thickness);
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);
@@ -143,12 +149,13 @@ export class LineProperty extends BaseProperty {
   }
 
   override refresh(): void {
-    const pos = this.mobj.position();
+    const pos = this.shapemobj.position();
     const newPos = c2p(pos.x, pos.y);
     this.position = newPos;
-    if (!(this.mobj instanceof Konva.Line)) return;
+    if (!(this.shapemobj instanceof Konva.Line)) return;
 
-    const pts = this.mobj.points();
+    const pts = this.shapemobj.points();
+    if (pts.length < 4) return;
     const startLogical = {
       x: pts[0] / DEFAULT_SCALE,
       y: -pts[1] / DEFAULT_SCALE,

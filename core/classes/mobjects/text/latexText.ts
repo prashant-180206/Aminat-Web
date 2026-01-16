@@ -4,14 +4,13 @@ import { AnimGetter } from "../../animation/animgetter";
 import { TrackerConnector } from "../../Tracker/helpers/TrackerConnector";
 import { Colors } from "@/core/utils/colors";
 import { MobjectData } from "@/core/types/file";
-import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "@/core/config";
 import { LatexTextProperties, LatexTextProperty } from "../../properties/latex";
 
 export class LatexText extends Konva.Image {
   private isRendering = false;
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private features: LatexTextProperty;
+  public features: LatexTextProperty;
 
   private _TYPE: string;
 
@@ -25,11 +24,11 @@ export class LatexText extends Konva.Image {
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
     this.features = new LatexTextProperty(this);
-    // this.UpdateFromKonvaProperties();
     this.refresh();
+    // this.UpdateFromKonvaProperties();
     this.position({
-      x: DEFAULT_WIDTH / 2 - this.width() / 2,
-      y: DEFAULT_HEIGHT / 2 - this.height() / 2,
+      x: 0,
+      y: 0,
     });
     this.name("Formula");
   }

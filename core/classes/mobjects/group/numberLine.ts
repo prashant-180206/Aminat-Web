@@ -13,7 +13,7 @@ export class MNumberLine extends Konva.Group {
   public trackerconnector: TrackerConnector;
   private _TYPE: string;
 
-  private features: NumberLineProperty;
+  public features: NumberLineProperty;
 
   axisGroup: Konva.Group;
   ticksGroup: Konva.Group;
@@ -37,6 +37,7 @@ export class MNumberLine extends Konva.Group {
     this.add(this.labelGroup);
 
     this.features = new NumberLineProperty(this);
+    this.refreshNumberLine();
   }
 
   type(): string {

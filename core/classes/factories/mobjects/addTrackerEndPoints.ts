@@ -20,7 +20,7 @@ export class TrackerEndPointsAdder {
 
     directions.forEach((key) => {
       mobject.trackerconnector.addConnectorFunc(key, (value: number) => {
-        const { lineEnds } = mobject.properties;
+        const { lineEnds } = mobject.features.getData();
         const newEnds = { ...lineEnds };
 
         if (key === "startX") newEnds.start.x = value;
@@ -28,7 +28,7 @@ export class TrackerEndPointsAdder {
         if (key === "endX") newEnds.end.x = value;
         if (key === "endY") newEnds.end.y = value;
 
-        mobject.properties = { lineEnds: newEnds };
+        mobject.features.update({ lineEnds: newEnds });
       });
     });
   }

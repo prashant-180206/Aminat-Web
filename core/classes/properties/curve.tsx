@@ -30,11 +30,17 @@ export class CurveProperty extends BaseProperty {
   protected labelobject: Konva.Text;
 
   constructor(mobj: ParametricCurve) {
-    super(mobj.line);
-    this.mobj = mobj.line;
+    super(mobj.line, mobj);
+    this.shapemobj = mobj.line;
     this.curveMobj = mobj;
     this.labelobject = mobj.label;
     this.label = new LabelProperty(mobj.label);
+    this.update({
+      parameterRange: this.parameterRange,
+      funcs: this.funcs,
+      thickness: this.thickness,
+      label: this.label.getData(),
+    });
   }
 
   override update(prop: Partial<CurveProperties>): void {
@@ -57,8 +63,8 @@ export class CurveProperty extends BaseProperty {
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      if (this.mobj instanceof Konva.Line)
-        this.mobj.strokeWidth(this.thickness);
+      if (this.shapemobj instanceof Konva.Line)
+        this.shapemobj.strokeWidth(this.thickness);
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);

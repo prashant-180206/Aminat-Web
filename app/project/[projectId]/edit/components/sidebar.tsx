@@ -35,22 +35,22 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
 
   const navItems = [
     {
-      route: `/project/${projectId}/mobjects`,
+      route: `/project/${projectId}/edit/mobjects`,
       icon: DraftingCompass,
       label: "Mobjects",
     },
     {
-      route: `/project/${projectId}/animations`,
+      route: `/project/${projectId}/edit/animations`,
       icon: PlayCircle,
       label: "Animations",
     },
     {
-      route: `/project/${projectId}/trackers`,
+      route: `/project/${projectId}/edit/trackers`,
       icon: Sigma,
       label: "Trackers",
     },
     {
-      route: `/project/${projectId}/settings`,
+      route: `/project/${projectId}/edit/settings`,
       icon: Settings,
       label: "Settings",
     },

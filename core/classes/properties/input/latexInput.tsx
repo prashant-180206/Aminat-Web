@@ -8,6 +8,12 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import dynamic from "next/dynamic";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const EditableMathField = dynamic(
   () => import("react-mathquill").then((mod) => mod.EditableMathField),
@@ -20,6 +26,7 @@ type PopoverSliderInputProps = {
   onChange: (val: string) => void;
   refreshFunc?: () => void;
   icon?: React.ReactNode;
+  message?: string;
 };
 
 let mathQuillStylesLoaded = false;
@@ -30,6 +37,7 @@ export const PopoverLatexInput: React.FC<PopoverSliderInputProps> = ({
   onChange,
   refreshFunc,
   icon,
+  message = "Latex",
 }) => {
   const [latex, setLatex] = useState(value);
 
@@ -47,15 +55,27 @@ export const PopoverLatexInput: React.FC<PopoverSliderInputProps> = ({
   return (
     <div className="flex items-center justify-between gap-2 w-full">
       <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 text-xs"
-          >
-            {icon}
-          </Button>
-        </PopoverTrigger>
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2 text-xs"
+                >
+                  {icon}
+                </Button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+
+            {message && (
+              <TooltipContent side="top" align="center">
+                <span>{message}</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
 
         <PopoverContent className="w-80 p-4 space-y-4">
           {/* Header */}
@@ -71,9 +91,7 @@ export const PopoverLatexInput: React.FC<PopoverSliderInputProps> = ({
             <EditableMathField
               latex={latex}
               onChange={(mf) => setLatex(mf.latex())}
-              style={{
-                borderRadius: 0,
-              }}
+              style={{ borderRadius: 0 }}
             />
           </div>
 

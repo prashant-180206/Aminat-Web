@@ -9,7 +9,7 @@ import { RectangleProperty } from "../../properties/rectangle";
 export class MRect extends Konva.Rect {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private features: RectangleProperty;
+  public features: RectangleProperty;
   private _TYPE: string;
 
   constructor(TYPE: string) {

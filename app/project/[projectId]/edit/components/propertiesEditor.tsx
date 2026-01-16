@@ -7,20 +7,17 @@ import { Trash2 } from "lucide-react";
 
 const PropertiesEditor = () => {
   // const properties = usePropertyDescriptors();
-  const { scene, setActiveMobject, setActiveMobjectId, activeMobject } =
-    useScene();
+  const {
+    scene,
+    setActiveMobject,
+    setActiveMobjectId,
+    activeMobject,
+    mobjToggle,
+  } = useScene();
+  void mobjToggle;
 
   if (!activeMobject) {
-    return (
-      <div>
-        {/* <div className="rounded-xl border border-dashed bg-muted/30 py-12 flex flex-col items-center justify-center">
-          <Info className="h-10 w-10 text-muted-foreground mb-3" />
-          <p className="text-sm text-muted-foreground text-center max-w-sm">
-            Select an object from the sidebar to edit its properties
-          </p>
-        </div> */}
-      </div>
-    );
+    return <div></div>;
   }
 
   return (
@@ -33,10 +30,7 @@ const PropertiesEditor = () => {
           </div>
           <div className="flex flex-row gap-2">
             {activeMobject.getUIComponents().map(({ name, component }) => (
-              <div key={name}>
-                <h3>{name}</h3>
-                {component}
-              </div>
+              <div key={name}>{component}</div>
             ))}
           </div>
           <Button

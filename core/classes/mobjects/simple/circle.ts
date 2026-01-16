@@ -1,6 +1,4 @@
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-// import Konva from "konva";
-import { p2c } from "@/core/utils/conversion";
 import { CircleProperties } from "@/core/types/properties";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { Konva } from "@/lib/konva";
@@ -10,7 +8,7 @@ import { CircleProperty } from "../../properties/circle";
 class MCircle extends Konva.Circle {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  protected features: CircleProperty;
+  public features: CircleProperty;
 
   private _TYPE: string;
 
@@ -20,7 +18,6 @@ class MCircle extends Konva.Circle {
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
     this.features = new CircleProperty(this);
-    this.position(p2c(0, 0));
     this.name("Circle");
   }
 

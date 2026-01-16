@@ -15,7 +15,7 @@ export class TextDataProperty {
   protected fontfamily: string = "Arial";
   protected bold: boolean = false;
   protected italic: boolean = false;
-  protected color: string = "#000000";
+  protected color: string = "#fff";
   protected mobj: Konva.Text;
   constructor(mobj: Konva.Text) {
     mobj.text("Sample Text");
@@ -51,18 +51,20 @@ export class TextDataProperty {
 
   getUIComponent(): React.ReactNode {
     return (
-      <TextStyleInput
-        value={{
-          fontsize: this.fontsize,
-          fontfamily: this.fontfamily,
-          bold: this.bold,
-          italic: this.italic,
-          color: this.color,
-        }}
-        onChange={(val) => {
-          this.update(val);
-        }}
-      />
+      <div>
+        <TextStyleInput
+          value={{
+            fontsize: this.fontsize,
+            fontfamily: this.fontfamily,
+            bold: this.bold,
+            italic: this.italic,
+            color: this.color,
+          }}
+          onChange={(val) => {
+            this.update(val);
+          }}
+        />
+      </div>
     );
   }
 

@@ -16,10 +16,10 @@ export interface NumberLineProperties extends BaseProperties {
 
 export class NumberLineProperty extends BaseProperty {
   protected range: [number, number, number] = [-10, 10, 1];
-  protected axisthickness: number = 2;
+  protected axisthickness: number = 20;
   protected showlabels: boolean = true;
-  protected labelsize: number = 12;
-  protected labelcolor: string = "#000000";
+  protected labelsize: number = 40;
+  protected labelcolor: string = "#fff";
 
   constructor(mobj: MNumberLine) {
     super(mobj);
@@ -27,43 +27,45 @@ export class NumberLineProperty extends BaseProperty {
 
   override update(prop: Partial<NumberLineProperties>): void {
     super.update(prop);
-    if (!(this.mobj instanceof MNumberLine)) return;
+    if (!(this.shapemobj instanceof MNumberLine)) return;
     if (prop.range !== undefined) {
       this.range = prop.range;
-      this.mobj.refreshNumberLine();
+      this.shapemobj.refreshNumberLine();
     }
     if (prop.color) {
-      this.mobj.axisGroup.children.forEach((l) => {
+      console.log("Updating color", prop.color);
+      this.shapemobj.axisGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.stroke(prop.color!);
+        console.log("Line updated to color", prop.color);
       });
-      this.mobj.ticksGroup.children.forEach((l) => {
+      this.shapemobj.ticksGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.stroke(prop.color!);
       });
     }
 
     if (prop.axisthickness) {
-      this.mobj.axisGroup.children.forEach((l) => {
+      this.shapemobj.axisGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.strokeWidth(prop.axisthickness!);
       });
-      this.mobj.ticksGroup.children.forEach((l) => {
+      this.shapemobj.ticksGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.strokeWidth(prop.axisthickness!);
       });
     }
 
     if (prop.labelcolor) {
-      this.mobj.labelGroup.children.forEach((t) => {
+      this.shapemobj.labelGroup.children.forEach((t) => {
         if (t instanceof Konva.Text) t.fill(prop.labelcolor!);
       });
     }
 
     if (prop.labelsize) {
-      this.mobj.labelGroup.children.forEach((t) => {
+      this.shapemobj.labelGroup.children.forEach((t) => {
         if (t instanceof Konva.Text) t.fontSize(prop.labelsize!);
       });
     }
 
     if (prop.showlabels !== undefined) {
-      this.mobj.labelGroup.visible(prop.showlabels);
+      this.shapemobj.labelGroup.visible(prop.showlabels);
     }
   }
 
@@ -173,6 +175,7 @@ export class NumberLineProperty extends BaseProperty {
       showlabels: this.showlabels,
       labelsize: this.labelsize,
       labelcolor: this.labelcolor,
+      color: this.color,
     };
   }
   override setData(data: NumberLineProperties): void {

@@ -11,18 +11,19 @@ export class VectorProperty extends LineProperty {
   protected pointerSize: number;
   //   protected mobj: Konva.Arrow;
 
-  constructor(mobj: MVector, labelObj: Konva.Text) {
-    super(mobj.arrow, labelObj);
-    this.mobj = mobj.arrow;
+  constructor(mobj: MVector) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    super(mobj as any);
+    this.shapemobj = mobj.line;
     this.pointerSize = 10;
   }
   override update(prop: Partial<VectorProperties>): void {
     super.update(prop);
     if (prop.pointerSize !== undefined) {
       this.pointerSize = prop.pointerSize;
-      if (this.mobj instanceof Konva.Arrow) {
-        this.mobj.pointerLength(this.pointerSize);
-        this.mobj.pointerWidth(this.pointerSize);
+      if (this.shapemobj instanceof Konva.Arrow) {
+        this.shapemobj.pointerLength(this.pointerSize);
+        this.shapemobj.pointerWidth(this.pointerSize);
       }
     }
   }

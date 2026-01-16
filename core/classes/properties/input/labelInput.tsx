@@ -16,38 +16,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { Label, Point } from "@/core/types/properties";
 import { NumberStepperInput } from "./numberstepper";
 import { ColorDisc } from "@/components/colordisc";
 import { Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "../label";
-// import { refresh } from "next/cache";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   value: Label;
   onChange: (next: Partial<Label>) => void;
+  message?: string;
 };
 
-export function LabelPopover({ value, onChange }: Props) {
+export function LabelPopover({ value, onChange, message = "Label " }: Props) {
+  const [localOffset, setLocalOffset] = React.useState(value.offset);
+
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline">
-          <Tag className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button variant="outline">
+                <Tag className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+
+          {message && (
+            <TooltipContent side="top" align="center">
+              <span>{message}</span>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       <PopoverContent className="w-50 space-y-2">
         <div>
           <UILabel>Label Text</UILabel>
           <Input
             type="text"
-            value={value.labelText}
+            defaultValue={value.labelText}
             onChange={(e) => onChange({ labelText: e.target.value })}
             className="w-full px-2 py-1 border rounded text-sm"
           />
         </div>
+
         <div className="flex items-center justify-between">
           <UILabel>Visible</UILabel>
           <Switch
@@ -59,23 +79,30 @@ export function LabelPopover({ value, onChange }: Props) {
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Offset X</span>
           <NumberStepperInput
-            value={value.offset.x}
-            onChange={(v) => onChange({ offset: { ...value.offset, x: v } })}
+            value={localOffset.x}
+            onChange={(v) => {
+              const next = { ...localOffset, x: v };
+              setLocalOffset(next);
+              onChange({ offset: next });
+            }}
             step={10}
           />
         </div>
 
-        {/* Second */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Offset Y</span>
           <NumberStepperInput
-            value={value.offset.y}
-            onChange={(v) => onChange({ offset: { ...value.offset, y: v } })}
+            value={localOffset.y}
+            onChange={(v) => {
+              const next = { ...localOffset, y: v };
+              setLocalOffset(next);
+              onChange({ offset: next });
+            }}
             step={10}
           />
         </div>
 
-        <div className="flex">
+        <div className="flex items-center justify-between">
           <UILabel>Font size</UILabel>
           <NumberStepperInput
             value={value.fontsize}
@@ -91,25 +118,23 @@ export function LabelPopover({ value, onChange }: Props) {
           />
         </div>
 
-        <div className="flex gap-2">
-          <div>
-            <UILabel>Position</UILabel>
-            <Select
-              value={value.position}
-              onValueChange={(v) =>
-                onChange({ position: v as Label["position"] })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="start">Start</SelectItem>
-                <SelectItem value="center">Center</SelectItem>
-                <SelectItem value="end">End</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div>
+          <UILabel>Position</UILabel>
+          <Select
+            defaultValue={value.position}
+            onValueChange={(v) =>
+              onChange({ position: v as Label["position"] })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="start">Start</SelectItem>
+              <SelectItem value="center">Center</SelectItem>
+              <SelectItem value="end">End</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </PopoverContent>
     </Popover>

@@ -42,8 +42,8 @@ export class PolygonProperty extends BaseProperty {
   }
 
   private setUpGeometry() {
-    if (!(this.mobj instanceof Konva.Shape)) return;
-    this.mobj.sceneFunc((context, shape) => {
+    if (!(this.shapemobj instanceof Konva.Shape)) return;
+    this.shapemobj.sceneFunc((context, shape) => {
       if (this.localPoints.length < 3) return;
       context.beginPath();
       context.moveTo(this.localPoints[0].x, this.localPoints[0].y);
@@ -59,7 +59,7 @@ export class PolygonProperty extends BaseProperty {
       context.fillStrokeShape(shape);
     });
 
-    this.mobj.hitFunc((context, shape) => {
+    this.shapemobj.hitFunc((context, shape) => {
       if (this.localPoints.length < 3) return;
       context.beginPath();
       context.moveTo(this.localPoints[0].x, this.localPoints[0].y);

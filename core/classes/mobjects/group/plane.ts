@@ -11,7 +11,7 @@ export class MPlane extends Konva.Group {
   public trackerconnector: TrackerConnector;
   private _TYPE: string;
 
-  private features: PlaneProperty;
+  public features: PlaneProperty;
 
   // Sub-groups for organization
   gridGroup: Konva.Group;
@@ -41,6 +41,7 @@ export class MPlane extends Konva.Group {
     this.add(this.labelGroup);
 
     this.features = new PlaneProperty(this);
+    this.refreshPlane();
   }
 
   type(): string {
@@ -66,6 +67,9 @@ export class MPlane extends Konva.Group {
       ranges: { xrange, yrange },
       labelsize,
       axiscolor,
+      color,
+      labelcolor,
+      gridthickness,
       axisthickness,
     } = this.features.getData();
 
@@ -74,6 +78,8 @@ export class MPlane extends Konva.Group {
         new Konva.Line({
           points,
           opacity: 1,
+          stroke: axiscolor,
+          strokeWidth: axisthickness,
         })
       );
 
@@ -82,6 +88,8 @@ export class MPlane extends Konva.Group {
         new Konva.Line({
           points,
           opacity: 0.4,
+          stroke: color,
+          strokeWidth: gridthickness,
         })
       );
 
@@ -93,6 +101,7 @@ export class MPlane extends Konva.Group {
           text: x.toString().slice(0, 4),
           align: "center",
           offsetX: labelsize / 2,
+          fill: labelcolor,
         })
       );
 
@@ -105,6 +114,7 @@ export class MPlane extends Konva.Group {
           align: "right",
           width: labelsize * 2,
           offsetY: labelsize / 2,
+          fill: labelcolor,
         })
       );
 

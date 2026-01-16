@@ -14,7 +14,7 @@ export class Dot extends Konva.Group {
 
   public circle: Konva.Circle;
   public label: Konva.Text;
-  private features: DotProperty;
+  public features: DotProperty;
   private _TYPE: string;
 
   constructor(TYPE: string) {

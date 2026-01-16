@@ -10,7 +10,7 @@ import { PolygonProperty } from "../../properties/polygon";
 export class MPolygon extends Konva.Shape {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private features: PolygonProperty;
+  public features: PolygonProperty;
   private _TYPE: string;
   private localPoints: { x: number; y: number }[] = [];
 

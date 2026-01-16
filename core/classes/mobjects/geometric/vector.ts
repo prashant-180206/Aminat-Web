@@ -11,30 +11,30 @@ import { VectorProperty } from "../../properties/vector";
 export class MVector extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  public arrow: Konva.Arrow;
+  public line: Konva.Arrow;
   private label: Konva.Text;
-  private features: VectorProperty;
+  public features: VectorProperty;
   private _TYPE: string;
 
   constructor(TYPE: string) {
     super();
 
     this.position({ x: 0, y: 0 });
-    this.arrow = new Konva.Arrow({
+    this.line = new Konva.Arrow({
       tension: 0,
       lineCap: "round",
       lineJoin: "round",
     } as Konva.ArrowConfig);
 
-    this.add(this.arrow);
-    this.arrow.position({ x: 0, y: 0 });
+    this.add(this.line);
+    this.line.position({ x: 0, y: 0 });
 
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
     this.label = new Konva.Text();
-    this.features = new VectorProperty(this, this.label);
+    this.features = new VectorProperty(this);
     this.add(this.label);
     this.name("Vector");
     TrackerEndPointsAdder.addLinePointConnectors(this);
@@ -84,6 +84,6 @@ export class DoubleArrow extends MVector {
   constructor(type: string) {
     super(type);
     this.name("DoubleArrow");
-    this.arrow.pointerAtBeginning(true);
+    this.line.pointerAtBeginning(true);
   }
 }

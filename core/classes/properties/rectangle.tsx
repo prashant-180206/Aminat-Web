@@ -5,6 +5,7 @@ import SliderInput from "./input/sliderInput";
 import { ColorDisc } from "./input/colordisc";
 import { DEFAULT_SCALE } from "@/core/config";
 import { c2p } from "@/core/utils/conversion";
+import { Colors } from "@/core/utils/colors";
 
 export interface RectangleProperties extends BaseProperties {
   dimensions: {
@@ -18,10 +19,10 @@ export interface RectangleProperties extends BaseProperties {
 
 export class RectangleProperty extends BaseProperty {
   protected dimensions: { width: number; height: number } = {
-    width: 100,
-    height: 50,
+    width: 3,
+    height: 2,
   };
-  protected bordercolor: string = "#000000";
+  protected bordercolor: string = Colors.BORDER;
   protected thickness: number = 2;
   protected cornerRadius: number = 0;
 
@@ -32,26 +33,37 @@ export class RectangleProperty extends BaseProperty {
     (mobj as Konva.Rect).cornerRadius(this.cornerRadius);
     (mobj as Konva.Rect).width(this.dimensions.width);
     (mobj as Konva.Rect).height(this.dimensions.height);
+    this.update({
+      dimensions: this.dimensions,
+      bordercolor: this.bordercolor,
+      thickness: this.thickness,
+      cornerRadius: this.cornerRadius,
+    });
   }
   override update(prop: Partial<RectangleProperties>) {
     super.update(prop);
     if (prop.dimensions !== undefined) {
       this.dimensions = prop.dimensions;
-      (this.mobj as Konva.Rect).width(this.dimensions.width * DEFAULT_SCALE);
-      (this.mobj as Konva.Rect).height(this.dimensions.height * DEFAULT_SCALE);
+      (this.shapemobj as Konva.Rect).width(
+        this.dimensions.width * DEFAULT_SCALE
+      );
+      (this.shapemobj as Konva.Rect).height(
+        this.dimensions.height * DEFAULT_SCALE
+      );
     }
     if (prop.bordercolor !== undefined) {
       this.bordercolor = prop.bordercolor;
-      if (this.mobj instanceof Konva.Rect) this.mobj.stroke(this.bordercolor);
+      if (this.shapemobj instanceof Konva.Rect)
+        this.shapemobj.stroke(this.bordercolor);
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      if (this.mobj instanceof Konva.Rect)
-        this.mobj.strokeWidth(this.thickness);
+      if (this.shapemobj instanceof Konva.Rect)
+        this.shapemobj.strokeWidth(this.thickness);
     }
     if (prop.cornerRadius !== undefined) {
       this.cornerRadius = prop.cornerRadius;
-      (this.mobj as Konva.Rect).cornerRadius(this.cornerRadius);
+      (this.shapemobj as Konva.Rect).cornerRadius(this.cornerRadius);
     }
   }
   override getUIComponents(): { name: string; component: React.ReactNode }[] {
@@ -158,12 +170,7 @@ export class RectangleProperty extends BaseProperty {
 
   override refresh(): void {
     super.refresh();
-    const pos = this.mobj.position();
-    this.position = c2p(
-      pos.x + this.mobj.width() / 2,
-      pos.y + this.mobj.height() / 2
-    );
-    this.dimensions.width = this.mobj.width() / DEFAULT_SCALE;
-    this.dimensions.height = this.mobj.height() / DEFAULT_SCALE;
+    const pos = this.shapemobj.position();
+    this.position = c2p(pos.x, pos.y);
   }
 }

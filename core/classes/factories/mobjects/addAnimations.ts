@@ -48,12 +48,12 @@ export class MobjectAnimAdder {
             const progress = easefunc(p);
             const newX = currentpos.x + (targetpos.x - currentpos.x) * progress;
             const newY = currentpos.y + (targetpos.y - currentpos.y) * progress;
-            mobj.properties = {
+            mobj.features.update({
               lineEnds: {
                 start: { x: newX, y: newY },
                 end: end,
               },
-            };
+            });
           },
         });
         return {
@@ -100,12 +100,12 @@ export class MobjectAnimAdder {
             const progress = easefunc(p);
             const newX = currentpos.x + (targetpos.x - currentpos.x) * progress;
             const newY = currentpos.y + (targetpos.y - currentpos.y) * progress;
-            mobj.properties = {
+            mobj.features.update({
               lineEnds: {
                 start: start,
                 end: { x: newX, y: newY },
               },
-            };
+            });
           },
         });
         return {
@@ -280,12 +280,12 @@ export class MobjectAnimAdder {
             const progress = easefunc(p);
             const newOpacity =
               currentOpacity + (targetOpacity - currentOpacity) * progress;
-            mobj.properties = {
+            mobj.features.update({
               label: {
                 ...mobj.properties.label,
                 opacity: newOpacity,
               },
-            };
+            });
           },
         });
         return {
@@ -324,12 +324,12 @@ export class MobjectAnimAdder {
             const progress = easefunc(p);
             const newOpacity =
               currentOpacity + (targetOpacity - currentOpacity) * progress;
-            mobj.properties = {
+            mobj.features.update({
               label: {
                 ...mobj.properties.label,
                 opacity: newOpacity,
               },
-            };
+            });
           },
         });
         return {

@@ -10,9 +10,9 @@ import { DashedLineProperty } from "../../properties/dashedLine";
 export class MDashedLine extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private line: Konva.Line;
-  private label: Konva.Text;
-  private features: DashedLineProperty;
+  line: Konva.Line;
+  label: Konva.Text;
+  public features: DashedLineProperty;
   private _TYPE: string;
 
   constructor(TYPE: string) {
@@ -35,7 +35,7 @@ export class MDashedLine extends Konva.Group {
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
 
-    this.features = new DashedLineProperty(this.line, this.label);
+    this.features = new DashedLineProperty(this);
 
     this.name("DashedLine");
     TrackerEndPointsAdder.addLinePointConnectors(this);

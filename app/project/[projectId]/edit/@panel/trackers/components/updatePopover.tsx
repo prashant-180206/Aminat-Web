@@ -8,8 +8,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { NumberStepperInput } from "../../../components/input/numberInput";
+// import { NumberStepperInput } from "../../../components/input/numberInput";
 import { Settings2 } from "lucide-react";
+import { NumberStepperInput } from "@/core/classes/properties/input/numberstepper";
 
 type Props = {
   initialMin: number;

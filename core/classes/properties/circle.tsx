@@ -19,22 +19,28 @@ export class CircleProperty extends BaseProperty {
   protected thickness: number = 1;
   constructor(mobj: Konva.Circle) {
     super(mobj);
+    this.update({
+      radius: this.radius,
+      bordercolor: this.bordercolor,
+      thickness: this.thickness,
+    });
   }
   override update(prop: Partial<CircleProperties>): void {
     super.update(prop);
     if (prop.radius !== undefined) {
       this.radius = prop.radius;
-      if (this.mobj instanceof Konva.Circle)
-        this.mobj.radius(this.radius * DEFAULT_SCALE);
+      if (this.shapemobj instanceof Konva.Circle)
+        this.shapemobj.radius(this.radius * DEFAULT_SCALE);
     }
     if (prop.bordercolor !== undefined) {
       this.bordercolor = prop.bordercolor;
-      if (this.mobj instanceof Konva.Circle) this.mobj.stroke(this.bordercolor);
+      if (this.shapemobj instanceof Konva.Circle)
+        this.shapemobj.stroke(this.bordercolor);
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
-      if (this.mobj instanceof Konva.Circle)
-        this.mobj.strokeWidth(this.thickness);
+      if (this.shapemobj instanceof Konva.Circle)
+        this.shapemobj.strokeWidth(this.thickness);
     }
   }
 

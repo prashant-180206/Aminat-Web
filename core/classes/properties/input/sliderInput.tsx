@@ -9,6 +9,7 @@ import React from "react";
 
 const SliderInput = ({
   fields,
+  icon,
 }: {
   fields: {
     label: string;
@@ -18,6 +19,7 @@ const SliderInput = ({
     max?: number;
     step?: number;
   }[];
+  icon?: React.ReactNode;
 }) => {
   return (
     <div className="flex items-center justify-between gap-2 w-full">
@@ -30,20 +32,16 @@ const SliderInput = ({
             size="sm"
             className={`flex items-center gap-2 text-xs  justify-between`}
           >
-            {/* {icon} */}
+            {icon}
           </Button>
         </PopoverTrigger>
 
         <PopoverContent className="w-64 space-y-3">
-          (
           {fields.map(({ label, value, onChange, min, max, step }) => (
             <div className="flex flex-col gap-4" key={label}>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Scale</span>
-                <span className="text-xs font-mono">
-                  {/* {value}
-                {unit} */}
-                </span>
+                <span className="text-xs text-muted-foreground">{label}</span>
+                <span className="text-xs font-mono">{value.toFixed(2)}</span>
               </div>
               <Slider
                 min={min || 0}
@@ -56,7 +54,6 @@ const SliderInput = ({
               />
             </div>
           ))}
-          )
         </PopoverContent>
       </Popover>
     </div>

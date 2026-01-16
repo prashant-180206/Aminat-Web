@@ -45,6 +45,7 @@ export function SceneProvider({ children }: { children: React.ReactNode }) {
           scene.activeMobject = mobj;
           setActiveMobject(mobj);
           setActiveMobjectId(mobj.id());
+          setMobjToggle((prev) => !prev);
         });
         scene.activeMobject = mobj;
         setActiveMobject(mobj);

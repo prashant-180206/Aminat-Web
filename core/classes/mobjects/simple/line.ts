@@ -11,9 +11,9 @@ import { LineProperty } from "../../properties/line";
 export class MLine extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
-  private line: Konva.Line;
-  private label: Konva.Text;
-  private features: LineProperty;
+  line: Konva.Line;
+  label: Konva.Text;
+  public features: LineProperty;
   private _TYPE: string;
 
   constructor(TYPE: string) {
@@ -35,7 +35,7 @@ export class MLine extends Konva.Group {
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
-    this.features = new LineProperty(this.line, this.label);
+    this.features = new LineProperty(this);
     this.name("Line");
     TrackerEndPointsAdder.addLinePointConnectors(this);
     MobjectAnimAdder.addLineAnimations(this);

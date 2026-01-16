@@ -25,17 +25,27 @@ export class BaseProperty {
   protected rotation: number = 0;
   protected opacity: number = 1;
   protected zindex: number = 0;
-  protected mobj: Konva.Node;
+  protected shapemobj: Konva.Shape | Konva.Node;
+  protected actualMobj: Konva.Node;
 
-  constructor(mobj: Konva.Node) {
-    this.mobj = mobj;
-    mobj.position(c2p(this.position.x, this.position.y));
-    if (mobj instanceof Konva.Shape) mobj.fill(this.color);
-    mobj.scale({ x: this.scale, y: this.scale });
-    mobj.rotation(this.rotation);
-    mobj.opacity(this.opacity);
-    mobj.zIndex(this.zindex);
-    this.mobj.on("dragmove", this.refresh.bind(this));
+  constructor(mobj: Konva.Shape | Konva.Node, actualMobj?: Konva.Node) {
+    this.shapemobj = mobj;
+    this.actualMobj = actualMobj ? actualMobj : mobj;
+    this.actualMobj.position(c2p(this.position.x, this.position.y));
+    if (this.shapemobj instanceof Konva.Shape) this.shapemobj.fill(this.color);
+    this.actualMobj.scale({ x: this.scale, y: this.scale });
+    this.actualMobj.rotation(this.rotation);
+    this.actualMobj.opacity(this.opacity);
+    this.actualMobj.zIndex(this.zindex);
+    this.actualMobj.on("dragmove", this.refresh.bind(this));
+    this.update({
+      position: this.position,
+      color: this.color,
+      scale: this.scale,
+      rotation: this.rotation,
+      opacity: this.opacity,
+      zindex: this.zindex,
+    });
   }
   update(prop: Partial<BaseProperties>) {
     if (prop.position !== undefined) {
@@ -43,29 +53,33 @@ export class BaseProperty {
         prop.position.x ?? this.position.x,
         prop.position.y ?? this.position.y
       );
-      this.mobj.position({ x: newpos.x, y: newpos.y });
+      this.actualMobj.position({ x: newpos.x, y: newpos.y });
       this.position = prop.position;
     }
     if (prop.color !== undefined) {
       this.color = prop.color;
-      if (this.mobj instanceof Konva.Shape) this.mobj.fill(this.color);
+      if (this.shapemobj instanceof Konva.Shape)
+        this.shapemobj.fill(this.color);
+      if (this.shapemobj instanceof Konva.Line)
+        this.shapemobj.stroke(this.color);
     }
     if (prop.scale !== undefined) {
       this.scale = prop.scale;
-      this.mobj.scale({ x: this.scale, y: this.scale });
+      this.actualMobj.scale({ x: this.scale, y: this.scale });
     }
     if (prop.rotation !== undefined) {
       this.rotation = prop.rotation;
-      this.mobj.rotation(this.rotation);
+      this.actualMobj.rotation(this.rotation);
     }
     if (prop.opacity !== undefined) {
       this.opacity = prop.opacity;
-      this.mobj.opacity(this.opacity);
+      this.actualMobj.opacity(this.opacity);
     }
     if (prop.zindex !== undefined) {
       this.zindex = prop.zindex;
-      this.mobj.zIndex(this.zindex);
+      this.actualMobj.zIndex(this.zindex);
     }
+    this.refresh();
   }
 
   getUIComponents(): { name: string; component: React.ReactNode }[] {
@@ -116,6 +130,7 @@ export class BaseProperty {
       name: "Color",
       component: (
         <ColorDisc
+          size={6}
           value={this.color}
           onChange={(val) => this.update({ color: val })}
         />
@@ -188,18 +203,17 @@ export class BaseProperty {
   }
 
   refresh() {
-    const pos = this.mobj.position();
-
+    const pos = this.shapemobj.position();
     this.position = c2p(pos.x, pos.y);
-    this.scale = this.mobj.scaleX();
-    this.rotation = this.mobj.rotation();
-    this.opacity = this.mobj.opacity();
+    this.scale = this.actualMobj.scaleX();
+    this.rotation = this.actualMobj.rotation();
+    this.opacity = this.actualMobj.opacity();
 
     // this.update({
     //   position: c2p(pos.x, pos.y),
-    //   scale: this.mobj.scaleX(),
-    //   rotation: this.mobj.rotation(),
-    //   opacity: this.mobj.opacity(),
+    //   scale: this.actualMobj.scaleX(),
+    //   rotation: this.actualMobj.rotation(),
+    //   opacity: this.actualMobj.opacity(),
     // });
   }
 }

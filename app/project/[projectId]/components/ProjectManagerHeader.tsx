@@ -10,8 +10,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+const DropdownMenuTrigger = dynamic(
+  () =>
+    import("@/components/ui/dropdown-menu").then(
+      (mod) => mod.DropdownMenuTrigger
+    ),
+  { ssr: false }
+);
 import { toast } from "sonner";
 import { Save, Sparkles, Trash2, Edit, Layers } from "lucide-react";
 import { useScene } from "@/hooks/SceneContext";
@@ -22,6 +28,7 @@ import LoadSceneDialog from "./LoadSceneDialog";
 import DeleteDialog from "./DeleteDialog";
 import { ProjectDoc, SceneDoc } from "./types";
 import LocalFileDropdown from "./LocalFileDropdown";
+import dynamic from "next/dynamic";
 
 interface ProjectManagerHeaderProps {
   projectId?: string;
