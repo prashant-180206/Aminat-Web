@@ -1,12 +1,15 @@
 // anim/classes/mobjects/vector.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { VectorProperties } from "@/core/types/properties";
+// import { VectorProperties } from "@/core/types/properties";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
-import { VectorProperty } from "../../properties/vector";
+import {
+  VectorProperties,
+  VectorProperty,
+} from "../../controllers/geometry/vector";
 
 export class MVector extends Konva.Group {
   public animgetter: AnimGetter;

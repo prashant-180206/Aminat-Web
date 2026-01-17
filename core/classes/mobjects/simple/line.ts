@@ -1,12 +1,11 @@
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { LineProperties } from "@/core/types/properties";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 
 import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
-import { LineProperty } from "../../properties/line";
+import { LineProperties, LineProperty } from "../../controllers/simple/line";
 
 export class MLine extends Konva.Group {
   public animgetter: AnimGetter;

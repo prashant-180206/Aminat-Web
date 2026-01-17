@@ -1,13 +1,14 @@
 import Konva from "konva";
-import { LineProperties, LineProperty } from "./line";
-import SliderInput from "./input/sliderInput";
-import { MDashedLine } from "../mobjects/simple/dashedLine";
+import { LineProperties, LineProperty } from "../simple/line";
+import SliderInput from "../input/sliderInput";
+import { MDashedLine } from "../../mobjects/simple/dashedLine";
+import { FoldVertical } from "lucide-react";
 
 export interface DashedLineProperties extends LineProperties {
   dashRatio: number;
 }
 export class DashedLineProperty extends LineProperty {
-  protected dashRatio: number = 5;
+  protected dashRatio: number = 20;
   constructor(mobj: MDashedLine) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     super(mobj as any);
@@ -39,11 +40,13 @@ export class DashedLineProperty extends LineProperty {
               onChange: (v) => {
                 this.update({ dashRatio: v });
               },
-              min: 1,
-              max: 20,
+              min: 5,
+              max: 50,
               step: 1,
             },
           ]}
+          icon={<FoldVertical className="h-4 w-4" />}
+          message="Dash Ratio"
         />
       ),
     });

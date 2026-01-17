@@ -10,7 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 // import { NumberStepperInput } from "../../../components/input/numberInput";
 import { Settings2 } from "lucide-react";
-import { NumberStepperInput } from "@/core/classes/properties/input/numberstepper";
+import { NumberStepperInput } from "@/core/classes/controllers/input/numberstepper";
 
 type Props = {
   initialX: { min: number; max: number };

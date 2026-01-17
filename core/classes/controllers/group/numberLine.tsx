@@ -1,10 +1,11 @@
 import Konva from "@/lib/konva";
-import { BaseProperties, BaseProperty } from "./base";
-import SliderInput from "./input/sliderInput";
-import { ColorDisc } from "./input/colordisc";
+import { BaseProperties, BaseProperty } from "../base/base";
+import SliderInput from "../input/sliderInput";
+import { ColorDisc } from "../input/colordisc";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { MNumberLine } from "../mobjects/group/numberLine";
+import { MNumberLine } from "../../mobjects/group/numberLine";
+import { SlidersHorizontalIcon, SquareDashedTopSolid } from "lucide-react";
 
 export interface NumberLineProperties extends BaseProperties {
   range: [number, number, number]; // [min, max, step]
@@ -104,6 +105,8 @@ export class NumberLineProperty extends BaseProperty {
               max: 20,
             },
           ]}
+          icon={<SlidersHorizontalIcon className="h-4 w-4" />}
+          message="Range"
         />
       ),
     });
@@ -111,9 +114,11 @@ export class NumberLineProperty extends BaseProperty {
       name: "Label Color",
       component: (
         <ColorDisc
+          size={8}
           key={"LabelColor"}
           value={this.labelcolor}
           onChange={(v) => this.update({ labelcolor: v })}
+          message="Label Color"
         />
       ),
     });
@@ -162,6 +167,8 @@ export class NumberLineProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });

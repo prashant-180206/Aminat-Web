@@ -1,9 +1,10 @@
 import Konva from "@/lib/konva";
-import { BaseProperties, BaseProperty } from "./base";
-import PointsInput from "./input/pointsInput";
-import { ColorDisc } from "./input/colordisc";
-import SliderInput from "./input/sliderInput";
+import { BaseProperties, BaseProperty } from "../base/base";
+import PointsInput from "../input/pointsInput";
+import { ColorDisc } from "../input/colordisc";
+import SliderInput from "../input/sliderInput";
 import { DEFAULT_SCALE } from "@/core/config";
+import { SquareDashedTopSolid } from "lucide-react";
 
 type Point = {
   x: number;
@@ -37,6 +38,14 @@ export class PolygonProperty extends BaseProperty {
       this.localPoints = prop.points.map((pt) => {
         return { x: pt.x * DEFAULT_SCALE, y: -pt.y * DEFAULT_SCALE };
       });
+      this.setUpGeometry();
+    }
+    if (prop.bordercolor !== undefined) {
+      this.bordercolor = prop.bordercolor;
+      this.setUpGeometry();
+    }
+    if (prop.thickness !== undefined) {
+      this.thickness = prop.thickness;
       this.setUpGeometry();
     }
   }
@@ -86,9 +95,11 @@ export class PolygonProperty extends BaseProperty {
       name: "Border Color",
       component: (
         <ColorDisc
+          size={8}
           key={"BorderColor"}
           value={this.bordercolor}
           onChange={(v) => this.update({ bordercolor: v })}
+          message="Border Color"
         />
       ),
     });
@@ -107,6 +118,8 @@ export class PolygonProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });

@@ -20,7 +20,7 @@ import { NumberStepperInput } from "./numberstepper";
 import { ColorDisc } from "@/components/colordisc";
 import { Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Label } from "../label";
+import { Label } from "../base/label";
 import {
   Tooltip,
   TooltipContent,
@@ -43,7 +43,7 @@ export function LabelPopover({ value, onChange, message = "Label " }: Props) {
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className=" h-8">
                 <Tag className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
@@ -107,6 +107,7 @@ export function LabelPopover({ value, onChange, message = "Label " }: Props) {
           <NumberStepperInput
             value={value.fontsize}
             onChange={(v) => onChange({ fontsize: v })}
+            step={8}
           />
         </div>
 

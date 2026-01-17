@@ -1,6 +1,6 @@
 import Konva from "konva";
-import { BaseProperties, BaseProperty } from "./base";
-import { TextDataProperty } from "./textDataProperty";
+import { BaseProperties, BaseProperty } from "../base/base";
+import { TextDataProperty } from "../base/textDataProperty";
 import { c2p, p2c } from "@/core/utils/conversion";
 
 export interface TextProperties extends BaseProperties {

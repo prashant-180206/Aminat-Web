@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { CirclePlay } from "lucide-react";
 import { Combobox } from "@/components/combobox";
 import { easingMap } from "@/core/maps/easingMap";
-import { NumberStepperInput } from "@/core/classes/properties/input/numberstepper";
+import { NumberStepperInput } from "@/core/classes/controllers/input/numberstepper";
 
 type Props = {
   onApply: (data: { duration: number; target: number; easing: string }) => void;

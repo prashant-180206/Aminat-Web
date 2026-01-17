@@ -1,7 +1,5 @@
-// core/scene.ts
 import Konva from "@/lib/konva";
 import { AnimationManager } from "@/core/classes/managers/animationManager";
-// import { TrackerManager } from "./Tracker/helpers/TrackerManager";
 import { Mobject } from "../types/mobjects";
 import { SceneData } from "../types/file";
 import { SceneSerializer } from "./serializers/sceneSerializer";
@@ -61,13 +59,13 @@ class Scene extends Konva.Stage {
     this.trackerManager = new TrackerManager(this.layer, this.sliderLayer);
     this.connManager = new ConnectionManager(
       this.trackerManager,
-      this.mobjManager
+      this.mobjManager,
     );
     this.animManager = new AnimationManager();
     this.trackerAnimator = new TrackerAnimator(
       this.animManager,
       this.trackerManager,
-      this.sliderLayer
+      this.sliderLayer,
     );
 
     const bgrec = new Konva.Rect({

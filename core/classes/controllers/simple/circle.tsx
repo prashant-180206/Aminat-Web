@@ -1,9 +1,10 @@
 import { Colors } from "@/core/utils/colors";
-import { BaseProperties, BaseProperty } from "./base";
+import { BaseProperties, BaseProperty } from "../base/base";
 import Konva from "@/lib/konva";
-import SliderInput from "./input/sliderInput";
-import { ColorDisc } from "./input/colordisc";
+import SliderInput from "../input/sliderInput";
+import { ColorDisc } from "../input/colordisc";
 import { DEFAULT_SCALE } from "@/core/config";
+import { CircleArrowOutDownRight, SquareDashedTopSolid } from "lucide-react";
 
 export interface CircleProperties extends BaseProperties {
   radius: number;
@@ -63,6 +64,8 @@ export class CircleProperty extends BaseProperty {
               step: 0.1,
             },
           ]}
+          icon={<CircleArrowOutDownRight className="h-4 w-4" />}
+          message="Radius"
         />
       ),
     });
@@ -70,9 +73,11 @@ export class CircleProperty extends BaseProperty {
       name: "Border Color",
       component: (
         <ColorDisc
+          size={8}
           key={"BorderColor"}
           value={this.bordercolor}
           onChange={(val) => this.update({ bordercolor: val })}
+          message="Border Color"
         />
       ),
     });
@@ -93,6 +98,8 @@ export class CircleProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });

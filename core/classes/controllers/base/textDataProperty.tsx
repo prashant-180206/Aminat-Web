@@ -1,5 +1,10 @@
 import Konva from "@/lib/konva";
-import { TextStyleInput } from "./input/textInput";
+import { TextStyleInput } from "../input/textInput";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface TextData {
   content: string;
@@ -11,7 +16,7 @@ interface TextData {
 }
 
 export class TextDataProperty {
-  protected fontsize: number = 16;
+  protected fontsize: number = 32;
   protected fontfamily: string = "Arial";
   protected bold: boolean = false;
   protected italic: boolean = false;
@@ -22,7 +27,7 @@ export class TextDataProperty {
     mobj.fontSize(this.fontsize);
     mobj.fontFamily(this.fontfamily);
     mobj.fontStyle(
-      `${this.bold ? "bold" : "normal"} ${this.italic ? "italic" : "normal"}`
+      `${this.bold ? "bold" : "normal"} ${this.italic ? "italic" : "normal"}`,
     );
     mobj.fill(this.color);
     this.mobj = mobj;
@@ -40,7 +45,7 @@ export class TextDataProperty {
       this.bold = prop.bold !== undefined ? prop.bold : this.bold;
       this.italic = prop.italic !== undefined ? prop.italic : this.italic;
       this.mobj.fontStyle(
-        `${this.bold ? "bold" : "normal"} ${this.italic ? "italic" : "normal"}`
+        `${this.bold ? "bold" : "normal"} ${this.italic ? "italic" : "normal"}`,
       );
     }
     if (prop.color !== undefined) {
@@ -51,20 +56,25 @@ export class TextDataProperty {
 
   getUIComponent(): React.ReactNode {
     return (
-      <div>
-        <TextStyleInput
-          value={{
-            fontsize: this.fontsize,
-            fontfamily: this.fontfamily,
-            bold: this.bold,
-            italic: this.italic,
-            color: this.color,
-          }}
-          onChange={(val) => {
-            this.update(val);
-          }}
-        />
-      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <TextStyleInput
+              value={{
+                fontsize: this.fontsize,
+                fontfamily: this.fontfamily,
+                bold: this.bold,
+                italic: this.italic,
+                color: this.color,
+              }}
+              onChange={(val) => {
+                this.update(val);
+              }}
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>Text Style</TooltipContent>
+      </Tooltip>
     );
   }
 

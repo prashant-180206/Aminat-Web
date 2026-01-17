@@ -1,12 +1,13 @@
-import { BaseProperties, BaseProperty } from "./base";
-import { Label, LabelProperty } from "./label";
-import { ParametricCurve } from "../mobjects/simple/curve";
-import SliderInput from "./input/sliderInput";
-import { StringInputs } from "./input/stringInput";
+import { BaseProperties, BaseProperty } from "../base/base";
+import { Label, LabelProperty } from "../base/label";
+import { ParametricCurve } from "../../mobjects/simple/curve";
+import SliderInput from "../input/sliderInput";
+import { StringInputs } from "../input/stringInput";
 import { toast } from "sonner";
 import Konva from "@/lib/konva";
 import { evaluate, parse } from "mathjs";
 import { DEFAULT_SCALE } from "@/core/config";
+import { SlidersHorizontal, SquareDashedTopSolid } from "lucide-react";
 
 export interface CurveProperties extends BaseProperties {
   parameterRange: [number, number];
@@ -50,7 +51,7 @@ export class CurveProperty extends BaseProperty {
       this.curveMobj.generateCurve(
         this.funcs.Xfunc,
         this.funcs.Yfunc,
-        prop.parameterRange
+        prop.parameterRange,
       );
     }
     if (prop.funcs !== undefined) {
@@ -58,7 +59,7 @@ export class CurveProperty extends BaseProperty {
       this.curveMobj.generateCurve(
         prop.funcs.Xfunc,
         prop.funcs.Yfunc,
-        this.parameterRange
+        this.parameterRange,
       );
     }
     if (prop.thickness !== undefined) {
@@ -116,6 +117,8 @@ export class CurveProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          message="Thickness"
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
         />
       ),
     });
@@ -179,6 +182,8 @@ export class CurveProperty extends BaseProperty {
               step: 0.1,
             },
           ]}
+          message="Parameter Range"
+          icon={<SlidersHorizontal className="h-4 w-4" />}
         />
       ),
     });

@@ -36,7 +36,7 @@ export const NumberStepperInput: React.FC<NumberStepperInputProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between rounded-md border border-foreground/30 bg-background h-9">
+    <div className="flex items-center justify-between rounded-md border border-foreground/30 bg-background h-8">
       {/* Decrease */}
       <Button
         variant="ghost"

@@ -1,11 +1,16 @@
 import Konva from "konva";
-import { BaseProperties, BaseProperty } from "./base";
-import { NumberInputs } from "./input/dualInput";
-import SliderInput from "./input/sliderInput";
-import { ColorDisc } from "./input/colordisc";
+import { BaseProperties, BaseProperty } from "../base/base";
+import { NumberInputs } from "../input/dualInput";
+import SliderInput from "../input/sliderInput";
+import { ColorDisc } from "../input/colordisc";
 import { DEFAULT_SCALE } from "@/core/config";
 import { c2p } from "@/core/utils/conversion";
 import { Colors } from "@/core/utils/colors";
+import {
+  RulerDimensionLine,
+  SquareDashedTopSolid,
+  SquareRoundCorner,
+} from "lucide-react";
 
 export interface RectangleProperties extends BaseProperties {
   dimensions: {
@@ -45,10 +50,10 @@ export class RectangleProperty extends BaseProperty {
     if (prop.dimensions !== undefined) {
       this.dimensions = prop.dimensions;
       (this.shapemobj as Konva.Rect).width(
-        this.dimensions.width * DEFAULT_SCALE
+        this.dimensions.width * DEFAULT_SCALE,
       );
       (this.shapemobj as Konva.Rect).height(
-        this.dimensions.height * DEFAULT_SCALE
+        this.dimensions.height * DEFAULT_SCALE,
       );
     }
     if (prop.bordercolor !== undefined) {
@@ -97,7 +102,8 @@ export class RectangleProperty extends BaseProperty {
                 }),
             },
           ]}
-          icon={<>H</>}
+          icon={<RulerDimensionLine className="h-4 w-4" />}
+          message="Dimensions"
         />
       ),
     });
@@ -116,6 +122,8 @@ export class RectangleProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });
@@ -134,6 +142,8 @@ export class RectangleProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareRoundCorner className="h-4 w-4" />}
+          message="Corner Radius"
         />
       ),
     });
@@ -141,9 +151,11 @@ export class RectangleProperty extends BaseProperty {
       name: "Border Color",
       component: (
         <ColorDisc
+          size={8}
           key={"BorderColor"}
           value={this.color}
           onChange={(val) => this.update({ color: val })}
+          message="Border Color"
         />
       ),
     });

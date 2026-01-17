@@ -1,13 +1,11 @@
-// /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { CurveProperties } from "@/core/types/properties";
 import { p2c } from "@/core/utils/conversion";
 import { Konva } from "@/lib/konva";
 import { evaluate } from "mathjs";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
-import { CurveProperty } from "../../properties/curve";
+import { CurveProperties, CurveProperty } from "../../controllers/simple/curve";
 
 export class ParametricCurve extends Konva.Group {
   public animgetter: AnimGetter;
@@ -89,7 +87,7 @@ export class ParametricCurve extends Konva.Group {
   updateFunctions(
     Xfunc: string,
     Yfunc: string,
-    range: [number, number] = this.properties.parameterRange
+    range: [number, number] = this.properties.parameterRange,
   ) {
     this.properties.funcs.Xfunc = Xfunc;
     this.properties.funcs.Yfunc = Yfunc;
@@ -102,7 +100,7 @@ export class ParametricCurve extends Konva.Group {
     this.generateCurve(
       this.properties.funcs.Xfunc,
       this.properties.funcs.Yfunc,
-      range
+      range,
     );
   }
 

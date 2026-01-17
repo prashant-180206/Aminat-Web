@@ -3,9 +3,11 @@ import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
-import { DashedLineProperties } from "@/core/types/properties";
 import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
-import { DashedLineProperty } from "../../properties/dashedLine";
+import {
+  DashedLineProperties,
+  DashedLineProperty,
+} from "../../controllers/simple/dashedLine";
 
 export class MDashedLine extends Konva.Group {
   public animgetter: AnimGetter;

@@ -1,5 +1,5 @@
+import { BaseProperties } from "../classes/controllers/base/base";
 import { AnimStoreData } from "./animation";
-import { BaseProperties } from "./properties";
 
 export interface MobjectData {
   properties: BaseProperties;

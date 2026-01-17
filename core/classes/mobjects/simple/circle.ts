@@ -1,9 +1,11 @@
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { CircleProperties } from "@/core/types/properties";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { Konva } from "@/lib/konva";
 import { MobjectData } from "@/core/types/file";
-import { CircleProperty } from "../../properties/circle";
+import {
+  CircleProperties,
+  CircleProperty,
+} from "../../controllers/simple/circle";
 
 class MCircle extends Konva.Circle {
   public animgetter: AnimGetter;

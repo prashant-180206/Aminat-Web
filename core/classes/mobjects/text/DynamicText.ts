@@ -1,10 +1,9 @@
 // /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
-import { TextProperties } from "@/core/types/properties";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { TextProperty } from "../../properties/text";
+import { TextProperties, TextProperty } from "../../controllers/text/text";
 
 export class DynamicText extends Konva.Text {
   public animgetter: AnimGetter;
@@ -32,11 +31,11 @@ export class DynamicText extends Konva.Text {
     const updatedLine = line
       .replace(
         /val1/g,
-        val.val1?.toString() || this._dynamicContent.val1.toString()
+        val.val1?.toString() || this._dynamicContent.val1.toString(),
       )
       .replace(
         /val2/g,
-        val.val2?.toString() || this._dynamicContent.val2.toString()
+        val.val2?.toString() || this._dynamicContent.val2.toString(),
       );
     this.text(updatedLine);
   }
@@ -76,7 +75,7 @@ export class DynamicText extends Konva.Text {
       top: `${pos.y - this.paddingAmount}px`,
       width: `${Math.max(
         20,
-        this.width() - this.padding() * 2 + this.paddingAmount * 3
+        this.width() - this.padding() * 2 + this.paddingAmount * 3,
       )}px`,
       height: `${
         this.features.getData().textData.fontsize + this.paddingAmount

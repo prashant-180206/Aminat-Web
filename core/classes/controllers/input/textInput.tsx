@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 // import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 import {
@@ -26,11 +26,13 @@ type TextStyle = {
 type TextStyleInputProps = {
   value: TextStyle;
   onChange: (val: Partial<TextStyle>) => void;
+  isSvg?: boolean;
 };
 
 export const TextStyleInput: React.FC<TextStyleInputProps> = ({
   value,
   onChange,
+  isSvg = false,
 }) => {
   const [local, setLocal] = useState<TextStyle>(value);
 
@@ -45,17 +47,15 @@ export const TextStyleInput: React.FC<TextStyleInputProps> = ({
     "Montserrat",
   ];
 
-  // keep in sync with external updates
-  useEffect(() => {
-    setLocal(value);
-  }, [value]);
-
   return (
-    <div className="flex items-center h-10 gap-1 rounded-md border bg-background p-1">
+    <div className="flex items-center h-8 gap-1 rounded-md border-foreground/30 border bg-background p-1 overflow-hidden">
       {/* Text color */}
       <ColorDisc
         value={local.color}
-        onChange={(c) => onChange({ color: c })}
+        onChange={(c) => {
+          setLocal({ ...local, color: c });
+          onChange({ color: c });
+        }}
         refreshFunc={() => {}}
         size={6}
         // className="w-8 h-8 rounded-md border"
@@ -65,33 +65,44 @@ export const TextStyleInput: React.FC<TextStyleInputProps> = ({
         value={local.fontsize}
         min={1}
         max={200}
-        step={1}
-        onChange={(v) => onChange({ fontsize: v })}
+        step={4}
+        onChange={(v) => {
+          setLocal({ ...local, fontsize: v });
+          onChange({ fontsize: v });
+        }}
       />
       {/* Font family */}
 
-      <Select
-        value={local.fontfamily}
-        onValueChange={(v) => onChange({ fontfamily: v })}
-      >
-        <SelectTrigger className="h-9 w-36 text-xs">
-          <Type className="h-4 w-4 mr-1" />
-          <SelectValue placeholder="Font" />
-        </SelectTrigger>
-        <SelectContent>
-          {FONT_FAMILIES.map((font) => (
-            <SelectItem key={font} value={font}>
-              <span style={{ fontFamily: font }}>{font}</span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {!isSvg && (
+        <Select
+          value={local.fontfamily}
+          onValueChange={(v) => {
+            setLocal({ ...local, fontfamily: v });
+            onChange({ fontfamily: v });
+          }}
+        >
+          <SelectTrigger className=" border-none w-36 text-xs h-8 ">
+            <Type className="h-4 w-4 mr-1" />
+            <SelectValue className="text-sm" placeholder="Font" />
+          </SelectTrigger>
+          <SelectContent>
+            {FONT_FAMILIES.map((font) => (
+              <SelectItem key={font} value={font}>
+                <span style={{ fontFamily: font }}>{font}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       {/* Bold */}
 
       <Toggle
         pressed={local.bold}
-        onPressedChange={(v) => onChange({ bold: v })}
+        onPressedChange={(v) => {
+          setLocal({ ...local, bold: v });
+          onChange({ bold: v });
+        }}
         size="sm"
       >
         <Bold className="h-4 w-4" />
@@ -99,7 +110,10 @@ export const TextStyleInput: React.FC<TextStyleInputProps> = ({
 
       <Toggle
         pressed={local.italic}
-        onPressedChange={(v) => onChange({ italic: v })}
+        onPressedChange={(v) => {
+          setLocal({ ...local, italic: v });
+          onChange({ italic: v });
+        }}
         size="sm"
       >
         <Italic className="h-4 w-4" />

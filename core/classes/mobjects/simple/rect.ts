@@ -1,10 +1,12 @@
 // anim/classes/mobjects/simple/rect.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { RectangleProperties } from "@/core/types/properties";
 import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { RectangleProperty } from "../../properties/rectangle";
+import {
+  RectangleProperties,
+  RectangleProperty,
+} from "../../controllers/simple/rectangle";
 
 export class MRect extends Konva.Rect {
   public animgetter: AnimGetter;

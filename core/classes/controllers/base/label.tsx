@@ -1,5 +1,5 @@
 import Konva from "@/lib/konva";
-import { LabelPopover } from "./input/labelInput";
+import { LabelPopover } from "../input/labelInput";
 
 export interface Label {
   labelText: string;
@@ -14,8 +14,8 @@ export interface Label {
 export class LabelProperty {
   protected labelText: string = "Label";
   protected visible: boolean = true;
-  protected offset: { x: number; y: number } = { x: 0, y: 0 };
-  protected fontsize: number = 14;
+  protected offset: { x: number; y: number } = { x: 40, y: 40 };
+  protected fontsize: number = 32;
   protected color: string = "#FFFFFF";
   protected position: "start" | "center" | "end" = "center";
   protected opacity: number = 1;
@@ -75,7 +75,7 @@ export class LabelProperty {
           opacity: this.opacity,
         }}
         onChange={(next) => this.update(next)}
-      />
+      />,
     );
 
     return components;

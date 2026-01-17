@@ -3,8 +3,8 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { PlaneProperties, PlaneProperty } from "../../properties/plane";
 import { DEFAULT_SCALE } from "@/core/config";
+import { PlaneProperties, PlaneProperty } from "../../controllers/group/plane";
 
 export class MPlane extends Konva.Group {
   public animgetter: AnimGetter;
@@ -80,7 +80,7 @@ export class MPlane extends Konva.Group {
           opacity: 1,
           stroke: axiscolor,
           strokeWidth: axisthickness,
-        })
+        }),
       );
 
     const drawGridLine = (points: number[]) =>
@@ -90,7 +90,7 @@ export class MPlane extends Konva.Group {
           opacity: 0.4,
           stroke: color,
           strokeWidth: gridthickness,
-        })
+        }),
       );
 
     const drawXLabel = (x: number) =>
@@ -102,7 +102,7 @@ export class MPlane extends Konva.Group {
           align: "center",
           offsetX: labelsize / 2,
           fill: labelcolor,
-        })
+        }),
       );
 
     const drawYLabel = (y: number) =>
@@ -115,7 +115,7 @@ export class MPlane extends Konva.Group {
           width: labelsize * 2,
           offsetY: labelsize / 2,
           fill: labelcolor,
-        })
+        }),
       );
 
     const TICK_SIZE = 8;
@@ -127,7 +127,7 @@ export class MPlane extends Konva.Group {
           stroke: axiscolor,
           strokeWidth: axisthickness,
           opacity: 1,
-        })
+        }),
       );
 
     const drawYTick = (y: number) =>
@@ -142,7 +142,7 @@ export class MPlane extends Konva.Group {
           stroke: axiscolor,
           strokeWidth: axisthickness,
           opacity: 1,
-        })
+        }),
       );
 
     const generateAxisGrid = (
@@ -150,7 +150,7 @@ export class MPlane extends Konva.Group {
       max: number,
       step: number,
       drawLine: (v: number) => void,
-      drawLabel: (v: number) => void
+      drawLabel: (v: number) => void,
     ) => {
       const steps = Math.ceil(Math.max(Math.abs(min), Math.abs(max)) / step);
 
@@ -185,7 +185,7 @@ export class MPlane extends Konva.Group {
           x * DEFAULT_SCALE,
           -yrange[1] * DEFAULT_SCALE,
         ]),
-      drawXLabel
+      drawXLabel,
     );
 
     // ---- Y direction grid ----
@@ -200,7 +200,7 @@ export class MPlane extends Konva.Group {
           xrange[1] * DEFAULT_SCALE,
           -y * DEFAULT_SCALE,
         ]),
-      drawYLabel
+      drawYLabel,
     );
 
     generateAxisGrid(xrange[0], xrange[1], xrange[2], drawXTick, () => {});

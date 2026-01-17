@@ -6,7 +6,11 @@ import { DEFAULT_SCALE } from "@/core/config";
 import {
   NumberLineProperties,
   NumberLineProperty,
-} from "../../properties/numberLine";
+} from "../../controllers/group/numberLine";
+// import {
+//   NumberLineProperties,
+//   NumberLineProperty,
+// } from "../../controllers/numberLine";
 
 export class MNumberLine extends Konva.Group {
   public animgetter: AnimGetter;
@@ -76,7 +80,7 @@ export class MNumberLine extends Konva.Group {
         points: [min * DEFAULT_SCALE, 0, max * DEFAULT_SCALE, 0],
         stroke: color,
         strokeWidth: axisthickness,
-      })
+      }),
     );
 
     const TICK_SIZE = 8;
@@ -87,7 +91,7 @@ export class MNumberLine extends Konva.Group {
           points: [x * DEFAULT_SCALE, -TICK_SIZE, x * DEFAULT_SCALE, TICK_SIZE],
           stroke: color,
           strokeWidth: axisthickness,
-        })
+        }),
       );
 
     const drawLabel = (x: number) =>
@@ -100,7 +104,7 @@ export class MNumberLine extends Konva.Group {
           fontSize: labelsize,
           align: "center",
           fill: labelcolor,
-        })
+        }),
       );
 
     const steps = Math.ceil(Math.max(Math.abs(min), Math.abs(max)) / step);

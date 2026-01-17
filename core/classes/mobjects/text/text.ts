@@ -2,7 +2,7 @@ import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { TextProperties, TextProperty } from "../../properties/text";
+import { TextProperties, TextProperty } from "../../controllers/text/text";
 
 export class MText extends Konva.Text {
   public animgetter: AnimGetter;
@@ -50,7 +50,7 @@ export class MText extends Konva.Text {
       top: `${pos.y - this.paddingAmount}px`,
       width: `${Math.max(
         20,
-        this.width() - this.padding() * 2 + this.paddingAmount * 3
+        this.width() - this.padding() * 2 + this.paddingAmount * 3,
       )}px`,
       height: `${
         this.features.getData().textData.fontsize + this.paddingAmount

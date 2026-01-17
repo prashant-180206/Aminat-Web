@@ -4,7 +4,10 @@ import { AnimGetter } from "../../animation/animgetter";
 import { TrackerConnector } from "../../Tracker/helpers/TrackerConnector";
 import { Colors } from "@/core/utils/colors";
 import { MobjectData } from "@/core/types/file";
-import { LatexTextProperties, LatexTextProperty } from "../../properties/latex";
+import {
+  LatexTextProperties,
+  LatexTextProperty,
+} from "../../controllers/text/latex";
 
 export class LatexText extends Konva.Image {
   private isRendering = false;
@@ -65,7 +68,6 @@ export class LatexText extends Konva.Image {
     });
 
     const { w, h } = this.measureMathML(rawSvg);
-    console.log("Measured dimensions:", { w, h });
 
     const { newh, neww } = {
       newh: h * (this.features.getTextData().fontsize / 18),

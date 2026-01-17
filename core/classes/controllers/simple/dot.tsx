@@ -1,9 +1,10 @@
 import Konva from "@/lib/konva";
-import { Dot } from "../mobjects/simple/dot";
-import { BaseProperties, BaseProperty } from "./base";
-import { Label, LabelProperty } from "./label";
-import SliderInput from "./input/sliderInput";
+import { Dot } from "../../mobjects/simple/dot";
+import { BaseProperties, BaseProperty } from "../base/base";
+import { Label, LabelProperty } from "../base/label";
+import SliderInput from "../input/sliderInput";
 import { c2p, p2c } from "@/core/utils/conversion";
+import { CircleArrowOutDownRight } from "lucide-react";
 
 export interface DotProperties extends BaseProperties {
   radius: number;
@@ -56,8 +57,13 @@ export class DotProperty extends BaseProperty {
               label: "Radius",
               value: this.radius,
               onChange: (v) => this.update({ radius: v }),
+              min: 0,
+              max: 100,
+              step: 1,
             },
           ]}
+          icon={<CircleArrowOutDownRight className="h-4 w-4" />}
+          message="Radius"
         />
       ),
     });

@@ -1,11 +1,12 @@
 import Konva from "@/lib/konva";
-import { BaseProperties, BaseProperty } from "./base";
-import { Label, LabelProperty } from "./label";
-import { NumberInputs } from "./input/dualInput";
-import SliderInput from "./input/sliderInput";
+import { BaseProperties, BaseProperty } from "../base/base";
+import { Label, LabelProperty } from "../base/label";
+import { NumberInputs } from "../input/dualInput";
+import SliderInput from "../input/sliderInput";
 import { DEFAULT_SCALE } from "@/core/config";
 import { c2p } from "@/core/utils/conversion";
-import { MLine } from "../mobjects/simple/line";
+import { MLine } from "../../mobjects/simple/line";
+import { SlidersHorizontal, SquareDashedTopSolid } from "lucide-react";
 
 export interface LineProperties extends BaseProperties {
   lineEnds: {
@@ -103,7 +104,8 @@ export class LineProperty extends BaseProperty {
             value: this.lineEnds[point][axis],
             onChange: makeHandler(point, axis),
           }))}
-          icon={<>X</>}
+          icon={<SlidersHorizontal className="h-4 w-4" />}
+          message="Line Ends"
         />
       ),
     });
@@ -123,6 +125,8 @@ export class LineProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });

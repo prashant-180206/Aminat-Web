@@ -1,8 +1,14 @@
-import { BaseProperties, BaseProperty } from "./base";
+import { BaseProperties, BaseProperty } from "../base/base";
 import { c2p, p2c } from "@/core/utils/conversion";
-import { LatexText } from "../mobjects/text/latexText";
-import { TextStyleInput } from "./input/textInput";
-import { PopoverLatexInput } from "./input/latexInput";
+import { LatexText } from "../../mobjects/text/latexText";
+import { TextStyleInput } from "../input/textInput";
+import { PopoverLatexInput } from "../input/latexInput";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Pi } from "lucide-react";
 
 export interface LatexTextProperties extends BaseProperties {
   textData: {
@@ -59,13 +65,22 @@ export class LatexTextProperty extends BaseProperty {
     com.push({
       name: "Text Style",
       component: (
-        <TextStyleInput
-          key={"TextStyle"}
-          value={this.textData}
-          onChange={(newStyle) => {
-            this.update({ textData: { ...newStyle, ...this.textData } });
-          }}
-        />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>
+              {" "}
+              <TextStyleInput
+                key={"TextStyle"}
+                value={this.textData}
+                onChange={(newStyle) => {
+                  this.update({ textData: { ...this.textData, ...newStyle } });
+                }}
+                isSvg
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent> Text Style</TooltipContent>
+        </Tooltip>
       ),
     });
     com.push({
@@ -78,6 +93,7 @@ export class LatexTextProperty extends BaseProperty {
           onChange={(val) => {
             this.update({ LatexContent: val });
           }}
+          icon={<Pi className="h-4 w-4" />}
         />
       ),
     });

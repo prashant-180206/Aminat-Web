@@ -2,11 +2,16 @@ import { Colors } from "@/core/utils/colors";
 import { c2p, p2c } from "@/core/utils/conversion";
 import Konva from "@/lib/konva";
 import React from "react";
-import { Move } from "lucide-react";
-import { NumberInputs } from "./input/dualInput";
-import SliderInput from "./input/sliderInput";
-import { ColorDisc } from "./input/colordisc";
-import { NumberStepperInput } from "./input/numberstepper";
+import { Expand, Eye, Move, RotateCw } from "lucide-react";
+import { NumberInputs } from "../input/dualInput";
+import SliderInput from "../input/sliderInput";
+import { ColorDisc } from "../input/colordisc";
+import { NumberStepperInput } from "../input/numberstepper";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface BaseProperties {
   position: { x: number; y: number };
@@ -51,7 +56,7 @@ export class BaseProperty {
     if (prop.position !== undefined) {
       const newpos = p2c(
         prop.position.x ?? this.position.x,
-        prop.position.y ?? this.position.y
+        prop.position.y ?? this.position.y,
       );
       this.actualMobj.position({ x: newpos.x, y: newpos.y });
       this.position = prop.position;
@@ -105,6 +110,17 @@ export class BaseProperty {
             },
           ]}
           icon={<Move className="h-4 w-4" />}
+          message="Position"
+        />
+      ),
+    });
+    components.push({
+      name: "Color",
+      component: (
+        <ColorDisc
+          size={8}
+          value={this.color}
+          onChange={(val) => this.update({ color: val })}
         />
       ),
     });
@@ -123,16 +139,8 @@ export class BaseProperty {
               step: 0.1,
             },
           ]}
-        />
-      ),
-    });
-    components.push({
-      name: "Color",
-      component: (
-        <ColorDisc
-          size={6}
-          value={this.color}
-          onChange={(val) => this.update({ color: val })}
+          icon={<Expand className="h-4 w-4" />}
+          message="Scale"
         />
       ),
     });
@@ -151,6 +159,8 @@ export class BaseProperty {
               step: 1,
             },
           ]}
+          icon={<RotateCw className="h-4 w-4" />}
+          message="Rotation"
         />
       ),
     });
@@ -169,20 +179,29 @@ export class BaseProperty {
               step: 0.01,
             },
           ]}
+          icon={<Eye className="h-4 w-4" />}
+          message="Opacity"
         />
       ),
     });
     components.push({
       name: "Z-Index",
       component: (
-        <NumberStepperInput
-          key={"ZIndex"}
-          value={this.zindex}
-          onChange={(v) => this.update({ zindex: v })}
-          min={0}
-          step={1}
-          max={50}
-        />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>
+              <NumberStepperInput
+                key={"ZIndex"}
+                value={this.zindex}
+                onChange={(v) => this.update({ zindex: v })}
+                min={0}
+                step={1}
+                max={50}
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>Z Index</TooltipContent>
+        </Tooltip>
       ),
     });
     return components;

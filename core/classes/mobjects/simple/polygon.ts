@@ -1,10 +1,12 @@
 // anim/classes/mobjects/simple/polygon.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { PolygonProperties } from "@/core/types/properties";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
-import { PolygonProperty } from "../../properties/polygon";
+import {
+  PolygonProperties,
+  PolygonProperty,
+} from "../../controllers/simple/polygon";
 // import { set } from "animejs";
 
 export class MPolygon extends Konva.Shape {

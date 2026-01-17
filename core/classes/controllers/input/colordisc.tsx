@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Popover,
@@ -26,6 +28,10 @@ export const ColorDisc = ({
   onChange,
   size = 10,
 }: ColorDiscProps) => {
+  /* ------------------------------------------------------------ */
+  /* Local UI state                                                */
+  /* ------------------------------------------------------------ */
+  const [localColor, setLocalColor] = useState<string>(() => value);
   const [open, setOpen] = useState(false);
 
   const PRESET_COLORS = [
@@ -40,6 +46,12 @@ export const ColorDisc = ({
     "#8B5CF6",
   ];
 
+  const commit = (color: string) => {
+    setLocalColor(color);
+    onChange(color);
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <TooltipProvider delayDuration={200}>
@@ -51,7 +63,7 @@ export const ColorDisc = ({
                 size="icon"
                 className="rounded-full"
                 style={{
-                  backgroundColor: value,
+                  backgroundColor: localColor,
                   width: size * 4,
                   height: size * 4,
                 }}
@@ -75,10 +87,7 @@ export const ColorDisc = ({
               size="icon"
               className="h-7 w-7 rounded-full border"
               style={{ backgroundColor: color }}
-              onClick={() => {
-                onChange(color);
-                setOpen(false);
-              }}
+              onClick={() => commit(color)}
             />
           ))}
 
@@ -94,11 +103,8 @@ export const ColorDisc = ({
             <Input
               type="color"
               className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-              value={value}
-              onChange={(e) => {
-                onChange(e.target.value);
-                setOpen(false);
-              }}
+              value={localColor}
+              onChange={(e) => commit(e.target.value)}
             />
           </label>
         </div>

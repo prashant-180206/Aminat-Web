@@ -1,12 +1,9 @@
 import { AnimGetter } from "@/core/classes/animation/animgetter";
-import { DotProperties } from "@/core/types/properties";
 import { Konva } from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
-import { DotProperty } from "../../properties/dot";
-// import { labelAble } from "./labelAble";
-// import type { Point } from './parametricCurve';
+import { DotProperties, DotProperty } from "../../controllers/simple/dot";
 
 export class Dot extends Konva.Group {
   public animgetter: AnimGetter;

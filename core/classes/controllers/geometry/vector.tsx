@@ -1,7 +1,8 @@
 import Konva from "@/lib/konva";
-import { LineProperties, LineProperty } from "./line";
-import { MVector } from "../mobjects/geometric/vector";
-import SliderInput from "./input/sliderInput";
+import { LineProperties, LineProperty } from "../simple/line";
+import { MVector } from "../../mobjects/geometric/vector";
+import SliderInput from "../input/sliderInput";
+import { Triangle } from "lucide-react";
 
 export interface VectorProperties extends LineProperties {
   pointerSize: number;
@@ -46,6 +47,7 @@ export class VectorProperty extends LineProperty {
               step: 1,
             },
           ]}
+          icon={<Triangle className="h-4 w-4" />}
         />
       ),
     });

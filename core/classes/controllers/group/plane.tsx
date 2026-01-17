@@ -1,11 +1,17 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { BaseProperties, BaseProperty } from "./base";
-import SliderInput from "./input/sliderInput";
+import { BaseProperties, BaseProperty } from "../base/base";
+import SliderInput from "../input/sliderInput";
 import { Label } from "@/components/ui/label";
-import { ColorDisc } from "./input/colordisc";
+import { ColorDisc } from "../input/colordisc";
 import Konva from "@/lib/konva";
-import { MPlane } from "../mobjects/group/plane";
+// import { MPlane } from "../mobjects/group/plane";
 import { Colors } from "@/core/utils/colors";
+import { MPlane } from "../../mobjects/group/plane";
+import {
+  RulerDimensionLine,
+  SlidersHorizontal,
+  SquareDashedTopSolid,
+} from "lucide-react";
 
 export interface PlaneProperties extends BaseProperties {
   // done
@@ -125,6 +131,8 @@ export class PlaneProperty extends BaseProperty {
                 }),
             },
           ]}
+          icon={<RulerDimensionLine className="h-4 w-4" />}
+          message="Dimensions"
         />
       ),
     });
@@ -214,6 +222,8 @@ export class PlaneProperty extends BaseProperty {
                 }),
             },
           ]}
+          icon={<SlidersHorizontal className="h-4 w-4" />}
+          message="Ranges"
         />
       ),
     });
@@ -254,6 +264,8 @@ export class PlaneProperty extends BaseProperty {
               step: 1,
             },
           ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });
@@ -297,9 +309,11 @@ export class PlaneProperty extends BaseProperty {
       name: "Axis Color",
       component: (
         <ColorDisc
+          size={8}
           key={"AxisColor"}
           value={this.axiscolor}
           onChange={(v) => this.update({ axiscolor: v })}
+          message="Axis Color"
         />
       ),
     });
@@ -307,9 +321,11 @@ export class PlaneProperty extends BaseProperty {
       name: "Label Color",
       component: (
         <ColorDisc
+          size={8}
           key={"LabelColor"}
           value={this.labelcolor}
           onChange={(v) => this.update({ labelcolor: v })}
+          message="Label Color"
         />
       ),
     });
