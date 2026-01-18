@@ -30,7 +30,7 @@ export class ConnectionManager {
     trackerName: string,
     mobjectId: string,
     functionName: string,
-    expression: string
+    expression: string,
   ) {
     const mobject = this.mobjectManager.getMobjectById(mobjectId);
     if (!mobject) return { success: false, id: null };
@@ -62,7 +62,7 @@ export class ConnectionManager {
     trackerName: string,
     mobjectId: string,
     functionNameY: string,
-    expressionY: string
+    expressionY: string,
   ): boolean {
     const mobject = this.mobjectManager.getMobjectById(mobjectId);
     if (!mobject) return false;
@@ -91,7 +91,7 @@ export class ConnectionManager {
     trackerName: string,
     mobjectId: string,
     functionNameX: string,
-    expressionX: string
+    expressionX: string,
   ): boolean {
     const mobject = this.mobjectManager.getMobjectById(mobjectId);
     if (!mobject) return false;

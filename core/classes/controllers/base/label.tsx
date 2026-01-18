@@ -21,6 +21,14 @@ export class LabelProperty {
   protected opacity: number = 1;
   protected mobj: Konva.Text;
 
+  private posCoordinateMap = {
+    start: { x: 0, y: 0 },
+    center: { x: 0, y: 0 },
+    end: { x: 0, y: 0 },
+  };
+
+  public defaultText: string = "Label";
+
   constructor(mobj: Konva.Text) {
     this.mobj = mobj;
     this.mobj.text(this.labelText);
@@ -32,15 +40,15 @@ export class LabelProperty {
   }
   update(prop: Partial<Label>) {
     if (prop.labelText !== undefined) {
-      this.labelText = prop.labelText;
-      this.mobj.text(this.labelText);
+      this.defaultText = prop.labelText;
+      this.changeText(prop.labelText);
     }
     if (prop.visible !== undefined) {
       this.visible = prop.visible;
       this.mobj.visible(this.visible);
     }
     if (prop.position !== undefined) {
-      this.position = prop.position;
+      this.setPosition(prop.position);
     }
     if (prop.offset !== undefined) {
       this.offset = prop.offset;
@@ -58,6 +66,31 @@ export class LabelProperty {
       this.opacity = prop.opacity;
       this.mobj.opacity(this.opacity);
     }
+  }
+
+  changeText(text: string) {
+    this.labelText = text;
+    this.mobj.text(this.labelText);
+  }
+
+  setPosition(position: "start" | "center" | "end") {
+    this.position = position;
+    if (position === "start") {
+      this.mobj.position(this.posCoordinateMap.start);
+    } else if (position === "center") {
+      this.mobj.position(this.posCoordinateMap.center);
+    } else if (position === "end") {
+      this.mobj.position(this.posCoordinateMap.end);
+    }
+  }
+
+  setPosCoordinateMap(map: {
+    start: { x: number; y: number };
+    center: { x: number; y: number };
+    end: { x: number; y: number };
+  }) {
+    this.posCoordinateMap = map;
+    this.setPosition(this.position);
   }
 
   getUIComponent(): React.ReactNode {

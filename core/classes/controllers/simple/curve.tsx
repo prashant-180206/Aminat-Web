@@ -43,6 +43,41 @@ export class CurveProperty extends BaseProperty {
       label: this.label.getData(),
     });
   }
+  private updatePosCoords() {
+    const [start, end] = this.parameterRange;
+    const midX = (start + end) / 2;
+    const midY = (start + end) / 2;
+    try {
+      this.label.setPosCoordinateMap({
+        start: {
+          x:
+            (evaluate(this.funcs.Xfunc, { t: start }) as number) *
+            DEFAULT_SCALE,
+          y:
+            (evaluate(this.funcs.Yfunc, { t: start }) as number) *
+            -DEFAULT_SCALE,
+        },
+        end: {
+          x: (evaluate(this.funcs.Xfunc, { t: end }) as number) * DEFAULT_SCALE,
+          y:
+            (evaluate(this.funcs.Yfunc, { t: end }) as number) * -DEFAULT_SCALE,
+        },
+        center: {
+          x:
+            (evaluate(this.funcs.Xfunc, { t: midX }) as number) * DEFAULT_SCALE,
+          y:
+            (evaluate(this.funcs.Yfunc, { t: midY }) as number) *
+            -DEFAULT_SCALE,
+        },
+      });
+    } catch {
+      this.label.setPosCoordinateMap({
+        start: { x: 0, y: 0 },
+        end: { x: 0, y: 0 },
+        center: { x: 0, y: 0 },
+      });
+    }
+  }
 
   override update(prop: Partial<CurveProperties>): void {
     super.update(prop);
@@ -53,6 +88,7 @@ export class CurveProperty extends BaseProperty {
         this.funcs.Yfunc,
         prop.parameterRange,
       );
+      this.updatePosCoords();
     }
     if (prop.funcs !== undefined) {
       this.funcs = prop.funcs;
@@ -61,6 +97,7 @@ export class CurveProperty extends BaseProperty {
         prop.funcs.Yfunc,
         this.parameterRange,
       );
+      this.updatePosCoords();
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
@@ -69,32 +106,6 @@ export class CurveProperty extends BaseProperty {
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);
-      if (prop.label.position !== undefined) {
-        let position = { x: 0, y: 0 };
-        const [start, end] = this.parameterRange;
-        const midX = (start + end) / 2;
-        const midY = (start + end) / 2;
-        if (prop.label.position === "start") {
-          position = {
-            x: evaluate(this.funcs.Xfunc, { t: start }) as number,
-            y: evaluate(this.funcs.Yfunc, { t: start }) as number,
-          };
-        } else if (prop.label.position === "end") {
-          position = {
-            x: evaluate(this.funcs.Xfunc, { t: end }) as number,
-            y: evaluate(this.funcs.Yfunc, { t: end }) as number,
-          };
-        } else if (prop.label.position === "center") {
-          position = {
-            x: evaluate(this.funcs.Xfunc, { t: midX }) as number,
-            y: evaluate(this.funcs.Yfunc, { t: midY }) as number,
-          };
-        }
-        this.labelobject.position({
-          x: position.x * DEFAULT_SCALE + this.label.getData().offset.x,
-          y: -position.y * DEFAULT_SCALE + this.label.getData().offset.y,
-        });
-      }
     }
   }
 

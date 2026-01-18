@@ -5,6 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Colors } from "@/core/utils/colors";
 
 interface TextData {
   content: string;
@@ -20,7 +21,7 @@ export class TextDataProperty {
   protected fontfamily: string = "Arial";
   protected bold: boolean = false;
   protected italic: boolean = false;
-  protected color: string = "#fff";
+  protected color: string = Colors.TEXT;
   protected mobj: Konva.Text;
   constructor(mobj: Konva.Text) {
     mobj.text("Sample Text");

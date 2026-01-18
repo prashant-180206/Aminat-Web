@@ -1,4 +1,3 @@
-// anim/classes/mobjects/simple/plane.ts
 import { AnimGetter } from "@/core/classes/animation/animgetter";
 import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
@@ -99,6 +98,7 @@ export class MPlane extends Konva.Group {
           x: x * DEFAULT_SCALE,
           y: 5,
           text: x.toString().slice(0, 4),
+          fontSize: labelsize,
           align: "center",
           offsetX: labelsize / 2,
           fill: labelcolor,
@@ -108,11 +108,11 @@ export class MPlane extends Konva.Group {
     const drawYLabel = (y: number) =>
       this.labelGroup.add(
         new Konva.Text({
-          x: -2 * labelsize - 10,
+          x: -2 * labelsize - 6,
           y: -y * DEFAULT_SCALE - labelsize / 2,
           text: y.toString().slice(0, 4),
           align: "right",
-          width: labelsize * 2,
+          fontSize: labelsize,
           offsetY: labelsize / 2,
           fill: labelcolor,
         }),

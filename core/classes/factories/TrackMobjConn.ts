@@ -19,7 +19,7 @@ export class TrackerMobjectConnectorFactory {
     if (!tracker) return { success: false, updaterId: null };
 
     const func = args.mobject.trackerconnector.getConnectorFunc(
-      args.functionName
+      args.functionName,
     );
     if (!func) return { success: false, updaterId: null };
 
@@ -28,7 +28,7 @@ export class TrackerMobjectConnectorFactory {
     const success = tracker.tracker.addUpdater(
       updaterId,
       func,
-      args.expression
+      args.expression,
     );
 
     return { success, updaterId: success ? updaterId : null };
@@ -49,14 +49,14 @@ export class TrackerMobjectConnectorFactory {
     if (!tracker) return false;
 
     const funcX = args.mobject.trackerconnector.getConnectorFunc(
-      args.functionNameX
+      args.functionNameX,
     );
     if (!funcX) return false;
 
     return tracker.tracker.x.addUpdater(
       `${args.mobject.id()}-${args.functionNameX}-X`,
       funcX,
-      args.expressionX
+      args.expressionX,
     );
   }
 
@@ -71,14 +71,14 @@ export class TrackerMobjectConnectorFactory {
     if (!tracker) return false;
 
     const funcY = args.mobject.trackerconnector.getConnectorFunc(
-      args.functionNameY
+      args.functionNameY,
     );
     if (!funcY) return false;
 
     return tracker.tracker.y.addUpdater(
       `${args.mobject.id()}-${args.functionNameY}-Y`,
       funcY,
-      args.expressionY
+      args.expressionY,
     );
   }
 }

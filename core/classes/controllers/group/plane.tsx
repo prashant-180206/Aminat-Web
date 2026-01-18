@@ -7,18 +7,10 @@ import Konva from "@/lib/konva";
 // import { MPlane } from "../mobjects/group/plane";
 import { Colors } from "@/core/utils/colors";
 import { MPlane } from "../../mobjects/group/plane";
-import {
-  RulerDimensionLine,
-  SlidersHorizontal,
-  SquareDashedTopSolid,
-} from "lucide-react";
+import { SlidersHorizontal, SquareDashedTopSolid } from "lucide-react";
 
 export interface PlaneProperties extends BaseProperties {
   // done
-  dimensions: {
-    width: number;
-    height: number;
-  };
   ranges: {
     xrange: [number, number, number];
     yrange: [number, number, number];
@@ -32,10 +24,6 @@ export interface PlaneProperties extends BaseProperties {
   labelcolor: string;
 }
 export class PlaneProperty extends BaseProperty {
-  protected dimensions: { width: number; height: number } = {
-    width: 400,
-    height: 400,
-  };
   protected ranges: {
     xrange: [number, number, number];
     yrange: [number, number, number];
@@ -45,8 +33,8 @@ export class PlaneProperty extends BaseProperty {
   protected axiscolor: string = Colors.FILL;
   protected showgrid: boolean = true;
   protected showlabels: boolean = true;
-  protected labelsize: number = 12;
-  protected labelcolor: string = Colors.TEXT;
+  protected labelsize: number = 32;
+  protected labelcolor: string = Colors.TEXT_SEC;
 
   constructor(mobj: MPlane) {
     super(mobj);
@@ -55,7 +43,10 @@ export class PlaneProperty extends BaseProperty {
   override update(prop: Partial<PlaneProperties>): void {
     super.update(prop);
     if (!(this.shapemobj instanceof MPlane)) return;
-    if (prop.ranges) this.shapemobj.refreshPlane();
+    if (prop.ranges) {
+      this.ranges = prop.ranges;
+      this.shapemobj.refreshPlane();
+    }
 
     if (prop.color) {
       this.shapemobj.gridGroup.children.forEach((line) => {
@@ -108,34 +99,7 @@ export class PlaneProperty extends BaseProperty {
   }
   override getUIComponents(): { name: string; component: React.ReactNode }[] {
     const components = super.getUIComponents();
-    components.push({
-      name: "Dimensions",
-      component: (
-        <SliderInput
-          key={"Dimensions"}
-          fields={[
-            {
-              label: "Width",
-              value: this.dimensions.width,
-              onChange: (v) =>
-                this.update({
-                  dimensions: { width: v, height: this.dimensions.height },
-                }),
-            },
-            {
-              label: "Height",
-              value: this.dimensions.height,
-              onChange: (v) =>
-                this.update({
-                  dimensions: { width: this.dimensions.width, height: v },
-                }),
-            },
-          ]}
-          icon={<RulerDimensionLine className="h-4 w-4" />}
-          message="Dimensions"
-        />
-      ),
-    });
+
     components.push({
       name: "Ranges",
       component: (
@@ -152,6 +116,9 @@ export class PlaneProperty extends BaseProperty {
                     yrange: this.ranges.yrange,
                   },
                 }),
+              max: 10,
+              min: -10,
+              step: 0.2,
             },
             {
               label: "Max X Range",
@@ -163,6 +130,9 @@ export class PlaneProperty extends BaseProperty {
                     yrange: this.ranges.yrange,
                   },
                 }),
+              max: 10,
+              min: -10,
+              step: 0.2,
             },
             {
               label: "X step",
@@ -174,6 +144,9 @@ export class PlaneProperty extends BaseProperty {
                     yrange: this.ranges.yrange,
                   },
                 }),
+              min: 0.2,
+              max: 6,
+              step: 0.1,
             },
 
             {
@@ -190,6 +163,9 @@ export class PlaneProperty extends BaseProperty {
                     yrange: [v, this.ranges.yrange[1], this.ranges.yrange[2]],
                   },
                 }),
+              min: -10,
+              max: 10,
+              step: 0.2,
             },
             {
               label: "Max Y Range",
@@ -205,6 +181,9 @@ export class PlaneProperty extends BaseProperty {
                     yrange: [this.ranges.yrange[0], v, this.ranges.yrange[2]],
                   },
                 }),
+              min: -10,
+              max: 10,
+              step: 0.2,
             },
             {
               label: "Y step",
@@ -220,6 +199,9 @@ export class PlaneProperty extends BaseProperty {
                     yrange: [this.ranges.yrange[0], this.ranges.yrange[1], v],
                   },
                 }),
+              min: 0.2,
+              max: 6,
+              step: 0.1,
             },
           ]}
           icon={<SlidersHorizontal className="h-4 w-4" />}
@@ -335,7 +317,6 @@ export class PlaneProperty extends BaseProperty {
   override getData(): PlaneProperties {
     return {
       ...super.getData(),
-      dimensions: this.dimensions,
       ranges: this.ranges,
       gridthickness: this.gridthickness,
       axisthickness: this.axisthickness,
@@ -348,7 +329,6 @@ export class PlaneProperty extends BaseProperty {
   }
   override setData(data: PlaneProperties): void {
     super.setData(data);
-    this.dimensions = data.dimensions;
     this.ranges = data.ranges;
     this.gridthickness = data.gridthickness;
     this.axisthickness = data.axisthickness;

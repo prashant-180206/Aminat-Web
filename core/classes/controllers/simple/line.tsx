@@ -36,6 +36,27 @@ export class LineProperty extends BaseProperty {
       label: this.label.getData(),
     });
   }
+
+  private changeLabel() {
+    const text = this.label.defaultText;
+    const updatedLine = text
+      .replace("lstartx", this.lineEnds.start.x.toFixed(2))
+      .replace("lstarty", this.lineEnds.start.y.toFixed(2))
+      .replace("lendx", this.lineEnds.end.x.toFixed(2))
+      .replace("lendy", this.lineEnds.end.y.toFixed(2));
+    this.labelobj.text(updatedLine);
+  }
+
+  private updatePosCoords() {
+    const { start, end } = this.lineEnds;
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+    this.label.setPosCoordinateMap({
+      start: { x: start.x * DEFAULT_SCALE, y: start.y * -DEFAULT_SCALE },
+      end: { x: end.x * DEFAULT_SCALE, y: end.y * -DEFAULT_SCALE },
+      center: { x: midX * DEFAULT_SCALE, y: midY * -DEFAULT_SCALE },
+    });
+  }
   override update(prop: Partial<LineProperties>) {
     super.update(prop);
     if (prop.lineEnds !== undefined) {
@@ -46,6 +67,8 @@ export class LineProperty extends BaseProperty {
         this.lineEnds.end.x * DEFAULT_SCALE,
         this.lineEnds.end.y * -DEFAULT_SCALE,
       ]);
+      this.changeLabel();
+      this.updatePosCoords();
     }
     if (prop.thickness !== undefined) {
       this.thickness = prop.thickness;
@@ -54,23 +77,7 @@ export class LineProperty extends BaseProperty {
     }
     if (prop.label !== undefined) {
       this.label.update(prop.label);
-      if (prop.label.position !== undefined) {
-        let position = { x: 0, y: 0 };
-        const { start, end } = this.lineEnds;
-        const midX = (start.x + end.x) / 2;
-        const midY = (start.y + end.y) / 2;
-        if (prop.label.position === "start") {
-          position = { x: start.x, y: start.y };
-        } else if (prop.label.position === "end") {
-          position = { x: end.x, y: end.y };
-        } else if (prop.label.position === "center") {
-          position = { x: midX, y: midY };
-        }
-        this.labelobj.position({
-          x: position.x * DEFAULT_SCALE + this.label.getData().offset.x,
-          y: -position.y * DEFAULT_SCALE + this.label.getData().offset.y,
-        });
-      }
+      this.changeLabel();
     }
   }
   override getUIComponents(): { name: string; component: React.ReactNode }[] {

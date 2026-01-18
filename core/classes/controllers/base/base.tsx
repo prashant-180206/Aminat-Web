@@ -82,7 +82,9 @@ export class BaseProperty {
     }
     if (prop.zindex !== undefined) {
       this.zindex = prop.zindex;
-      this.actualMobj.zIndex(this.zindex);
+      try {
+        this.actualMobj.zIndex(this.zindex);
+      } catch {}
     }
     this.refresh();
   }

@@ -4,60 +4,119 @@ import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnecto
 import { MobjectData } from "@/core/types/file";
 import { TextProperties, TextProperty } from "../../controllers/text/text";
 
-export class MText extends Konva.Text {
+export class MText extends Konva.Group {
   public animgetter: AnimGetter;
   public trackerconnector: TrackerConnector;
+  public features: TextProperty;
+
+  // Public sub-elements
+  public textNode: Konva.Text;
+  public bgRect: Konva.Rect;
+
   private _TYPE: string;
   private _textarea?: HTMLTextAreaElement;
   private _transformer?: Konva.Transformer;
-  public cornerRadius: number = 4;
-  private paddingAmount: number = 5;
-  public features: TextProperty;
+  private paddingAmount: number = 10;
+  protected defaultText: string = "";
 
   constructor(TYPE: string) {
     super({
       draggable: true,
+      name: "TextGroup",
+    });
+
+    this._TYPE = TYPE;
+
+    // 1. Initialize Background Rectangle
+    this.bgRect = new Konva.Rect({
+      x: 0,
+      y: 0,
+      name: "Background",
+      listening: true, // Allows dragging via the background
+    });
+
+    // 2. Initialize Text Node
+    this.textNode = new Konva.Text({
       lineCap: "round",
       lineJoin: "round",
       name: "Text",
+      padding: 10, // Internal text padding
     });
+
+    // Add to Group
+    this.add(this.bgRect);
+    this.add(this.textNode);
+
+    // standard logic
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
-    this._TYPE = TYPE;
     this.features = new TextProperty(this);
+
+    // Event Listeners
     this.on("dblclick dbltap", () => this.startEditing());
+
+    // Auto-resize background when text changes
+    this.textNode.on("transform change", () => this.updateLayout());
+
+    this.updateLayout();
+  }
+
+  /**
+   * Syncs the Background Rect size and color to the Text Node
+   */
+  public updateLayout() {
+    const width = this.textNode.width();
+    const height = this.textNode.height();
+
+    this.bgRect.setAttrs({
+      x: 0,
+      y: 0,
+      width: width,
+      height: height,
+      fill: this.features.getData().color || "transparent",
+      cornerRadius: 4,
+    });
   }
 
   get properties(): TextProperties {
     return { ...this.features.getData() };
   }
+
   getUIComponents() {
     return this.features.getUIComponents();
   }
 
   setContent(content: string) {
-    this.text(content);
+    this.defaultText = content;
+    this.textNode.text(content);
+    this.updateLayout();
   }
 
   private syncTextarea() {
     const stage = this.getStage();
     if (!stage || !this._textarea) return;
-    const pos = this.absolutePosition();
 
-    // We offset the top/left by paddingAmount so the text stays in the same visual spot
-    Object.assign(this._textarea.style, {
-      left: `${pos.x - this.paddingAmount - 2}px`,
-      top: `${pos.y - this.paddingAmount}px`,
+    // Use absolute position of the textNode (inside the group)
+    const pos = this.textNode.absolutePosition();
+    const area = this._textarea;
+
+    Object.assign(area.style, {
+      left: `${pos.x}px`,
+      top: `${pos.y}px`,
       width: `${Math.max(
         20,
-        this.width() - this.padding() * 2 + this.paddingAmount * 3,
+        this.textNode.width() -
+          this.textNode.padding() * 2 +
+          this.paddingAmount * 3,
       )}px`,
+      // Height matches font size or scroll height
       height: `${
         this.features.getData().textData.fontsize + this.paddingAmount
       }px`,
       transform: `rotateZ(${this.rotation()}deg) translateY(-2px)`,
     });
-    this._textarea.style.height = this._textarea.scrollHeight + "px";
+
+    area.style.height = area.scrollHeight + "px";
   }
 
   startEditing() {
@@ -66,15 +125,15 @@ export class MText extends Konva.Text {
     if (!stage || !layer || typeof window === "undefined" || this._textarea)
       return;
 
-    const original = this.text();
-    this.hide();
+    const original = this.textNode.text();
+    this.textNode.hide();
 
     this._transformer = new Konva.Transformer({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      nodes: [this] as any,
+      nodes: [this.textNode],
       enabledAnchors: ["middle-left", "middle-right"],
       rotateEnabled: false,
       boundBoxFunc: (oldB, newB) => (newB.width > 30 ? newB : oldB),
+      visible: false,
     });
     layer.add(this._transformer).batchDraw();
 
@@ -87,12 +146,13 @@ export class MText extends Konva.Text {
       resize: "none",
       zIndex: "1000",
       padding: `${this.paddingAmount}px`,
-      borderRadius: `${this.cornerRadius}px`,
-      backgroundColor: this.features.getData().textData.color,
-      lineHeight: this.lineHeight().toString(),
-      fontFamily: this.fontFamily(),
-      fontSize: this.fontSize() + "px",
-      textAlign: this.align(),
+      borderRadius: `4px`,
+      color: this.features.getData().textData.color,
+      backgroundColor: this.features.getData().color, // Editor background usually white for contrast
+      lineHeight: this.textNode.lineHeight().toString(),
+      fontFamily: this.textNode.fontFamily(),
+      fontSize: this.textNode.fontSize() + "px",
+      textAlign: this.textNode.align(),
     });
 
     area.value = original;
@@ -103,19 +163,23 @@ export class MText extends Konva.Text {
 
     const stop = (commit: boolean) => {
       this.setContent(commit ? area.value || "N/A" : original);
-      this.show();
+      this.textNode.show();
       this._transformer?.destroy();
       window.removeEventListener("click", clickHandler);
       area.remove();
       this._textarea = undefined;
+      this.updateLayout();
       layer.batchDraw();
     };
 
     const clickHandler = (e: Event) => e.target !== area && stop(true);
+
     area.oninput = () => {
-      this.text(area.value);
+      this.textNode.text(area.value);
       this.syncTextarea();
+      this.updateLayout(); // Real-time background resize
     };
+
     area.onkeydown = (e) => {
       if (e.key === "Enter" && !e.shiftKey) stop(true);
       else if (e.key === "Escape") stop(false);
@@ -131,6 +195,7 @@ export class MText extends Konva.Text {
   loadFromObj(obj: MobjectData) {
     this.features.setData(obj.properties as TextProperties);
     this.features.refresh();
+    this.updateLayout();
   }
 
   type() {

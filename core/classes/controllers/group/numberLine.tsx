@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { MNumberLine } from "../../mobjects/group/numberLine";
 import { SlidersHorizontalIcon, SquareDashedTopSolid } from "lucide-react";
+import { Colors } from "@/core/utils/colors";
 
 export interface NumberLineProperties extends BaseProperties {
   range: [number, number, number]; // [min, max, step]
@@ -17,10 +18,10 @@ export interface NumberLineProperties extends BaseProperties {
 
 export class NumberLineProperty extends BaseProperty {
   protected range: [number, number, number] = [-10, 10, 1];
-  protected axisthickness: number = 20;
+  protected axisthickness: number = 6;
   protected showlabels: boolean = true;
-  protected labelsize: number = 40;
-  protected labelcolor: string = "#fff";
+  protected labelsize: number = 32;
+  protected labelcolor: string = Colors.TEXT_SEC;
 
   constructor(mobj: MNumberLine) {
     super(mobj);
@@ -83,26 +84,27 @@ export class NumberLineProperty extends BaseProperty {
               value: this.range[0],
               onChange: (v) =>
                 this.update({ range: [v, this.range[1], this.range[2]] }),
-              min: -100,
-              max: 100,
-              step: 1,
+              min: -10,
+              max: 10,
+              step: 0.2,
             },
             {
               label: "Range Max",
               value: this.range[1],
               onChange: (v) =>
                 this.update({ range: [this.range[0], v, this.range[2]] }),
-              min: -100,
-              max: 100,
-              step: 1,
+              min: -10,
+              max: 10,
+              step: 0.2,
             },
             {
               label: "Range Step",
               value: this.range[2],
               onChange: (v) =>
                 this.update({ range: [this.range[0], this.range[1], v] }),
-              min: 1,
-              max: 20,
+              min: 0.2,
+              max: 6,
+              step: 0.1,
             },
           ]}
           icon={<SlidersHorizontalIcon className="h-4 w-4" />}
@@ -162,9 +164,9 @@ export class NumberLineProperty extends BaseProperty {
               onChange: (v) => {
                 this.update({ labelsize: v });
               },
-              min: 1,
-              max: 30,
-              step: 1,
+              min: 16,
+              max: 100,
+              step: 4,
             },
           ]}
           icon={<SquareDashedTopSolid className="h-4 w-4" />}

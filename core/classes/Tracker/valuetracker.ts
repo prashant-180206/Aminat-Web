@@ -45,7 +45,7 @@ export class ValueTracker {
   addUpdater(
     id: string,
     cb: (value: number) => void,
-    expression: string = "t"
+    expression: string = "t",
   ): boolean {
     try {
       if (this.updaters.has(id)) {
@@ -60,8 +60,7 @@ export class ValueTracker {
       });
       cb(compiled.evaluate({ t: this._value }));
       return true;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
+    } catch {
       return false;
     }
   }

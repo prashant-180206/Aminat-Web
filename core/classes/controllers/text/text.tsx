@@ -1,7 +1,8 @@
-import Konva from "konva";
 import { BaseProperties, BaseProperty } from "../base/base";
 import { TextDataProperty } from "../base/textDataProperty";
 import { c2p, p2c } from "@/core/utils/conversion";
+import { MText } from "../../mobjects/text/text";
+import { Colors } from "@/core/utils/colors";
 
 export interface TextProperties extends BaseProperties {
   textData: {
@@ -16,16 +17,17 @@ export interface TextProperties extends BaseProperties {
 export class TextProperty extends BaseProperty {
   protected textData: TextDataProperty;
 
-  constructor(mobj: Konva.Text) {
-    super(mobj);
-    this.textData = new TextDataProperty(mobj);
+  constructor(mobj: MText) {
+    super(mobj.bgRect, mobj);
+    this.update({ color: Colors.BG });
+    this.textData = new TextDataProperty(mobj.textNode);
   }
 
   override update(prop: Partial<TextProperties>): void {
     super.update(prop);
     if (prop.position) {
       const p = p2c(prop.position.x, prop.position.y);
-      this.shapemobj.position({
+      this.actualMobj.position({
         x: p.x,
         y: p.y,
       });
@@ -56,7 +58,7 @@ export class TextProperty extends BaseProperty {
   }
   override refresh(): void {
     super.refresh();
-    const pos = this.shapemobj.position();
+    const pos = this.actualMobj.position();
     this.position = c2p(pos.x, pos.y);
   }
 }
