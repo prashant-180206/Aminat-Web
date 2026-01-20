@@ -130,7 +130,7 @@ export class AnimGetter {
           },
         });
         return {
-          id: `${this.node.id()}-Move-${currentval.x}-${currentval.y}-${this
+          id: `${this.node.id()}-Move-${currentval.x.toFixed(2)}-${currentval.y.toFixed(2)}-${this
             .counter++}`,
           targetId: this.node.id(),
           type: "Move",

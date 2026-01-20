@@ -13,19 +13,8 @@ export class AnimationManager {
   }
 
   //  * Adds a group of animations that should play together
-
-  /**
-   * The function `addAnimations` takes in an array of animation metadata objects, stores the data in
-   * various data structures, and returns an array of IDs of the added animations.
-   * @param {AnimMeta[]} tweens - The `tweens` parameter in the `addAnimations` function is an array of
-   * objects of type `AnimMeta`. Each object in the array represents animation data with the following
-   * properties:
-   * @returns The `addAnimations` function returns an array of strings containing the IDs of the
-   * animations that were added.
-   */
   addAnimations(...tweens: AnimMeta[]): string[] {
     const ids: string[] = [];
-
     const storeData: AnimStoreData[] = [];
 
     tweens.forEach((animData) => {
@@ -40,9 +29,15 @@ export class AnimationManager {
         animFuncInput: animData.animFuncInput,
       });
     });
-    this.animStore.push(storeData);
 
-    this.order.push(ids);
+    // Calculate insertion point: immediately after the activeIndex
+    // If you want it to be the VERY NEXT thing that plays, use this.activeIndex
+    const insertionIndex = this.activeIndex++;
+
+    // Use splice to insert at the specific index
+    this.animStore.splice(insertionIndex, 0, storeData);
+    this.order.splice(insertionIndex, 0, ids);
+
     return ids;
   }
 
@@ -55,18 +50,6 @@ export class AnimationManager {
   }
 
   //  * Moves a whole animation group up or down in the playback order
-
-  /**
-   * The function `moveGroup` swaps the positions of two groups in an array while also updating the
-   * active index if necessary.
-   * @param {number} groupIndex - The `groupIndex` parameter is a number that represents the index of
-   * the group you want to move within the `order` array.
-   * @param {"up" | "down"} direction - The `direction` parameter in the `moveGroup` function specifies
-   * whether the group should be moved up or down. It can have two possible values: "up" or "down". If
-   * the direction is "up", the group at the specified `groupIndex` will be moved up one position.
-   * @returns If the `groupIndex` is out of bounds or if the `targetIndex` after moving the group is
-   * out of bounds, the function will return early without performing any actions.
-   */
   moveGroup(groupIndex: number, direction: "up" | "down") {
     if (groupIndex < 0 || groupIndex >= this.order.length) {
       return;
@@ -108,7 +91,7 @@ export class AnimationManager {
   // Returns groups with meta info for UI
   getGroupsWithMeta(): AnimMeta[][] {
     return this.order.map((group) =>
-      group.map((id) => this.animations.get(id)!).filter(Boolean)
+      group.map((id) => this.animations.get(id)!).filter(Boolean),
     );
   }
 

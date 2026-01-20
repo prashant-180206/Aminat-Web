@@ -3,7 +3,7 @@ import { Dot } from "../../mobjects/simple/dot";
 import { BaseProperties, BaseProperty } from "../base/base";
 import { Label, LabelProperty } from "../base/label";
 import SliderInput from "../input/sliderInput";
-import { c2p, p2c } from "@/core/utils/conversion";
+import { c2p } from "@/core/utils/conversion";
 import { CircleArrowOutDownRight } from "lucide-react";
 
 export interface DotProperties extends BaseProperties {
@@ -22,13 +22,6 @@ export class DotProperty extends BaseProperty {
   }
   override update(prop: Partial<DotProperties>): void {
     super.update(prop);
-    if (prop.position && this.labelobj) {
-      this.actualMobj.position(p2c(prop.position.x, prop.position.y));
-      let txt = this.label.getData().labelText;
-      txt = txt.replace(/valx/g, this.position.x.toFixed(2));
-      txt = txt.replace(/valy/g, this.position.y.toFixed(2));
-      this.labelobj.text(txt);
-    }
 
     if (prop.radius !== undefined) {
       this.radius = prop.radius;

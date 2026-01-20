@@ -30,7 +30,7 @@ export class MobjectManager {
       id: string;
       type: string;
       mobject: Mobject;
-    }[]
+    }[],
   ) {
     this._mobjectsMeta = value;
   }
@@ -49,7 +49,7 @@ export class MobjectManager {
   addMobject(type: string, id?: string): Mobject {
     const mobject = MobjectFactory.create(type, this.layer, this.textlayer!, {
       id,
-      zIndex: this.totalObjects++,
+      number: this.totalObjects++,
     });
 
     this.mobjectAddCallback?.(mobject);

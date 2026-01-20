@@ -1,7 +1,6 @@
 import { SceneData } from "@/core/types/file";
 import Scene from "../scene";
 import { AnimMeta } from "@/core/types/animation";
-// import { TrackerAnimatorfuncs } from "@/core/utils/valAnimation";
 
 export class SceneSerializer {
   static serialize(scene: Scene): SceneData {
@@ -24,10 +23,12 @@ export class SceneSerializer {
   }
 
   static deserialize(data: SceneData, scene: Scene) {
-    data.mobjects.forEach((entry) => {
-      const mobject = scene.addMobject(entry.type, entry.mobject.id);
-      mobject.loadFromObj(entry.mobject);
-    });
+    data.mobjects
+      .sort((a, b) => a.mobject.properties.zindex - b.mobject.properties.zindex)
+      .forEach((entry) => {
+        const mobject = scene.addMobject(entry.type, entry.mobject.id);
+        mobject.loadFromObj(entry.mobject);
+      });
 
     /* ---------------- trackers ---------------- */
 
@@ -38,7 +39,7 @@ export class SceneSerializer {
         rel.trackerName,
         rel.mobjectId,
         rel.functionName,
-        rel.expression
+        rel.expression,
       );
     });
 
@@ -48,7 +49,7 @@ export class SceneSerializer {
           rel.trackerName,
           rel.mobjectId,
           rel.functionNameX,
-          rel.expressionX
+          rel.expressionX,
         );
       }
       if (rel.functionNameY && rel.expressionY) {
@@ -56,7 +57,7 @@ export class SceneSerializer {
           rel.trackerName,
           rel.mobjectId,
           rel.functionNameY,
-          rel.expressionY
+          rel.expressionY,
         );
       }
     });
@@ -72,21 +73,34 @@ export class SceneSerializer {
           const i = a.animFuncInput;
 
           const trackerHandlers: Record<string, () => void> = {
-            Tracker: () =>
+            Tracker: () => {
               scene.trackerAnimator.animateTracker(
                 a.targetId,
                 i.target as number,
                 i.duration as number,
-                i.easing as string
-              ),
+                i.easing as string,
+              );
+              const tracker = scene.trackerManager.getTracker(a.targetId);
+              if (tracker) {
+                tracker.tracker.value = i.target as number;
+              }
+            },
 
-            PtTracker: () =>
+            PtTracker: () => {
               scene.trackerAnimator.animatePtTracker(
                 a.targetId,
                 { x: i.targetX as number, y: i.targetY as number },
                 i.duration as number,
-                i.easing as string
-              ),
+                i.easing as string,
+              );
+              const pttracker = scene.trackerManager.getPtValueTracker(
+                a.targetId,
+              );
+              if (pttracker) {
+                pttracker.tracker.x.value = i.targetX as number;
+                pttracker.tracker.y.value = i.targetY as number;
+              }
+            },
 
             Slider: () => {
               if (a.type === "SliderAppear") {
@@ -133,11 +147,11 @@ export class SceneSerializer {
 
         const anim = meta.func(a.animFuncInput);
         if (!anim) return;
-
+        anim.anim.seek(anim.anim.duration - 1);
         animMetaGrp.push(anim);
       });
-
-      scene.animManager.addAnimations(...animMetaGrp);
+      if (animMetaGrp.length > 0)
+        scene.animManager.addAnimations(...animMetaGrp);
     });
   }
 }

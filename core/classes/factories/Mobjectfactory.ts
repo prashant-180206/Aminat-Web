@@ -9,9 +9,9 @@ export class MobjectFactory {
     layer: Konva.Layer,
     textlayer: Konva.Layer,
     opts: {
+      number?: number;
       id?: string;
-      zIndex: number;
-    }
+    },
   ): Mobject {
     const mobject = MobjectMap[type].func();
 
@@ -24,12 +24,8 @@ export class MobjectFactory {
       layer.add(mobject);
     }
 
-    mobject.id(opts.id ?? `${mobject.name()}-${opts.zIndex}`);
+    mobject.id(opts.id ?? `${mobject.name()}-${opts.number}`);
     mobject.setDraggable(true);
-
-    // mobject.on("dragend", () => {
-    //   mobject.UpdateFromKonvaProperties();
-    // });
 
     return mobject;
   }

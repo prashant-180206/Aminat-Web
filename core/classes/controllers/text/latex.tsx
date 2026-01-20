@@ -1,5 +1,4 @@
 import { BaseProperties, BaseProperty } from "../base/base";
-import { c2p, p2c } from "@/core/utils/conversion";
 import { LatexText } from "../../mobjects/text/latexText";
 import { TextStyleInput } from "../input/textInput";
 import { PopoverLatexInput } from "../input/latexInput";
@@ -44,13 +43,6 @@ export class LatexTextProperty extends BaseProperty {
   override update(prop: Partial<LatexTextProperties>): void {
     super.update(prop);
     if (!(this.shapemobj instanceof LatexText)) return;
-    if (prop.position) {
-      const p = p2c(prop.position.x, prop.position.y);
-      this.shapemobj.position({
-        x: p.x,
-        y: p.y,
-      });
-    }
     if (prop.textData !== undefined) {
       this.textData = { ...this.textData, ...prop.textData };
       this.shapemobj.refresh();
@@ -113,8 +105,6 @@ export class LatexTextProperty extends BaseProperty {
   }
   override refresh(): void {
     super.refresh();
-    const pos = this.shapemobj.position();
-    this.position = c2p(pos.x, pos.y);
   }
 
   getTextData() {

@@ -13,6 +13,7 @@ import { TrackerAnimator } from "./managers/trackerAnimator";
 class Scene extends Konva.Stage {
   /* ---------------- Public ---------------- */
   private layer: Konva.Layer;
+  private bglayer: Konva.Layer;
   private textlayer: Konva.Layer;
   private sliderLayer: Konva.Layer;
   private _activeMobject: Mobject | null = null;
@@ -41,6 +42,7 @@ class Scene extends Konva.Stage {
 
   constructor(config: Konva.StageConfig) {
     super(config);
+    this.bglayer = new Konva.Layer();
     this.layer = new Konva.Layer();
     this.textlayer = new Konva.Layer();
     this.sliderLayer = new Konva.Layer();
@@ -52,6 +54,7 @@ class Scene extends Konva.Stage {
       x: DEFAULT_WIDTH / 2,
       y: DEFAULT_HEIGHT / 2,
     });
+    this.add(this.bglayer);
     this.add(this.layer);
     this.add(this.textlayer);
     this.add(this.sliderLayer);
@@ -69,13 +72,13 @@ class Scene extends Konva.Stage {
     );
 
     const bgrec = new Konva.Rect({
-      x: -DEFAULT_WIDTH / 2,
-      y: -DEFAULT_HEIGHT / 2,
+      x: 0,
+      y: 0,
       width: DEFAULT_WIDTH,
       height: DEFAULT_HEIGHT,
       fill: Colors.BG,
     });
-    this.layer.add(bgrec);
+    this.bglayer.add(bgrec);
   }
 
   addMobjectFunction(func: (mobj: Mobject) => void) {
@@ -109,6 +112,7 @@ class Scene extends Konva.Stage {
   }
 
   storeAsObj(): SceneData {
+    this.animManager.resetAll();
     return SceneSerializer.serialize(this);
   }
 

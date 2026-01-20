@@ -158,6 +158,5 @@ export class LatexText extends Konva.Image {
 
   loadFromObj(obj: MobjectData) {
     this.features.setData(obj.properties as LatexTextProperties);
-    this.features.refresh();
   }
 }

@@ -3,6 +3,7 @@ import Konva from "@/lib/konva";
 import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnector";
 import { MobjectData } from "@/core/types/file";
 import { TextProperties, TextProperty } from "../../controllers/text/text";
+import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 
 export class MText extends Konva.Group {
   public animgetter: AnimGetter;
@@ -17,7 +18,7 @@ export class MText extends Konva.Group {
   private _textarea?: HTMLTextAreaElement;
   private _transformer?: Konva.Transformer;
   private paddingAmount: number = 10;
-  protected defaultText: string = "";
+  public defaultText: string = "";
 
   constructor(TYPE: string) {
     super({
@@ -57,6 +58,7 @@ export class MText extends Konva.Group {
 
     // Auto-resize background when text changes
     this.textNode.on("transform change", () => this.updateLayout());
+    MobjectAnimAdder.addTextAnimations(this);
 
     this.updateLayout();
   }
@@ -189,12 +191,22 @@ export class MText extends Konva.Group {
   }
 
   storeAsObj(): MobjectData {
-    return { properties: this.features.getData(), id: this.id() };
+    return {
+      properties: {
+        ...this.features.getData(),
+        text: this.defaultText,
+      } as TextProperties,
+      id: this.id(),
+    };
   }
 
-  loadFromObj(obj: MobjectData) {
+  loadFromObj(obj: MobjectData & { properties: { text?: string } }) {
     this.features.setData(obj.properties as TextProperties);
     this.features.refresh();
+    if (obj.properties.text) {
+      this.defaultText = obj.properties.text;
+      this.setContent((obj.properties.text as string) || "");
+    }
     this.updateLayout();
   }
 

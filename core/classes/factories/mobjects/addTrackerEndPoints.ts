@@ -1,4 +1,5 @@
 import { MVector } from "../../mobjects/geometric/vector";
+import { ParametricCurve } from "../../mobjects/simple/curve";
 import { MDashedLine } from "../../mobjects/simple/dashedLine";
 import { MLine } from "../../mobjects/simple/line";
 import { DynamicText } from "../../mobjects/text/DynamicText";
@@ -31,6 +32,19 @@ export class TrackerEndPointsAdder {
         mobject.features.update({ lineEnds: newEnds });
       });
     });
+  }
+  static addCurvePointConnectors(mobj: ParametricCurve) {
+    mobj.trackerconnector.addConnectorFunc("Tend", (val: number) => {
+      const range = mobj.features.getData().parameterRange;
+      if (Math.abs(range[1] - val) < 0.01) return;
+      mobj.features.update({ parameterRange: [range[0], val] });
+    });
+    mobj.trackerconnector.addConnectorFunc("Tstart", (val: number) => {
+      const range = mobj.features.getData().parameterRange;
+      if (Math.abs(range[0] - val) < 0.01) return;
+      mobj.features.update({ parameterRange: [val, range[1]] });
+    });
+    // To be implemented for curved lines
   }
 
   // static add Text

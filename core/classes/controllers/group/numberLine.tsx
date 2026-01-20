@@ -35,10 +35,8 @@ export class NumberLineProperty extends BaseProperty {
       this.shapemobj.refreshNumberLine();
     }
     if (prop.color) {
-      console.log("Updating color", prop.color);
       this.shapemobj.axisGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.stroke(prop.color!);
-        console.log("Line updated to color", prop.color);
       });
       this.shapemobj.ticksGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.stroke(prop.color!);
@@ -46,6 +44,7 @@ export class NumberLineProperty extends BaseProperty {
     }
 
     if (prop.axisthickness) {
+      this.axisthickness = prop.axisthickness;
       this.shapemobj.axisGroup.children.forEach((l) => {
         if (l instanceof Konva.Line) l.strokeWidth(prop.axisthickness!);
       });
@@ -55,18 +54,21 @@ export class NumberLineProperty extends BaseProperty {
     }
 
     if (prop.labelcolor) {
+      this.labelcolor = prop.labelcolor;
       this.shapemobj.labelGroup.children.forEach((t) => {
         if (t instanceof Konva.Text) t.fill(prop.labelcolor!);
       });
     }
 
     if (prop.labelsize) {
+      this.labelsize = prop.labelsize;
       this.shapemobj.labelGroup.children.forEach((t) => {
         if (t instanceof Konva.Text) t.fontSize(prop.labelsize!);
       });
     }
 
     if (prop.showlabels !== undefined) {
+      this.showlabels = prop.showlabels;
       this.shapemobj.labelGroup.visible(prop.showlabels);
     }
   }

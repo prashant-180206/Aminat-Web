@@ -45,6 +45,7 @@ export const TextStyleInput: React.FC<TextStyleInputProps> = ({
     "Courier New",
     "Roboto",
     "Montserrat",
+    "STIX Two Math",
   ];
 
   return (

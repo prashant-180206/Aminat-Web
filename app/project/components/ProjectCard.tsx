@@ -93,7 +93,7 @@ export function ProjectCard({ project, onProjectDeleted }: ProjectCardProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/scene/edit?projectId=${project._id}`}
+                  href={`/project/${project._id}/edit`}
                   className="flex items-center gap-2"
                 >
                   <Edit className="w-4 h-4" />

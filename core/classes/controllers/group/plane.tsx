@@ -22,6 +22,7 @@ export interface PlaneProperties extends BaseProperties {
   showlabels: boolean;
   labelsize: number;
   labelcolor: string;
+  isComplex: boolean;
 }
 export class PlaneProperty extends BaseProperty {
   protected ranges: {
@@ -35,6 +36,7 @@ export class PlaneProperty extends BaseProperty {
   protected showlabels: boolean = true;
   protected labelsize: number = 32;
   protected labelcolor: string = Colors.TEXT_SEC;
+  protected isComplex: boolean = false;
 
   constructor(mobj: MPlane) {
     super(mobj);
@@ -48,6 +50,11 @@ export class PlaneProperty extends BaseProperty {
       this.shapemobj.refreshPlane();
     }
 
+    if (prop.isComplex !== undefined) {
+      this.isComplex = prop.isComplex;
+      this.shapemobj.refreshPlane();
+    }
+
     if (prop.color) {
       this.shapemobj.gridGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.stroke(prop.color!);
@@ -55,6 +62,7 @@ export class PlaneProperty extends BaseProperty {
     }
 
     if (prop.axiscolor) {
+      this.axiscolor = prop.axiscolor;
       this.shapemobj.axesGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.stroke(prop.axiscolor!);
       });
@@ -65,6 +73,7 @@ export class PlaneProperty extends BaseProperty {
     }
 
     if (prop.axisthickness) {
+      this.axisthickness = prop.axisthickness;
       this.shapemobj.axesGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.strokeWidth(prop.axisthickness!);
       });
@@ -75,25 +84,30 @@ export class PlaneProperty extends BaseProperty {
     }
 
     if (prop.labelcolor) {
+      this.labelcolor = prop.labelcolor;
       this.shapemobj.labelGroup.children.forEach((text) => {
         if (text instanceof Konva.Text) text.fill(prop.labelcolor!);
       });
     }
     if (prop.labelsize) {
+      this.labelsize = prop.labelsize;
       this.shapemobj.labelGroup.children.forEach((text) => {
         if (text instanceof Konva.Text) text.fontSize(prop.labelsize!);
       });
     }
     if (prop.gridthickness) {
+      this.gridthickness = prop.gridthickness;
       this.shapemobj.gridGroup.children.forEach((line) => {
         if (line instanceof Konva.Line) line.strokeWidth(prop.gridthickness!);
       });
     }
 
     if (prop.showgrid !== undefined) {
+      this.showgrid = prop.showgrid;
       this.shapemobj.gridGroup.visible(prop.showgrid);
     }
     if (prop.showlabels !== undefined) {
+      this.showlabels = prop.showlabels;
       this.shapemobj.labelGroup.visible(prop.showlabels);
     }
   }
@@ -270,6 +284,24 @@ export class PlaneProperty extends BaseProperty {
       ),
     });
     components.push({
+      name: "Is Complex Plane",
+      component: (
+        <div key={"IsComplexPlane"} className="flex items-center gap-2">
+          <Checkbox
+            id={`my-checkbox-iscomplexplane`}
+            defaultChecked={this.isComplex}
+            onCheckedChange={(v) => this.update({ isComplex: v as boolean })}
+          />
+          <Label
+            htmlFor={`my-checkbox-iscomplexplane`}
+            className="text-sm font-medium"
+          >
+            Complex Plane
+          </Label>
+        </div>
+      ),
+    });
+    components.push({
       name: "Show Labels",
       component: (
         <div key={"ShowLabels"} className="flex items-center gap-2">
@@ -314,9 +346,11 @@ export class PlaneProperty extends BaseProperty {
 
     return components;
   }
+
   override getData(): PlaneProperties {
     return {
       ...super.getData(),
+      isComplex: this.isComplex,
       ranges: this.ranges,
       gridthickness: this.gridthickness,
       axisthickness: this.axisthickness,
@@ -329,6 +363,7 @@ export class PlaneProperty extends BaseProperty {
   }
   override setData(data: PlaneProperties): void {
     super.setData(data);
+    this.isComplex = data.isComplex;
     this.ranges = data.ranges;
     this.gridthickness = data.gridthickness;
     this.axisthickness = data.axisthickness;

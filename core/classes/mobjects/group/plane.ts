@@ -70,6 +70,7 @@ export class MPlane extends Konva.Group {
       labelcolor,
       gridthickness,
       axisthickness,
+      isComplex,
     } = this.features.getData();
 
     const drawAxis = (points: number[]) =>
@@ -110,7 +111,7 @@ export class MPlane extends Konva.Group {
         new Konva.Text({
           x: -2 * labelsize - 6,
           y: -y * DEFAULT_SCALE - labelsize / 2,
-          text: y.toString().slice(0, 4),
+          text: `${y.toString().slice(0, 4)} ${isComplex ? "i" : ""}`,
           align: "right",
           fontSize: labelsize,
           offsetY: labelsize / 2,

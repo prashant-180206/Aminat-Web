@@ -10,14 +10,14 @@ const CollapsibleTrigger = dynamic(
     import("@/components/ui/collapsible").then((mod) => mod.CollapsibleTrigger),
   {
     ssr: false,
-  }
+  },
 );
 const CollapsibleContent = dynamic(
   () =>
     import("@/components/ui/collapsible").then((mod) => mod.CollapsibleContent),
   {
     ssr: false,
-  }
+  },
 );
 // import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -85,24 +85,6 @@ const AnimationSidePanel = () => {
                   </p>
                 </div>
               </div>
-
-              {/* <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={animRefresh}
-                      className="h-9 w-9"
-                    >
-                      <RefreshCcw className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Refresh animations</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider> */}
             </div>
             <Separator />
           </div>

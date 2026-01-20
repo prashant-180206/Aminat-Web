@@ -1,15 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Trash2, Clock, Target, Layers } from "lucide-react";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Trash2 } from "lucide-react";
 import { useScene } from "@/hooks/SceneContext";
 
 interface AnimationCardProps {
@@ -31,85 +29,39 @@ export const AnimationCard = ({
   const { animToggle } = useScene();
   void animToggle;
   return (
-    <Card className="group hover:shadow-md transition-all duration-200 p-0 hover:border-primary/50">
-      <CardContent className="p-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 space-y-2">
-            {/* Animation ID */}
-            <div className="flex items-center gap-2">
-              <h4 className="text-sm font-semibold truncate">{id}</h4>
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="item-1" className="border-b-0">
+        <div className="group flex items-center hover:bg-muted/50 rounded px-2 py-1">
+          <AccordionTrigger className="flex-1 py-1 hover:no-underline">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-medium truncate max-w-[100px]">{type}</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">{label}s</span>
             </div>
-
-            {/* <Button onClick={}>play</Button> */}
-
-            {/* Animation Details */}
-            <div className="space-y-1.5">
-              <TooltipProvider>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-1.5">
-                        <Layers className="h-3 w-3" />
-                        <span className="truncate max-w-[120px]">{type}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Animation Type</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-1.5">
-                        <Target className="h-3 w-3" />
-                        <span className="truncate max-w-[120px]">{mobjId}</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Target Object</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="secondary" className="text-xs gap-1">
-                        <Clock className="h-3 w-3" />
-                        {label}s
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Duration</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </TooltipProvider>
+          </AccordionTrigger>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+        <AccordionContent className="px-2 pb-2 pt-0">
+          <div className="text-xs space-y-1 text-muted-foreground ml-2">
+            <div>
+              <span className="font-medium">ID:</span> {id}
+            </div>
+            <div>
+              <span className="font-medium">Target:</span> {mobjId}
             </div>
           </div>
-
-          {/* Delete Button */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={onDelete}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete animation</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </CardContent>
-    </Card>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 };

@@ -6,6 +6,7 @@ import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnecto
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { CurveProperties, CurveProperty } from "../../controllers/simple/curve";
+import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
 
 export class ParametricCurve extends Konva.Group {
   public animgetter: AnimGetter;
@@ -36,6 +37,7 @@ export class ParametricCurve extends Konva.Group {
 
     MobjectAnimAdder.addCurveAnimations(this);
     MobjectAnimAdder.addLabelAnimations(this);
+    TrackerEndPointsAdder.addCurvePointConnectors(this);
 
     this.name("Curve");
   }

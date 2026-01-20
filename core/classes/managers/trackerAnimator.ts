@@ -17,7 +17,7 @@ export class TrackerAnimator {
 
   addSliderAppearAnimation(
     valueTrackerId: string,
-    { min, max, rank }: { min: number; max: number; rank: number }
+    { min, max, rank }: { min: number; max: number; rank: number },
   ): boolean {
     const { success, slider } = this.trackerManager.addSlider(valueTrackerId, {
       min,
@@ -55,13 +55,13 @@ export class TrackerAnimator {
       minY,
       maxY,
       rank,
-    }: { minX: number; maxX: number; minY: number; maxY: number; rank: number }
+    }: { minX: number; maxX: number; minY: number; maxY: number; rank: number },
   ): boolean {
     const { success, slider } = this.trackerManager.addPtSlider(
       PtvalueTrackerId,
       { min: minX, max: maxX },
       { min: minY, max: maxY },
-      rank
+      rank,
     );
     if (!success || !slider) {
       return false;
@@ -130,7 +130,7 @@ export class TrackerAnimator {
     trackerId: string,
     target: number,
     duration: number = 1,
-    easing: string = "inOutQuad"
+    easing: string = "inOutQuad",
   ): boolean {
     const trackerMeta = this.trackerManager.getTracker(trackerId);
     if (!trackerMeta) {
@@ -173,7 +173,7 @@ export class TrackerAnimator {
     trackerId: string,
     { x, y }: { x: number; y: number },
     duration: number = 1,
-    easing: string = "inOutQuad"
+    easing: string = "inOutQuad",
   ): boolean {
     const trackerMeta = this.trackerManager.getPtValueTracker(trackerId);
     if (!trackerMeta) {
@@ -208,8 +208,8 @@ export class TrackerAnimator {
     this.animManager.addAnimations({
       id: `TrackerAnim_${trackerId}_${this.trackerAnimationCount}`,
       targetId: trackerId,
-      type: "ValueTracker",
-      category: "Tracker",
+      type: "PtValueTracker",
+      category: "PtTracker",
       label: `Animating ValueTracker ${trackerId} to ${x}, ${y}`,
       animFuncInput: { targetX: x, targetY: y, duration, easing },
       anim: timer,

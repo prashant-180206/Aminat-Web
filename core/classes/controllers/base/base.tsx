@@ -229,12 +229,6 @@ export class BaseProperty {
     this.scale = this.actualMobj.scaleX();
     this.rotation = this.actualMobj.rotation();
     this.opacity = this.actualMobj.opacity();
-
-    // this.update({
-    //   position: c2p(pos.x, pos.y),
-    //   scale: this.actualMobj.scaleX(),
-    //   rotation: this.actualMobj.rotation(),
-    //   opacity: this.actualMobj.opacity(),
-    // });
+    this.zindex = this.actualMobj.zIndex();
   }
 }
