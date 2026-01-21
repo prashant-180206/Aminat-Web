@@ -1,3 +1,4 @@
+import { MArc } from "../../mobjects/geometric/arc";
 import { MVector } from "../../mobjects/geometric/vector";
 import { ParametricCurve } from "../../mobjects/simple/curve";
 import { MDashedLine } from "../../mobjects/simple/dashedLine";
@@ -47,5 +48,14 @@ export class TrackerEndPointsAdder {
     // To be implemented for curved lines
   }
 
-  // static add Text
+  static addArcPointConnectors(mobj: MArc) {
+    mobj.trackerconnector.addConnectorFunc("StartAngle", (val: number) => {
+      if (Math.abs(mobj.features.getData().startAngle - val) < 0.01) return;
+      mobj.features.update({ startAngle: val });
+    });
+    mobj.trackerconnector.addConnectorFunc("EndAngle", (val: number) => {
+      if (Math.abs(mobj.features.getData().endAngle - val) < 0.01) return;
+      mobj.features.update({ endAngle: val });
+    });
+  }
 }

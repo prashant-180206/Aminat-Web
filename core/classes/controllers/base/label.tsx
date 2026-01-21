@@ -1,5 +1,6 @@
 import Konva from "@/lib/konva";
 import { LabelPopover } from "../input/labelInput";
+import { Colors } from "@/core/utils/colors";
 
 export interface Label {
   labelText: string;
@@ -16,7 +17,7 @@ export class LabelProperty {
   protected visible: boolean = false;
   protected offset: { x: number; y: number } = { x: 40, y: 40 };
   protected fontsize: number = 32;
-  protected color: string = "#FFFFFF";
+  protected color: string = Colors.TEXT_SEC;
   protected position: "start" | "center" | "end" = "center";
   protected opacity: number = 1;
   protected mobj: Konva.Text;

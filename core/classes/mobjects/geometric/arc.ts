@@ -4,6 +4,7 @@ import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnecto
 import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { ArcProperties, ArcProperty } from "../../controllers/geometry/arc";
+import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
 // import { ArcProperty, ArcProperties } from "../../controllers/simple/arc";
 
 export class MArc extends Konva.Group {
@@ -23,23 +24,16 @@ export class MArc extends Konva.Group {
       lineCap: "round",
       lineJoin: "round",
     });
-
     this.label = new Konva.Text();
-
     this.add(this.line);
     this.add(this.label);
-
     this._TYPE = TYPE;
     this.animgetter = new AnimGetter(this);
     this.trackerconnector = new TrackerConnector(this);
-
-    // Use the specialized ArcProperty
     this.features = new ArcProperty(this);
-
     this.name("Arc");
-
-    // Add animations (Reusing your factories)
     MobjectAnimAdder.addLabelAnimations(this);
+    TrackerEndPointsAdder.addArcPointConnectors(this);
   }
 
   type(): string {

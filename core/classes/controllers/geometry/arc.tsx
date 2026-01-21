@@ -4,7 +4,7 @@ import { BaseProperties, BaseProperty } from "../base/base";
 import { Label, LabelProperty } from "../base/label";
 import SliderInput from "../input/sliderInput";
 import { DEFAULT_SCALE } from "@/core/config";
-import { Circle } from "lucide-react";
+import { Circle, SquareDashedTopSolid } from "lucide-react";
 import { MArc } from "../../mobjects/geometric/arc";
 
 export interface ArcProperties extends BaseProperties {
@@ -60,6 +60,27 @@ export class ArcProperty extends BaseProperty {
     return points;
   }
 
+  private changeLabel() {
+    const text = this.label.defaultText;
+    const updatedLine = text
+      .replace(
+        "angle",
+        (this.endAngle - this.startAngle).toFixed(1).toString() + "°",
+      )
+      .replace(
+        "pirad",
+        ((this.endAngle - this.startAngle) / 180).toFixed(2).toString() +
+          "∏ rad",
+      )
+      .replace(
+        "radian",
+        (((this.endAngle - this.startAngle) * Math.PI) / 180)
+          .toFixed(2)
+          .toString() + " rad",
+      );
+    this.labelobj.text(updatedLine);
+  }
+
   private updateLabelPosition() {
     const midAngle = (this.startAngle + this.endAngle) / 2;
     const rad = (midAngle * Math.PI) / 180;
@@ -70,7 +91,6 @@ export class ArcProperty extends BaseProperty {
 
     this.label.setPosCoordinateMap({
       center: { x, y },
-      end: { x, y },
       start: {
         x:
           this.radius *
@@ -81,6 +101,16 @@ export class ArcProperty extends BaseProperty {
           Math.sin((this.startAngle * Math.PI) / 180) *
           -DEFAULT_SCALE,
       },
+      end: {
+        x:
+          this.radius *
+          Math.cos((this.endAngle * Math.PI) / 180) *
+          DEFAULT_SCALE,
+        y:
+          this.radius *
+          Math.sin((this.endAngle * Math.PI) / 180) *
+          -DEFAULT_SCALE,
+      },
     });
   }
 
@@ -88,9 +118,14 @@ export class ArcProperty extends BaseProperty {
     super.update(prop);
 
     if (prop.radius !== undefined) this.radius = prop.radius;
-    if (prop.startAngle !== undefined) this.startAngle = prop.startAngle;
-    if (prop.endAngle !== undefined) this.endAngle = prop.endAngle;
-
+    if (prop.startAngle !== undefined) {
+      this.startAngle = prop.startAngle;
+      this.changeLabel();
+    }
+    if (prop.endAngle !== undefined) {
+      this.endAngle = prop.endAngle;
+      this.changeLabel();
+    }
     if (
       prop.radius !== undefined ||
       prop.startAngle !== undefined ||
@@ -147,6 +182,26 @@ export class ArcProperty extends BaseProperty {
           ]}
           icon={<Circle className="h-4 w-4" />}
           message="Adjust Arc"
+        />
+      ),
+    });
+    components.push({
+      name: "Thickness",
+      component: (
+        <SliderInput
+          key={"Thickness"}
+          fields={[
+            {
+              label: "Thickness",
+              value: this.thickness,
+              onChange: (v) => this.update({ thickness: v }),
+              min: 1,
+              max: 20,
+              step: 1,
+            },
+          ]}
+          icon={<SquareDashedTopSolid className="h-4 w-4" />}
+          message="Thickness"
         />
       ),
     });
