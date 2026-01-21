@@ -1,10 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Konva from "konva";
-
-interface RecorderOptions {
-  fps?: number;
-  mimeType?: string;
-  filename?: string;
-}
+import fixWebmDuration from "fix-webm-duration";
 
 export class KonvaRecorder {
   private stage: Konva.Stage;
@@ -12,92 +8,130 @@ export class KonvaRecorder {
   private chunks: Blob[] = [];
   private fps: number;
   private mimeType: string;
+  private animationId: number | null = null;
 
-  constructor(stage: Konva.Stage, options: RecorderOptions = {}) {
+  private startTime: number = 0;
+  private totalPausedTime: number = 0;
+  private lastPauseTimestamp: number = 0;
+
+  constructor(stage: Konva.Stage, options: any = {}) {
     this.stage = stage;
-    this.fps = options.fps || 60;
-    this.mimeType = options.mimeType || "video/webm; codecs=vp9";
+    this.fps = options.fps || 30;
+    this.mimeType = options.mimeType || "video/webm; codecs=vp8";
   }
 
   /**
-   * Starts the recording
+   * Internal drawing loop to merge layers
    */
+  private draw = (ctx: CanvasRenderingContext2D) => {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    this.stage.getLayers().forEach((layer) => {
+      ctx.drawImage(
+        layer.getCanvas()._canvas,
+        0,
+        0,
+        this.stage.width(),
+        this.stage.height(),
+      );
+    });
+    this.animationId = requestAnimationFrame(() => this.draw(ctx));
+  };
+
   public start(): void {
-    const canvas = this.stage.content.querySelector(
-      "canvas"
-    ) as HTMLCanvasElement;
+    const ratio = window.devicePixelRatio || 1;
+    const recordingCanvas = document.createElement("canvas");
+    recordingCanvas.width = this.stage.width() * ratio;
+    recordingCanvas.height = this.stage.height() * ratio;
 
-    if (!canvas) {
-      return;
-    }
+    const ctx = recordingCanvas.getContext("2d");
+    if (!ctx) return;
+    ctx.scale(ratio, ratio);
 
-    const stream = canvas.captureStream(this.fps);
+    // Start the drawing loop
+    this.draw(ctx);
+
+    const stream = recordingCanvas.captureStream(this.fps);
     this.chunks = [];
+    this.startTime = Date.now();
+    this.totalPausedTime = 0;
 
-    try {
-      this.mediaRecorder = new MediaRecorder(stream, {
-        mimeType: this.mimeType,
-        videoBitsPerSecond: 5000000,
-      });
-    } catch {
-      this.mediaRecorder = new MediaRecorder(stream);
-    }
+    this.mediaRecorder = new MediaRecorder(stream, {
+      mimeType: this.mimeType,
+      videoBitsPerSecond: 5000000,
+    });
 
-    this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
-      if (event.data.size > 0) {
-        this.chunks.push(event.data);
-      }
+    this.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) this.chunks.push(e.data);
     };
 
     this.mediaRecorder.start();
+    console.log("⏺️ Recording started");
   }
 
   /**
-   * Pauses the recording
+   * Pauses the recording and the internal drawing loop
    */
   public pause(): void {
-    if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+    if (this.mediaRecorder?.state === "recording") {
       this.mediaRecorder.pause();
-    } else {
-    }
-  }
 
-  /**
-   * Resumes the recording after a pause
-   */
-  public resume(): void {
-    if (this.mediaRecorder && this.mediaRecorder.state === "paused") {
-      this.mediaRecorder.resume();
-      console.log("▶️ Recording resumed.");
-    } else {
-      console.warn("Recorder is not paused.");
-    }
-  }
-
-  /**
-   * Stops recording and returns the video URL
-   */
-  public async stop(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (!this.mediaRecorder) {
-        return reject("Recorder not started");
+      // Stop the drawing loop to save resources
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
       }
 
-      this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.chunks, { type: this.mimeType });
-        const videoUrl = URL.createObjectURL(blob);
-        console.log("✅ Recording finished.");
-        resolve(videoUrl);
+      this.lastPauseTimestamp = Date.now();
+      console.log("⏸️ Recording paused");
+    }
+  }
+
+  /**
+   * Resumes the recording and restarts the drawing loop
+   */
+  public resume(): void {
+    if (this.mediaRecorder?.state === "paused") {
+      this.mediaRecorder.resume();
+
+      // Restart the drawing loop
+      const canvas = (this.mediaRecorder.stream.getVideoTracks()[0] as any)
+        .canvas;
+      const ctx = canvas.getContext("2d");
+      if (ctx) this.draw(ctx);
+
+      // Track how long we were paused to fix the final duration
+      this.totalPausedTime += Date.now() - this.lastPauseTimestamp;
+      console.log("▶️ Recording resumed");
+    }
+  }
+
+  public async stop(): Promise<string> {
+    return new Promise((resolve) => {
+      if (!this.mediaRecorder) return;
+
+      this.mediaRecorder.onstop = async () => {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+
+        // Final duration = (Current Time - Start Time) - Total time spent paused
+        const duration = Date.now() - this.startTime - this.totalPausedTime;
+        const buggyBlob = new Blob(this.chunks, { type: this.mimeType });
+
+        try {
+          const fixedBlob = await fixWebmDuration(buggyBlob, duration);
+          resolve(URL.createObjectURL(fixedBlob));
+        } catch {
+          resolve(URL.createObjectURL(buggyBlob));
+        }
       };
 
       this.mediaRecorder.stop();
     });
   }
 
-  /**
-   * Helper to trigger a browser download
-   */
-  public saveToDisk(url: string, filename: string = "math-canvas.webm"): void {
+  public saveToDisk(
+    url: string,
+    filename: string = "math-animation.webm",
+  ): void {
     const link = document.createElement("a");
     link.href = url;
     link.download = filename;
