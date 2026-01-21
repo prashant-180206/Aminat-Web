@@ -13,7 +13,7 @@ export interface Label {
 
 export class LabelProperty {
   protected labelText: string = "Label";
-  protected visible: boolean = true;
+  protected visible: boolean = false;
   protected offset: { x: number; y: number } = { x: 40, y: 40 };
   protected fontsize: number = 32;
   protected color: string = "#FFFFFF";

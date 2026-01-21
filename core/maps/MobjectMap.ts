@@ -15,6 +15,7 @@ import {
   Circle,
   DotIcon,
   Grid3x3,
+  LoaderCircle,
   MoveDiagonal,
   MoveUpRight,
   PentagonIcon,
@@ -30,6 +31,7 @@ import { LatexText } from "../classes/mobjects/text/latexText";
 import { DynamicText } from "../classes/mobjects/text/DynamicText";
 import { MDashedLine } from "../classes/mobjects/simple/dashedLine";
 import { MNumberLine } from "../classes/mobjects/group/numberLine";
+import { MArc } from "../classes/mobjects/geometric/arc";
 
 const MobjectMap: MobjectMapType = {
   Circle: { func: () => new MCircle("Circle"), name: "Circle", Icon: Circle },
@@ -82,6 +84,11 @@ const MobjectMap: MobjectMapType = {
     func: () => new MNumberLine("NumberLine"),
     name: "NumberLine",
     Icon: Axis3d,
+  },
+  Arc: {
+    func: () => new MArc("Arc"),
+    name: "Arc",
+    Icon: LoaderCircle,
   },
 };
 

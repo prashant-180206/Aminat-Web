@@ -8,6 +8,7 @@ import { parse } from "mathjs";
 import { MDashedLine } from "../../mobjects/simple/dashedLine";
 import { Dot } from "../../mobjects/simple/dot";
 import { MText } from "../../mobjects/text/text";
+import { MArc } from "../../mobjects/geometric/arc";
 
 export class MobjectAnimAdder {
   static addLineAnimations(mobj: MLine | MVector | MDashedLine) {
@@ -234,16 +235,8 @@ export class MobjectAnimAdder {
       },
     });
   }
-
-  /**
-   * The function `addLabelAnimations` adds animation functions for making labels appear and disappear
-   * on a given Mobject.
-   * @param {MLine | MVector | MDashedLine | ParametricCurve | Dot} mobj - The `mobj` parameter in the
-   * `addLabelAnimations` function is used to specify the target object to which the label animations
-   * will be applied. It can be of type `MLine`, `MVector`, `MDashedLine`, `ParametricCurve`, or `Dot`.
-   */
   static addLabelAnimations(
-    mobj: MLine | MVector | MDashedLine | ParametricCurve | Dot,
+    mobj: MLine | MVector | MDashedLine | ParametricCurve | Dot | MArc,
   ) {
     mobj.animgetter.addAnimFunc("LabelAppear", {
       title: "Appear Label",

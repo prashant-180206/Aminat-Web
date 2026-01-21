@@ -1,3 +1,4 @@
+import { MArc } from "../classes/mobjects/geometric/arc";
 import { DoubleArrow, MVector } from "../classes/mobjects/geometric/vector";
 import { MNumberLine } from "../classes/mobjects/group/numberLine";
 import { MPlane } from "../classes/mobjects/group/plane";
@@ -26,7 +27,8 @@ export type Mobject =
   | LatexText
   | DynamicText
   | MDashedLine
-  | MNumberLine;
+  | MNumberLine
+  | MArc;
 
 export type MobjectMapType = {
   [key: string]: {
