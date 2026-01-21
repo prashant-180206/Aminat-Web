@@ -10,14 +10,6 @@ import { Dot } from "../../mobjects/simple/dot";
 import { MText } from "../../mobjects/text/text";
 
 export class MobjectAnimAdder {
-  /**
-   * The function `addLineAnimations` in TypeScript adds animation functionality to a line, vector, or
-   * dashed line object by animating changes to its start and end points.
-   * @param {MLine | MVector | MDashedLine} mobj - The `mobj` parameter in the `addLineAnimations`
-   * function can be of type `MLine`, `MVector`, or `MDashedLine`.
-   *
-   * type and first parameter of func need to be same , for better serialization od scene
-   */
   static addLineAnimations(mobj: MLine | MVector | MDashedLine) {
     mobj.animgetter.addAnimFunc("LineStart", {
       title: "Line Start",
@@ -412,16 +404,14 @@ export class MobjectAnimAdder {
       input: {
         duration: "number",
         easing: "string",
-        targetOpacity: "number",
-        targetScale: "number",
       },
       func: (args: { [key: string]: any }) => {
         const targetText = mobj.defaultText + "  " || "";
         const startOpacity = 0;
-        const startScale = (args.targetScale || 1) * 0.8; // Start slightly smaller
+        const startScale = 0; // Start slightly smaller
 
-        const targetOpacity = args.targetOpacity ?? 1;
-        const targetScale = args.targetScale ?? 1;
+        const targetOpacity = 1;
+        const targetScale = 1;
 
         const easefunc = args.easing
           ? easings.eases[
@@ -442,15 +432,14 @@ export class MobjectAnimAdder {
               const newOpacity =
                 startOpacity + (targetOpacity - startOpacity) * subP;
               const newScale = startScale + (targetScale - startScale) * subP;
-
               mobj.features.update({ opacity: newOpacity, scale: newScale });
-              mobj.setContent("");
+              mobj.setShownContent("");
             } else {
               /* PHASE 2: WRITE (0.25 -> 1.0) */
               const subP = (progress - 0.25) * (1 / 0.75); // Normalize: 0.75 * 1.33 = 1.0
               const charCount = Math.floor(targetText.length * subP);
 
-              mobj.setContent(targetText.substring(0, charCount));
+              mobj.setShownContent(targetText.substring(0, charCount));
               mobj.features.update({
                 opacity: targetOpacity,
                 scale: targetScale,
@@ -466,7 +455,7 @@ export class MobjectAnimAdder {
           animFuncInput: args,
           anim: timer,
           category: "Mobject",
-          label: `Writing text "${targetText}" on ${mobj.id()}`,
+          label: `Writing text on ${mobj.id()}`,
         };
       },
     });
@@ -478,16 +467,14 @@ export class MobjectAnimAdder {
       input: {
         duration: "number",
         easing: "string",
-        targetOpacity: "number",
-        targetScale: "number",
       },
       func: (args: { [key: string]: any }) => {
         const initialText = mobj.defaultText + "  " || "";
         const startOpacity = mobj.properties.opacity ?? 1;
         const startScale = mobj.properties.scale ?? 1;
 
-        const targetOpacity = args.targetOpacity ?? 0;
-        const targetScale = args.targetScale ?? 0.8; // Scale down slightly
+        const targetOpacity = 0;
+        const targetScale = 0.8; // Scale down slightly
 
         const easefunc = args.easing
           ? easings.eases[
@@ -508,7 +495,7 @@ export class MobjectAnimAdder {
               const eraseProgress = 1 - subP;
               const charCount = Math.ceil(initialText.length * eraseProgress);
 
-              mobj.setContent(initialText.substring(0, charCount));
+              mobj.setShownContent(initialText.substring(0, charCount));
               mobj.features.update({
                 opacity: startOpacity,
                 scale: startScale,
@@ -520,7 +507,7 @@ export class MobjectAnimAdder {
                 startOpacity + (targetOpacity - startOpacity) * subP;
               const newScale = startScale + (targetScale - startScale) * subP;
 
-              mobj.setContent("");
+              mobj.setShownContent("");
               mobj.features.update({ opacity: newOpacity, scale: newScale });
             }
           },

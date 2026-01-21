@@ -7,10 +7,7 @@ import {
   NumberLineProperties,
   NumberLineProperty,
 } from "../../controllers/group/numberLine";
-// import {
-//   NumberLineProperties,
-//   NumberLineProperty,
-// } from "../../controllers/numberLine";
+import { GroupAnimAdder } from "../../factories/mobjects/groupAnimAdder";
 
 export class MNumberLine extends Konva.Group {
   public animgetter: AnimGetter;
@@ -41,6 +38,7 @@ export class MNumberLine extends Konva.Group {
     this.add(this.labelGroup);
 
     this.features = new NumberLineProperty(this);
+    GroupAnimAdder.addNumberLineAnimations(this);
     this.refreshNumberLine();
   }
 

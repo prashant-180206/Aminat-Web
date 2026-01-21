@@ -4,6 +4,7 @@ import { TrackerConnector } from "@/core/classes/Tracker/helpers/TrackerConnecto
 import { MobjectData } from "@/core/types/file";
 import { DEFAULT_SCALE } from "@/core/config";
 import { PlaneProperties, PlaneProperty } from "../../controllers/group/plane";
+import { GroupAnimAdder } from "../../factories/mobjects/groupAnimAdder";
 
 export class MPlane extends Konva.Group {
   public animgetter: AnimGetter;
@@ -40,6 +41,7 @@ export class MPlane extends Konva.Group {
     this.add(this.labelGroup);
 
     this.features = new PlaneProperty(this);
+    GroupAnimAdder.addPlaneAnimations(this);
     this.refreshPlane();
   }
 

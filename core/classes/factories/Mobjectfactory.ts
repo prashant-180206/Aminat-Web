@@ -1,6 +1,7 @@
 import MobjectMap from "@/core/maps/MobjectMap";
 import { Mobject } from "@/core/types/mobjects";
 import Konva from "@/lib/konva";
+import { MText } from "../mobjects/text/text";
 
 // factories/MobjectFactory.ts
 export class MobjectFactory {
@@ -16,7 +17,7 @@ export class MobjectFactory {
     const mobject = MobjectMap[type].func();
 
     if (
-      (mobject instanceof Konva.Text || mobject instanceof Konva.Image) &&
+      (mobject instanceof MText || mobject instanceof Konva.Image) &&
       textlayer
     ) {
       textlayer.add(mobject);

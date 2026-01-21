@@ -64,7 +64,10 @@ export class MobjectManager {
   }
 
   getMobjectById(id: string): Mobject | null {
-    return this.layer.findOne(`#${id}`) as Mobject | null;
+    let m = this.layer.findOne(`#${id}`) as Mobject | null;
+    if (m) return m;
+    m = this.textlayer.findOne(`#${id}`) as Mobject | null;
+    return m;
   }
 
   clear() {

@@ -94,6 +94,11 @@ export class MText extends Konva.Group {
     this.updateLayout();
   }
 
+  setShownContent(content: string) {
+    this.textNode.text(content);
+    this.updateLayout();
+  }
+
   private syncTextarea() {
     const stage = this.getStage();
     if (!stage || !this._textarea) return;
