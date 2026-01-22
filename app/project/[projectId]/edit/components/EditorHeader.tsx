@@ -13,9 +13,12 @@ import {
 import { Sparkles, Save, FolderOpen, FileText, Play } from "lucide-react";
 import { useScene } from "@/hooks/SceneContext";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const EditorHeader = () => {
   const { scene } = useScene();
+  const router = useRouter();
 
   const handleNew = () => {
     if (confirm("Create a new project? Unsaved changes will be lost.")) {
@@ -50,9 +53,8 @@ const EditorHeader = () => {
           try {
             const data = JSON.parse(event.target?.result as string);
             scene.loadFromObj(data);
-          } catch (error) {
-            console.error("Failed to load project:", error);
-            alert("Failed to load project file");
+          } catch {
+            toast.error("Failed to load project file");
           }
         };
         reader.readAsText(file);
@@ -72,8 +74,10 @@ const EditorHeader = () => {
   const handleLogout = async () => {
     const res = await signOut();
     if (res) {
-      console.log("User signed out successfully");
+      toast.error("Failed to logout");
+      return;
     }
+    router.push("/");
   };
 
   return (

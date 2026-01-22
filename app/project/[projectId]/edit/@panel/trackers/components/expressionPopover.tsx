@@ -70,7 +70,7 @@ export const ExpressionPopover: React.FC = () => {
       </PopoverTrigger>
 
       <PopoverContent className=" p-0" align="start" side="left">
-        <div className="w-[180px]">
+        <div className="">
           {/* Header */}
           <div className="p-4 border-b bg-muted/50">
             <h4 className="font-medium leading-none mb-1">Expression Editor</h4>

@@ -20,7 +20,6 @@ export class AnimGetter {
       },
       targetId: this.node.id(),
       type: "Create",
-      // category: "Mobject",
       func: (args: { [key: string]: any }) => {
         const easefunc = args.easing
           ? easings.eases[
@@ -102,8 +101,10 @@ export class AnimGetter {
       type: "Move",
 
       func: (args: { [key: string]: any }) => {
-        if (args.toX === undefined || args.toY === undefined) return null;
-        // const canvas = p2c(args.toX, args.toY);
+        if (args.toX === undefined || args.toY === undefined) {
+          args.toX = 0;
+          args.toY = 0;
+        }
         const currentval = this.node.properties.position;
         const easefunc = args.easing
           ? easings.eases[

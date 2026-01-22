@@ -23,7 +23,7 @@ const AnimationsTab: React.FC = () => {
   const [animMeta, setAnimMeta] = useState<AnimFuncMeta | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [inputObject, setInputObject] = useState<Record<string, any>>({
+  const [inputObject, setInputObject] = useState<{ [key: string]: any }>({
     duration: 1,
     easing: Object.keys(easingMap)[3],
   });
@@ -63,7 +63,6 @@ const AnimationsTab: React.FC = () => {
     scene.animManager.addAnimations(...animGroup);
     setAnimGroup([]);
     toast.success("Animation group added to timeline");
-    scene.animManager.animate();
     animRefresh();
   };
 

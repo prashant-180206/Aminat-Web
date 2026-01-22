@@ -94,10 +94,9 @@ const SignUp = () => {
         // Account created but sign in failed, redirect to sign in page
         router.push("/auth/signin");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred during sign up");
       toast.error("An error occurred during sign up");
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -107,9 +106,9 @@ const SignUp = () => {
     setIsGithubLoading(true);
     try {
       await signIn("github");
-    } catch (err) {
+    } catch {
       toast.error("Failed to sign up with GitHub");
-      console.error(err);
+
       setIsGithubLoading(false);
     }
   };

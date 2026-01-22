@@ -8,9 +8,9 @@ import {
 const DropdownMenuTrigger = dynamic(
   () =>
     import("@/components/ui/dropdown-menu").then(
-      (mod) => mod.DropdownMenuTrigger
+      (mod) => mod.DropdownMenuTrigger,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 import { useScene } from "@/hooks/SceneContext";
 import { FolderOpen, Save } from "lucide-react";
@@ -47,8 +47,7 @@ const LocalFileDropdown = () => {
           try {
             const data = JSON.parse(event.target?.result as string);
             scene.loadFromObj(data);
-          } catch (error) {
-            console.error("Failed to load project:", error);
+          } catch {
             toast.error("Failed to load project file");
           }
         };

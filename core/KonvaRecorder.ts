@@ -65,7 +65,6 @@ export class KonvaRecorder {
     };
 
     this.mediaRecorder.start();
-    console.log("⏺️ Recording started");
   }
 
   /**
@@ -82,7 +81,6 @@ export class KonvaRecorder {
       }
 
       this.lastPauseTimestamp = Date.now();
-      console.log("⏸️ Recording paused");
     }
   }
 
@@ -99,9 +97,7 @@ export class KonvaRecorder {
       const ctx = canvas.getContext("2d");
       if (ctx) this.draw(ctx);
 
-      // Track how long we were paused to fix the final duration
       this.totalPausedTime += Date.now() - this.lastPauseTimestamp;
-      console.log("▶️ Recording resumed");
     }
   }
 

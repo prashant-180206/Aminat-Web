@@ -53,8 +53,7 @@ export class LatexText extends Konva.Image {
       const img = await this.svgToImage(svg);
       this.image(img);
       this.getLayer()?.batchDraw();
-    } catch (e) {
-      console.error("LaTeX rendering failed:", e);
+    } catch {
     } finally {
       this.isRendering = false;
     }
@@ -131,7 +130,6 @@ export class LatexText extends Konva.Image {
 
       img.onload = () => resolve(img);
       img.onerror = (err) => {
-        console.error("SVG Load Error:", err);
         reject(err);
       };
 

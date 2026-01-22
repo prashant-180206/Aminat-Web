@@ -30,13 +30,47 @@ export class AnimationManager {
       });
     });
 
-    // Calculate insertion point: immediately after the activeIndex
-    // If you want it to be the VERY NEXT thing that plays, use this.activeIndex
-    const insertionIndex = this.activeIndex++;
+    const insertionIndex = this.activeIndex;
 
-    // Use splice to insert at the specific index
     this.animStore.splice(insertionIndex, 0, storeData);
     this.order.splice(insertionIndex, 0, ids);
+    this.animate();
+
+    return ids;
+  }
+
+  /**
+   * Used specifically for deserialization/loading.
+   * Appends animations to the end of the timeline to maintain original order.
+   */
+  importAnimations(...tweens: AnimMeta[]): string[] {
+    const ids: string[] = [];
+    const storeData: AnimStoreData[] = [];
+
+    tweens.forEach((animData) => {
+      // 1. Register the meta in the Map
+      this.animations.set(animData.id, animData);
+      ids.push(animData.id);
+
+      // 2. Prepare the store data
+      storeData.push({
+        id: animData.id,
+        targetId: animData.targetId,
+        type: animData.type,
+        category: animData.category,
+        label: animData.label,
+        animFuncInput: animData.animFuncInput,
+      });
+    });
+
+    // 3. Always PUSH to the end of the arrays.
+    // This ensures A, B, C are added as [A, B, C]
+    this.animStore.push(storeData);
+    this.order.push(ids);
+
+    // 4. We keep activeIndex at 0 during import so that
+    // when the file finishes loading, the user is at the start.
+    this._activeIndex = 0;
 
     return ids;
   }

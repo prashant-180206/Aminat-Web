@@ -28,7 +28,6 @@ export class SceneSerializer {
       .forEach((entry) => {
         const mobject = scene.addMobject(entry.type, entry.mobject.id);
         mobject.loadFromObj(entry.mobject);
-        console.log("Loaded mobject:", mobject);
       });
 
     /* ---------------- trackers ---------------- */
@@ -152,7 +151,7 @@ export class SceneSerializer {
         animMetaGrp.push(anim);
       });
       if (animMetaGrp.length > 0)
-        scene.animManager.addAnimations(...animMetaGrp);
+        scene.animManager.importAnimations(...animMetaGrp);
     });
   }
 }

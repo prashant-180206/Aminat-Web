@@ -29,16 +29,14 @@ export const AnimationGroupCard = ({
 }: AnimationGroupCardProps) => {
   return (
     <div
-      className={`mb-1 mx-1 border rounded-md ${
-        isActive
-          ? "border-primary bg-primary/5"
-          : "border-border/50"
+      className={`mb-1 mx-1 border rounded-md  ${
+        isActive ? "border-primary bg-primary/5" : "border-border/50"
       }`}
     >
       {/* Group Header */}
       <div className="flex items-center justify-between px-2 py-1 border-b">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium">Group {groupIndex}</span>
+          <span className="text-xs font-medium">{groupIndex}</span>
           <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
             {animations.length}
           </Badge>

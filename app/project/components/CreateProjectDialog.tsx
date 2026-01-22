@@ -57,9 +57,8 @@ export function CreateProjectDialog({
 
       // Navigate to edit page with the new project
       router.push(`/project/projectId=${project.project._id}/edit`);
-    } catch (error) {
+    } catch {
       toast.error("An error occurred");
-      console.error(error);
     } finally {
       setIsLoading(false);
     }

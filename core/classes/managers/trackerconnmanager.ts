@@ -15,7 +15,7 @@ export class TrackerConnectionManager {
 
   constructor(
     trackers: Map<string, TrackerMeta>,
-    pointTrackers: Map<string, PtTrackerMeta>
+    pointTrackers: Map<string, PtTrackerMeta>,
   ) {
     this.trackers = trackers;
     this.pointTrackers = pointTrackers;
@@ -121,9 +121,7 @@ export class TrackerConnectionManager {
         if (typeof result === "number" && !Number.isNaN(result)) {
           targetTracker.value = result;
         }
-      } catch (err) {
-        console.error("Link evaluation error:", err);
-      }
+      } catch {}
     };
 
     // Attach listeners using the targetRef as the unique ID
@@ -133,7 +131,7 @@ export class TrackerConnectionManager {
       const done = depTracker.addUpdater(
         `link-${targetRef}`,
         updateTarget,
-        "t"
+        "t",
       );
       successArray.push(done);
     });
@@ -168,7 +166,7 @@ export class TrackerConnectionManager {
     this.dependencies.delete(link.target);
     this.activeLinks.delete(expression);
     this.validConnections = this.validConnections.filter(
-      (conn) => conn !== expression
+      (conn) => conn !== expression,
     );
   }
   getAllExpressions(): string[] {
@@ -192,7 +190,7 @@ export class TrackerConnectionManager {
     });
     this.activeLinks.forEach((link, expr) => {
       const hasDep = Array.from(link.deps).some((dep) =>
-        targetsToRemove.has(dep)
+        targetsToRemove.has(dep),
       );
       if (hasDep) {
         this.removeExpression(expr);

@@ -36,8 +36,8 @@ const StagedGroupList: React.FC<StagedGroupListProps> = ({
       ) : (
         <div className="space-y-2">
           {animGroup.map((anim, index) => (
-            <Card key={anim.id} className="border-muted">
-              <CardContent className="p-3">
+            <Card key={anim.id} className="border-muted p-3 px-0">
+              <CardContent className="">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -45,10 +45,12 @@ const StagedGroupList: React.FC<StagedGroupListProps> = ({
                         {index + 1}
                       </Badge>
                       <span className="text-xs font-medium truncate">
-                        {anim.label}
+                        {anim.type}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">{anim.type}</p>
+                    <p className="text-xs text-muted-foreground overflow-hidden">
+                      {anim.label}
+                    </p>
                   </div>
                   <Button
                     size="icon"

@@ -51,7 +51,6 @@ export class ValueTracker {
       if (this.updaters.has(id)) {
         return false;
       }
-      // console.log("Adding updater with expression:", expression, id);
       const compiled = compile(expression);
       compiled.evaluate({ t: this._value });
       this.updaters.set(id, {

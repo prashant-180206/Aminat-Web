@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Pi } from "lucide-react";
+import { Colors } from "@/core/utils/colors";
 
 export interface LatexTextProperties extends BaseProperties {
   textData: {
@@ -32,12 +33,15 @@ export class LatexTextProperty extends BaseProperty {
     fontfamily: "Arial",
     bold: false,
     italic: false,
-    color: "#ff0000",
+    color: Colors.TEXT,
   };
   protected LatexContent: string = "\\int_0^\\infty x^2 dx";
 
   constructor(mobj: LatexText) {
     super(mobj);
+    super.update({
+      color: Colors.BG,
+    });
   }
 
   override update(prop: Partial<LatexTextProperties>): void {

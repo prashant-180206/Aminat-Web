@@ -46,11 +46,10 @@ const SignIn = () => {
         toast.success("Signed in successfully!");
         router.push("/project");
       }
-    } catch (err) {
+    } catch {
       const errorMessage = "An error occurred during sign in";
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -60,10 +59,8 @@ const SignIn = () => {
     setIsGithubLoading(true);
     try {
       await signIn("github", { callbackUrl: "/project" });
-      console.log("Redirecting to GitHub for sign in");
-    } catch (err) {
+    } catch {
       toast.error("Failed to sign in with GitHub");
-      console.error(err);
       setIsGithubLoading(false);
     }
   };
