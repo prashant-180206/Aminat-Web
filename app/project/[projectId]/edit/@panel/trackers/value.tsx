@@ -138,14 +138,13 @@ const ValueTrackersPanelTab = () => {
                           tm.id,
                           target,
                           duration,
-                          easing
+                          easing,
                         );
                         if (!success) {
                           toast.error("Failed to create animation for slider.");
                           return;
                         }
                         toast.success("Animation added to queue.");
-                        scene?.animManager.animate();
                         valRefresh();
                       }}
                     />
@@ -164,16 +163,15 @@ const ValueTrackersPanelTab = () => {
                       onClick={() => {
                         const success =
                           scene?.trackerAnimator.addSliderDisappearAnimation(
-                            tm.id
+                            tm.id,
                           );
                         if (!success) {
                           toast.error(
-                            "Failed to create hide slider animation."
+                            "Failed to create hide slider animation.",
                           );
                           return;
                         }
                         toast.success("Hide slider animation added to queue.");
-                        scene?.animManager.animate();
                         valRefresh();
                       }}
                     >

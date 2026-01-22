@@ -194,13 +194,12 @@ const PtValueTrackersPanelTab = () => {
                           tm.id,
                           { x: targetX, y: targetY },
                           duration,
-                          easing
+                          easing,
                         );
                         if (!success) {
                           toast.error("Failed to create animation for slider.");
                           return;
                         }
-                        scene?.animManager.animate();
                         toast.success("Animation added to queue.");
                         valRefresh();
                         animRefresh();
@@ -222,16 +221,15 @@ const PtValueTrackersPanelTab = () => {
                       onClick={() => {
                         const success =
                           scene?.trackerAnimator.addPtSliderDisappearAnimation(
-                            tm.id
+                            tm.id,
                           );
                         if (!success) {
                           toast.error(
-                            "Failed to create hide slider animation."
+                            "Failed to create hide slider animation.",
                           );
                           return;
                         }
                         toast.success("Hide slider animation added to queue.");
-                        scene?.animManager.animate();
                         valRefresh();
                         animRefresh();
                       }}

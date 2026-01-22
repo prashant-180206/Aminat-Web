@@ -54,8 +54,6 @@ const PtSliderSettingsPopover = ({
       toast.error("Failed to create point slider");
       return;
     }
-    // const anim = slider.appearAnim();
-    scene.animManager.animate();
     toast.success("Point slider created");
     onSliderAdded?.();
     valRefresh();

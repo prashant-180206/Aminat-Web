@@ -46,7 +46,6 @@ const SliderSettingsPopover = ({
       toast.error("Failed to create slider");
       return;
     }
-    scene.animManager.animate();
     toast.success("Slider created");
     onSliderAdded?.();
     valRefresh();
