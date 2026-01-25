@@ -51,9 +51,8 @@ export class MobjectAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-ls-${targetX}-${targetY}-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-ls-${targetX}-${targetY}-${mobj.animgetter
+            .counter++}`,
           targetId: mobj.id(),
           type: "LineStart",
           label: `Changing start of ${mobj.id()} to (${targetX}, ${targetY})`,
@@ -102,9 +101,8 @@ export class MobjectAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-ls-${targetX}-${targetY}-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-ls-${targetX}-${targetY}-${mobj.animgetter
+            .counter++}`,
           targetId: mobj.id(),
           type: "LineEnd",
           label: `Changing end of ${mobj.id()} to (${targetX}, ${targetY})`,
@@ -150,9 +148,8 @@ export class MobjectAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-ls-${targetStart}-${targetEnd}-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-ls-${targetStart}-${targetEnd}-${mobj.animgetter
+            .counter++}`,
           targetId: mobj.id(),
           type: "Range",
           label: `Changing Range of ${mobj.id()} to (${targetStart}, ${targetEnd})`,
@@ -222,9 +219,8 @@ export class MobjectAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-ls-${TargetXFunc}-${TargetYFunc}-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-ls-${TargetXFunc}-${TargetYFunc}-${mobj.animgetter
+            .counter++}`,
           targetId: mobj.id(),
           type: "Functions",
           label: `Changing Range of ${mobj.id()} to (${TargetXFunc}, ${TargetYFunc})`,
@@ -247,7 +243,7 @@ export class MobjectAnimAdder {
         easing: "string",
       },
       func: (args: { [key: string]: any }) => {
-        const currentOpacity = mobj.properties.label.opacity;
+        const currentOpacity = 0;
         const targetOpacity = 1;
         const easefunc = args.easing
           ? easings.eases[
@@ -271,7 +267,7 @@ export class MobjectAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-showLabel`,
+          id: `${mobj.id()}-showLabel-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "LabelAppear",
           label: `making label of ${mobj.id()} visible`,
@@ -290,7 +286,7 @@ export class MobjectAnimAdder {
         easing: "string",
       },
       func: (args: { [key: string]: any }) => {
-        const currentOpacity = mobj.properties.label.opacity;
+        const currentOpacity = 1;
         const targetOpacity = 0;
         const easefunc = args.easing
           ? easings.eases[
@@ -314,7 +310,7 @@ export class MobjectAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-showLabel`,
+          id: `${mobj.id()}-hideLabel-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "LabelDisappear",
           label: `making label of ${mobj.id()} visible`,
@@ -380,7 +376,7 @@ export class MobjectAnimAdder {
         });
 
         return {
-          id: `${mobj.id()}-changeText`,
+          id: `${mobj.id()}-changeText-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "ChangeText",
           label: `Changing text of ${mobj.id()} to "${targetText}"`,
@@ -442,7 +438,7 @@ export class MobjectAnimAdder {
         });
 
         return {
-          id: `${mobj.id()}-writeText`,
+          id: `${mobj.id()}-writeText-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "WriteText",
           animFuncInput: args,
@@ -507,7 +503,7 @@ export class MobjectAnimAdder {
         });
 
         return {
-          id: `${mobj.id()}-removeText`,
+          id: `${mobj.id()}-removeText-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "RemoveText",
           animFuncInput: args,

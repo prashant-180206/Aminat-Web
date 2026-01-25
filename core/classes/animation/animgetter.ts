@@ -7,7 +7,7 @@ import { createTimer, easings } from "animejs";
 export class AnimGetter {
   private AnimGetterMap = new Map<string, AnimFuncMeta>();
   private node: Mobject;
-  private counter = 0;
+  counter = 0;
 
   constructor(obj: Mobject) {
     this.node = obj;
@@ -82,6 +82,53 @@ export class AnimGetter {
           targetId: this.node.id(),
           type: "Destroy",
           label: `Destroying ${this.node.id()}`,
+          animFuncInput: args,
+          anim: timer,
+          category: "Mobject",
+        };
+      },
+    });
+
+    this.AnimGetterMap.set("Focus", {
+      title: "Focus Animation",
+      input: {
+        duration: "number",
+        easing: "string",
+      },
+      targetId: this.node.id(),
+      type: "Focus",
+      func: (args: { [key: string]: any }) => {
+        const easefunc = args.easing
+          ? easings.eases[
+              easingMap[args.easing] as keyof typeof easings.eases.in
+            ]
+          : easings.eases.inOutQuad;
+
+        const timer = createTimer({
+          duration: args.duration ? args.duration * 1000 : 1000,
+          autoplay: false,
+          onUpdate: (t) => {
+            const progress = t.reversed ? 1 - t.progress : t.progress;
+            const transformedProgress = easefunc(progress);
+
+            // Use a Sine wave to go 0 -> 1 -> 0 over the duration
+            // Math.sin(PI * 1) = 0, Math.sin(PI * 0.5) = 1
+            const pulseFactor = Math.sin(Math.PI * transformedProgress);
+
+            // Scale moves from 1.0 to 1.1 (1.0 + 0.1 * pulseFactor)
+            const currentScale = 1.0 + pulseFactor * 0.1;
+
+            this.node.features.update({
+              scale: currentScale,
+            });
+          },
+        });
+
+        return {
+          id: `${this.node.id()}-Focus-${this.counter++}`,
+          targetId: this.node.id(),
+          type: "Focus",
+          label: `Focusing ${this.node.id()}`,
           animFuncInput: args,
           anim: timer,
           category: "Mobject",

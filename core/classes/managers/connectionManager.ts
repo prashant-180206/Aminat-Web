@@ -45,8 +45,9 @@ export class ConnectionManager {
 
     if (result.success) {
       this.valFuncRelations.push({
+        connectionId: result.updaterId as string,
         trackerName,
-        mobjectId,
+        targetId: mobjectId,
         functionName,
         expression,
       });
@@ -58,16 +59,55 @@ export class ConnectionManager {
     };
   }
 
+  removeValueTrackerConnection(connectionId: string) {
+    const relations = this.valFuncRelations.find(
+      (rel) => rel.connectionId === connectionId,
+    );
+    if (!relations) return;
+    this.trackerManager
+      .getTracker(relations.trackerName)
+      ?.tracker.removeUpdater(connectionId);
+
+    this.valFuncRelations = this.valFuncRelations.filter(
+      (rel) => rel.connectionId !== connectionId,
+    );
+  }
+
+  removeYPtValueTrackerConnection(connectionId: string) {
+    const relations = this.ptValFuncRelations.find(
+      (rel) => rel.connectionId === connectionId,
+    );
+    if (!relations) return;
+    this.trackerManager
+      .getPtValueTracker(relations.trackerName)
+      ?.tracker.y.removeUpdater(connectionId);
+
+    this.ptValFuncRelations = this.ptValFuncRelations.filter(
+      (rel) => rel.connectionId !== connectionId,
+    );
+  }
+  removeXPtValueTrackerConnection(connectionId: string) {
+    const relations = this.ptValFuncRelations.find(
+      (rel) => rel.connectionId === connectionId,
+    );
+    if (!relations) return;
+    this.trackerManager
+      .getPtValueTracker(relations.trackerName)
+      ?.tracker.x.removeUpdater(connectionId);
+    this.ptValFuncRelations = this.ptValFuncRelations.filter(
+      (rel) => rel.connectionId !== connectionId,
+    );
+  }
   ConnectYPtValueTrackerToMobject(
     trackerName: string,
     mobjectId: string,
     functionNameY: string,
     expressionY: string,
-  ): boolean {
+  ): { success: boolean; updaterId: string | null } {
     const mobject = this.mobjectManager.getMobjectById(mobjectId);
-    if (!mobject) return false;
+    if (!mobject) return { success: false, updaterId: null };
 
-    const success = TrackerMobjectConnectorFactory.connectY({
+    const result = TrackerMobjectConnectorFactory.connectY({
       trackerManager: this.trackerManager,
       trackerName,
       mobject,
@@ -75,16 +115,17 @@ export class ConnectionManager {
       expressionY,
     });
 
-    if (success) {
+    if (result.success) {
       this.ptValFuncRelations.push({
+        connectionId: result.updaterId as string,
         trackerName,
-        mobjectId,
+        targetId: mobjectId,
         functionNameY,
         expressionY,
       });
     }
 
-    return success;
+    return result;
   }
 
   ConnectXPtValueTrackerToMobject(
@@ -92,11 +133,11 @@ export class ConnectionManager {
     mobjectId: string,
     functionNameX: string,
     expressionX: string,
-  ): boolean {
+  ): { success: boolean; updaterId: string | null } {
     const mobject = this.mobjectManager.getMobjectById(mobjectId);
-    if (!mobject) return false;
+    if (!mobject) return { success: false, updaterId: null };
 
-    const success = TrackerMobjectConnectorFactory.connectX({
+    const result = TrackerMobjectConnectorFactory.connectX({
       trackerManager: this.trackerManager,
       trackerName,
       mobject,
@@ -104,16 +145,17 @@ export class ConnectionManager {
       expressionX,
     });
 
-    if (success) {
+    if (result.success) {
       this.ptValFuncRelations.push({
+        connectionId: result.updaterId as string,
         trackerName,
-        mobjectId,
+        targetId: mobjectId,
         functionNameX,
         expressionX,
       });
     }
 
-    return success;
+    return result;
   }
 
   clear() {

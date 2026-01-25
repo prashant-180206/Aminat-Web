@@ -41,7 +41,8 @@ export class BaseProperty {
     this.actualMobj.scale({ x: this.scale, y: this.scale });
     this.actualMobj.rotation(this.rotation);
     this.actualMobj.opacity(this.opacity);
-    this.actualMobj.zIndex(this.zindex);
+    if (this.actualMobj && this.actualMobj.parent)
+      this.actualMobj.zIndex(this.zindex);
     this.actualMobj.on("dragmove", this.refresh.bind(this));
     this.update({
       position: this.position,
@@ -83,7 +84,8 @@ export class BaseProperty {
     if (prop.zindex !== undefined) {
       this.zindex = prop.zindex;
       try {
-        this.actualMobj.zIndex(this.zindex);
+        if (this.actualMobj && this.actualMobj.parent)
+          this.actualMobj.zIndex(this.zindex);
       } catch {}
     }
     this.refresh();

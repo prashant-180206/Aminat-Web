@@ -28,6 +28,8 @@ export class MobjectFactory {
     mobject.id(opts.id ?? `${mobject.name()}-${opts.number}`);
     mobject.setDraggable(true);
 
+    const zin = mobject.zIndex();
+    mobject.features.update({ zindex: zin });
     return mobject;
   }
 }

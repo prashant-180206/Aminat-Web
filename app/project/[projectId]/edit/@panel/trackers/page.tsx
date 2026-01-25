@@ -9,14 +9,14 @@ const CollapsibleTrigger = dynamic(
     import("@/components/ui/collapsible").then((mod) => mod.CollapsibleTrigger),
   {
     ssr: false,
-  }
+  },
 );
 const CollapsibleContent = dynamic(
   () =>
     import("@/components/ui/collapsible").then((mod) => mod.CollapsibleContent),
   {
     ssr: false,
-  }
+  },
 );
 import { Separator } from "@/components/ui/separator";
 import { Menu, Layers } from "lucide-react";
@@ -35,7 +35,7 @@ const TrackerSidePanel = () => {
   return (
     <Collapsible
       defaultOpen
-      className="relative flex flex-row bg-card border-r overflow-auto h-screen no-scrollbar"
+      className="relative flex flex-row bg-card border-r overflow-auto h-full no-scrollbar"
     >
       {/* Collapsed Toggle */}
       <CollapsibleTrigger asChild className="absolute top-2 right-2 z-10">
@@ -46,7 +46,7 @@ const TrackerSidePanel = () => {
 
       {/* Sidebar Content */}
       <CollapsibleContent className="w-[280px] h-full">
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-auto no-scrollbar">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
             <div className="flex items-center gap-2">

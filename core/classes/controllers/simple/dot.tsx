@@ -20,9 +20,19 @@ export class DotProperty extends BaseProperty {
     mobj.circle.radius(this.radius);
     this.labelobj = mobj.label;
   }
+
+  private changeLabel() {
+    const text = this.label.defaultText;
+    const updatedLine = text
+      .replace("posx", this.position.x.toFixed(2))
+      .replace("posy", this.position.y.toFixed(2));
+    this.labelobj.text(updatedLine);
+  }
   override update(prop: Partial<DotProperties>): void {
     super.update(prop);
-
+    if (prop.position !== undefined && this.label) {
+      this.changeLabel();
+    }
     if (prop.radius !== undefined) {
       this.radius = prop.radius;
       if (this.shapemobj instanceof Konva.Circle) {

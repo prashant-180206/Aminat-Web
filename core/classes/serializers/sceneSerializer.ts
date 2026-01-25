@@ -34,34 +34,6 @@ export class SceneSerializer {
 
     scene.trackerManager.loadFromObj(data.trackerManagerData);
 
-    data.valFuncRelations.forEach((rel) => {
-      scene.connManager.ConnectValueTrackerToMobject(
-        rel.trackerName,
-        rel.mobjectId,
-        rel.functionName,
-        rel.expression,
-      );
-    });
-
-    data.ptValFuncRelations?.forEach((rel) => {
-      if (rel.functionNameX && rel.expressionX) {
-        scene.connManager.ConnectXPtValueTrackerToMobject(
-          rel.trackerName,
-          rel.mobjectId,
-          rel.functionNameX,
-          rel.expressionX,
-        );
-      }
-      if (rel.functionNameY && rel.expressionY) {
-        scene.connManager.ConnectYPtValueTrackerToMobject(
-          rel.trackerName,
-          rel.mobjectId,
-          rel.functionNameY,
-          rel.expressionY,
-        );
-      }
-    });
-
     /* ---------------- animations ---------------- */
     const animStoreData = data.animationsData.animations;
 
@@ -79,6 +51,7 @@ export class SceneSerializer {
                 i.target as number,
                 i.duration as number,
                 i.easing as string,
+                true,
               );
               const tracker = scene.trackerManager.getTracker(a.targetId);
               if (tracker) {
@@ -92,6 +65,7 @@ export class SceneSerializer {
                 { x: i.targetX as number, y: i.targetY as number },
                 i.duration as number,
                 i.easing as string,
+                true,
               );
               const pttracker = scene.trackerManager.getPtValueTracker(
                 a.targetId,
@@ -104,29 +78,43 @@ export class SceneSerializer {
 
             Slider: () => {
               if (a.type === "SliderAppear") {
-                scene.trackerAnimator.addSliderAppearAnimation(a.targetId, {
-                  min: i.min as number,
-                  max: i.max as number,
-                  rank: i.rank as number,
-                });
+                scene.trackerAnimator.addSliderAppearAnimation(
+                  a.targetId,
+                  {
+                    min: i.min as number,
+                    max: i.max as number,
+                    rank: i.rank as number,
+                  },
+                  true,
+                );
               }
               if (a.type === "SliderDisappear") {
-                scene.trackerAnimator.addSliderDisappearAnimation(a.targetId);
+                scene.trackerAnimator.addSliderDisappearAnimation(
+                  a.targetId,
+                  true,
+                );
               }
             },
 
             PtSlider: () => {
               if (a.type === "PtSliderAppear") {
-                scene.trackerAnimator.addPtSliderAppearAnimation(a.targetId, {
-                  minX: i.minX as number,
-                  maxX: i.maxX as number,
-                  minY: i.minY as number,
-                  maxY: i.maxY as number,
-                  rank: i.rank as number,
-                });
+                scene.trackerAnimator.addPtSliderAppearAnimation(
+                  a.targetId,
+                  {
+                    minX: i.minX as number,
+                    maxX: i.maxX as number,
+                    minY: i.minY as number,
+                    maxY: i.maxY as number,
+                    rank: i.rank as number,
+                  },
+                  true,
+                );
               }
               if (a.type === "PtSliderDisappear") {
-                scene.trackerAnimator.addPtSliderDisappearAnimation(a.targetId);
+                scene.trackerAnimator.addPtSliderDisappearAnimation(
+                  a.targetId,
+                  true,
+                );
               }
             },
           };
@@ -152,6 +140,34 @@ export class SceneSerializer {
       });
       if (animMetaGrp.length > 0)
         scene.animManager.importAnimations(...animMetaGrp);
+    });
+
+    data.valFuncRelations.forEach((rel) => {
+      scene.connManager.ConnectValueTrackerToMobject(
+        rel.trackerName,
+        rel.targetId,
+        rel.functionName,
+        rel.expression,
+      );
+    });
+
+    data.ptValFuncRelations?.forEach((rel) => {
+      if (rel.functionNameX && rel.expressionX) {
+        scene.connManager.ConnectXPtValueTrackerToMobject(
+          rel.trackerName,
+          rel.targetId,
+          rel.functionNameX,
+          rel.expressionX,
+        );
+      }
+      if (rel.functionNameY && rel.expressionY) {
+        scene.connManager.ConnectYPtValueTrackerToMobject(
+          rel.trackerName,
+          rel.targetId,
+          rel.functionNameY,
+          rel.expressionY,
+        );
+      }
     });
   }
 }

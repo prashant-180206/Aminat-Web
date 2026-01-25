@@ -3,6 +3,7 @@ import { AnimationManager } from "./animationManager";
 import { TrackerManager } from "./TrackerManager";
 import { easingMap } from "@/core/maps/easingMap";
 import { createTimer, easings } from "animejs";
+import { AnimMeta } from "@/core/types/animation";
 
 export class TrackerAnimator {
   private trackerAnimationCount = 0;
@@ -18,6 +19,7 @@ export class TrackerAnimator {
   addSliderAppearAnimation(
     valueTrackerId: string,
     { min, max, rank }: { min: number; max: number; rank: number },
+    deserializing: boolean = false,
   ): boolean {
     const { success, slider } = this.trackerManager.addSlider(valueTrackerId, {
       min,
@@ -29,7 +31,8 @@ export class TrackerAnimator {
     }
     this.layer.add(slider);
     const anim = slider.appearAnim();
-    this.animManager.addAnimations({
+
+    const meta = {
       id: `Appear_${valueTrackerId}_${this.trackerAnimationCount}`,
       targetId: valueTrackerId,
       anim,
@@ -42,7 +45,12 @@ export class TrackerAnimator {
         max: max,
         rank: rank,
       },
-    });
+    };
+    if (deserializing) {
+      this.animManager.importAnimations(meta as AnimMeta);
+    } else {
+      this.animManager.addAnimations(meta as AnimMeta);
+    }
     this.trackerAnimationCount++;
     return true;
   }
@@ -56,6 +64,7 @@ export class TrackerAnimator {
       maxY,
       rank,
     }: { minX: number; maxX: number; minY: number; maxY: number; rank: number },
+    deserializing: boolean = false,
   ): boolean {
     const { success, slider } = this.trackerManager.addPtSlider(
       PtvalueTrackerId,
@@ -68,7 +77,7 @@ export class TrackerAnimator {
     }
     this.layer.add(slider);
     const anim = slider.appearAnim();
-    this.animManager.addAnimations({
+    const meta = {
       id: `Appear_${PtvalueTrackerId}_${this.trackerAnimationCount}`,
       targetId: PtvalueTrackerId,
       anim,
@@ -83,18 +92,26 @@ export class TrackerAnimator {
         maxY,
         rank: rank,
       },
-    });
+    };
+    if (deserializing) {
+      this.animManager.importAnimations(meta as AnimMeta);
+    } else {
+      this.animManager.addAnimations(meta as AnimMeta);
+    }
     this.trackerAnimationCount++;
     return true;
   }
 
-  addSliderDisappearAnimation(trackerId: string): boolean {
+  addSliderDisappearAnimation(
+    trackerId: string,
+    deserializing: boolean = false,
+  ): boolean {
     const tracker = this.trackerManager.getTracker(trackerId);
     if (!tracker || !tracker.slider) {
       return false;
     }
     const anim = tracker.slider.disappearAnim();
-    this.animManager.addAnimations({
+    const meta = {
       id: `Disappear_${trackerId}_${this.trackerAnimationCount}`,
       targetId: trackerId,
       anim,
@@ -102,18 +119,26 @@ export class TrackerAnimator {
       category: "Slider",
       label: `Slider Disappear Animation for ${trackerId}`,
       animFuncInput: { duration: 1 },
-    });
+    };
+    if (deserializing) {
+      this.animManager.importAnimations(meta as AnimMeta);
+    } else {
+      this.animManager.addAnimations(meta as AnimMeta);
+    }
     this.trackerAnimationCount++;
     return true;
   }
 
-  addPtSliderDisappearAnimation(trackerId: string): boolean {
+  addPtSliderDisappearAnimation(
+    trackerId: string,
+    deserializing: boolean = false,
+  ): boolean {
     const tracker = this.trackerManager.getPtValueTracker(trackerId);
     if (!tracker || !tracker.slider) {
       return false;
     }
     const anim = tracker.slider.disappearAnim();
-    this.animManager.addAnimations({
+    const meta = {
       id: `Disappear_${trackerId}_${this.trackerAnimationCount}`,
       targetId: trackerId,
       anim,
@@ -121,7 +146,13 @@ export class TrackerAnimator {
       category: "PtSlider",
       label: `PtSlider Disappear Animation for ${trackerId}`,
       animFuncInput: { duration: 1 },
-    });
+    };
+
+    if (deserializing) {
+      this.animManager.importAnimations(meta as AnimMeta);
+    } else {
+      this.animManager.addAnimations(meta as AnimMeta);
+    }
     this.trackerAnimationCount++;
     return true;
   }
@@ -131,6 +162,7 @@ export class TrackerAnimator {
     target: number,
     duration: number = 1,
     easing: string = "inOutQuad",
+    deserializing = false,
   ): boolean {
     const trackerMeta = this.trackerManager.getTracker(trackerId);
     if (!trackerMeta) {
@@ -156,7 +188,7 @@ export class TrackerAnimator {
       },
     });
 
-    this.animManager.addAnimations({
+    const anim = {
       id: `TrackerAnim_${trackerId}_${this.trackerAnimationCount}`,
       targetId: trackerId,
       type: "ValueTracker",
@@ -164,7 +196,13 @@ export class TrackerAnimator {
       label: `Animating ValueTracker ${trackerId} to ${target}`,
       animFuncInput: { target, duration, easing },
       anim: timer,
-    });
+    };
+
+    if (deserializing) {
+      this.animManager.importAnimations(anim as AnimMeta);
+    } else {
+      this.animManager.addAnimations(anim as AnimMeta);
+    }
 
     this.trackerAnimationCount++;
     return true;
@@ -174,6 +212,7 @@ export class TrackerAnimator {
     { x, y }: { x: number; y: number },
     duration: number = 1,
     easing: string = "inOutQuad",
+    deserializing = false,
   ): boolean {
     const trackerMeta = this.trackerManager.getPtValueTracker(trackerId);
     if (!trackerMeta) {
@@ -205,7 +244,7 @@ export class TrackerAnimator {
       },
     });
 
-    this.animManager.addAnimations({
+    const anim = {
       id: `TrackerAnim_${trackerId}_${this.trackerAnimationCount}`,
       targetId: trackerId,
       type: "PtValueTracker",
@@ -213,7 +252,12 @@ export class TrackerAnimator {
       label: `Animating ValueTracker ${trackerId} to ${x}, ${y}`,
       animFuncInput: { targetX: x, targetY: y, duration, easing },
       anim: timer,
-    });
+    };
+    if (deserializing) {
+      this.animManager.importAnimations(anim as AnimMeta);
+    } else {
+      this.animManager.addAnimations(anim as AnimMeta);
+    }
 
     this.trackerAnimationCount++;
     return true;

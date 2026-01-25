@@ -44,20 +44,21 @@ export class TrackerMobjectConnectorFactory {
     mobject: Mobject;
     functionNameX: string;
     expressionX: string;
-  }): boolean {
+  }): { success: boolean; updaterId: string | null } {
     const tracker = args.trackerManager.getPtValueTracker(args.trackerName);
-    if (!tracker) return false;
+    if (!tracker) return { success: false, updaterId: null };
 
     const funcX = args.mobject.trackerconnector.getConnectorFunc(
       args.functionNameX,
     );
-    if (!funcX) return false;
+    if (!funcX) return { success: false, updaterId: null };
 
-    return tracker.tracker.x.addUpdater(
-      `${args.mobject.id()}-${args.functionNameX}-X`,
-      funcX,
-      args.expressionX,
-    );
+    const updaterId = `${args.mobject.id()}-${args.functionNameX}-X`;
+
+    return {
+      success: tracker.tracker.x.addUpdater(updaterId, funcX, args.expressionX),
+      updaterId,
+    };
   }
 
   static connectY(args: {
@@ -66,19 +67,20 @@ export class TrackerMobjectConnectorFactory {
     mobject: Mobject;
     functionNameY: string;
     expressionY: string;
-  }): boolean {
+  }): { success: boolean; updaterId: string | null } {
     const tracker = args.trackerManager.getPtValueTracker(args.trackerName);
-    if (!tracker) return false;
+    if (!tracker) return { success: false, updaterId: null };
 
     const funcY = args.mobject.trackerconnector.getConnectorFunc(
       args.functionNameY,
     );
-    if (!funcY) return false;
+    if (!funcY) return { success: false, updaterId: null };
 
-    return tracker.tracker.y.addUpdater(
-      `${args.mobject.id()}-${args.functionNameY}-Y`,
-      funcY,
-      args.expressionY,
-    );
+    const updaterId = `${args.mobject.id()}-${args.functionNameY}-Y`;
+
+    return {
+      success: tracker.tracker.y.addUpdater(updaterId, funcY, args.expressionY),
+      updaterId,
+    };
   }
 }

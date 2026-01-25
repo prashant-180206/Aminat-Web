@@ -27,6 +27,8 @@ const ValueTrackersPanelTab = () => {
 
   const trackers = scene?.trackerManager.getAllTrackerMetas() || [];
 
+  const cm = scene?.connManager;
+
   if (trackers.length === 0) {
     return (
       <div className="px-2 text-xs italic text-muted-foreground">
@@ -84,7 +86,7 @@ const ValueTrackersPanelTab = () => {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              tm.tracker.removeUpdater(id);
+                              cm?.removeValueTrackerConnection(id);
                               valRefresh();
                             }}
                           >

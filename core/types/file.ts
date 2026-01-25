@@ -46,14 +46,16 @@ export interface TrackerData {
 }
 
 export interface ValFuncRelations {
-  mobjectId: string;
+  connectionId: string;
+  targetId: string;
   trackerName: string;
   functionName: string;
   expression: string;
 }
 
 export interface PtValFuncRelations {
-  mobjectId: string;
+  connectionId: string;
+  targetId: string;
   trackerName: string;
   functionNameX?: string;
   functionNameY?: string;

@@ -9,16 +9,15 @@ const CollapsibleTrigger = dynamic(
     import("@/components/ui/collapsible").then((mod) => mod.CollapsibleTrigger),
   {
     ssr: false,
-  }
+  },
 );
 const CollapsibleContent = dynamic(
   () =>
     import("@/components/ui/collapsible").then((mod) => mod.CollapsibleContent),
   {
     ssr: false,
-  }
+  },
 );
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useScene } from "@/hooks/SceneContext";
@@ -55,7 +54,7 @@ const MobjectsSidePanel = () => {
 
       {/* Sidebar Content */}
       <CollapsibleContent className="w-[280px] h-full">
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full ">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
             <div className="flex items-center gap-2">
@@ -68,7 +67,7 @@ const MobjectsSidePanel = () => {
           </div>
 
           {/* List */}
-          <ScrollArea className="flex-1 px-3 py-3">
+          <div className="flex-1 px-3 py-3 overflow-auto no-scrollbar">
             {mobjects.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-12">
                 <Layers className="h-12 w-12 text-muted-foreground/50 mb-3" />
@@ -138,7 +137,7 @@ const MobjectsSidePanel = () => {
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
 
           <Separator />
         </div>

@@ -19,14 +19,14 @@ import {
 import { PencilOff, Trash2, MoveHorizontal, MoveVertical } from "lucide-react";
 import PtUpdateSliderPopover from "./components/updatePtPopover";
 import AnimatePtSliderPopover from "./components/animatePtSlider";
-// import { getAnimationforPtTracker } from "@/core/utils/valAnimation";
 import { toast } from "sonner";
-// import { TrackerAnimatorfuncs } from "@/core/utils/valAnimation";
 
 const PtValueTrackersPanelTab = () => {
   const { scene, valRefresh, animRefresh } = useScene();
 
   const trackers = scene?.trackerManager.getAllPtTrackerMetas() || [];
+
+  const cm = scene?.connManager;
 
   if (trackers.length === 0) {
     return (
@@ -89,7 +89,7 @@ const PtValueTrackersPanelTab = () => {
                               size="icon"
                               variant="ghost"
                               onClick={() => {
-                                tm.tracker.x.removeUpdater(id);
+                                cm?.removeXPtValueTrackerConnection(id);
                                 valRefresh();
                               }}
                             >
@@ -129,7 +129,7 @@ const PtValueTrackersPanelTab = () => {
                               size="icon"
                               variant="ghost"
                               onClick={() => {
-                                tm.tracker.y.removeUpdater(id);
+                                cm?.removeYPtValueTrackerConnection(id);
                                 valRefresh();
                               }}
                             >

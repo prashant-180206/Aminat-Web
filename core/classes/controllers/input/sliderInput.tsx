@@ -83,7 +83,7 @@ const SliderInput: React.FC<SliderInputProps> = ({ fields, icon, message }) => {
               <div className="flex flex-col gap-3" key={label}>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">{label}</span>
-                  <span className="text-xs font-mono">{local.toFixed(2)}</span>
+                  <span className="text-xs font-mono">{local?.toFixed(2)}</span>
                 </div>
 
                 <Slider

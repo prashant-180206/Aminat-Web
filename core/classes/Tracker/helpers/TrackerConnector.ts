@@ -1,10 +1,9 @@
-import { DEFAULT_SCALE } from "@/core/config";
-import Konva from "@/lib/konva";
+import { Mobject } from "@/core/types/mobjects";
 
 export class TrackerConnector {
   private connectorFuncs: Map<string, (value: number) => void> = new Map();
-  private node: Konva.Node;
-  constructor(node: Konva.Node) {
+  private node: Mobject;
+  constructor(node: Mobject) {
     // Initialize with the given Konva node
     this.node = node;
     this.initiateFuncs();
@@ -12,10 +11,20 @@ export class TrackerConnector {
 
   private initiateFuncs() {
     this.connectorFuncs.set("x", (value: number) => {
-      this.node.x(value * DEFAULT_SCALE);
+      this.node.features.update({
+        position: {
+          x: value,
+          y: this.node.properties.position.y,
+        },
+      });
     });
     this.connectorFuncs.set("y", (value: number) => {
-      this.node.y(-value * DEFAULT_SCALE);
+      this.node.features.update({
+        position: {
+          x: this.node.properties.position.x,
+          y: value,
+        },
+      });
     });
     // Built-in transforms
     this.connectorFuncs.set("rotation", (value: number) => {

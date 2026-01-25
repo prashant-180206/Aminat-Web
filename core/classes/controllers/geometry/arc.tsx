@@ -65,7 +65,7 @@ export class ArcProperty extends BaseProperty {
     const updatedLine = text
       .replace(
         "angle",
-        (this.endAngle - this.startAngle).toFixed(1).toString() + "°",
+        (this.endAngle - this.startAngle).toFixed(0).toString() + "°",
       )
       .replace(
         "pirad",

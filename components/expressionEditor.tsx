@@ -18,47 +18,54 @@ export const ExpressionEditor: React.FC<Props> = ({
   className,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [open, setOpen] = useState(false);
 
-  /* ---------------- syntax highlighting ---------------- */
+  /* ---------------- Syntax Highlighting ---------------- */
 
   const highlighted = useMemo(() => {
-    let html = value
+    const escaped = value
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-    html = html.replace(
-      /\[([^\]]+)\]/g,
-      `<span class="text-blue-500">[$1]</span>`
-    );
-    html = html.replace(
-      /\b\d+(\.\d+)?\b/g,
-      `<span class="text-orange-500">$&</span>`
-    );
-    html = html.replace(
-      /[+\-*/^=]/g,
-      `<span class="text-purple-500">$&</span>`
-    );
-    html = html.replace(/[();]/g, `<span class="text-emerald-500">$&</span>`);
+    // Updated Regex:
+    // 1. (\[[^\]]*\]?) -> Matches '[' followed by anything that isn't ']', and an optional closing ']'
+    // This ensures '[' is visible and colored even while you are typing it.
+    const tokenRegex = /(\[[^\]]*\]?)|(\b\d+(?:\.\d+)?\b)|([+\-*/^=])|([();])/g;
 
-    return html + "&nbsp;";
+    const html = escaped.replace(tokenRegex, (match, g1, g2, g3, g4) => {
+      // NOTE: Removed 'font-bold' because it breaks character width alignment
+      if (g1) return `<span class="text-blue-500">${g1}</span>`;
+      if (g2) return `<span class="text-orange-500">${g2}</span>`;
+      if (g3) return `<span class="text-purple-500">${g3}</span>`;
+      if (g4) return `<span class="text-emerald-500">${g4}</span>`;
+      return match;
+    });
+
+    return html + (value.endsWith("\n") ? " " : "");
   }, [value]);
 
-  /* ---------------- input handling ---------------- */
+  /* ---------------- Handlers ---------------- */
+
+  const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (preRef.current) {
+      preRef.current.scrollTop = e.currentTarget.scrollTop;
+    }
+  };
 
   const handleChange = (v: string) => {
     onChange(v);
-
-    const match = v
-      .slice(0, textareaRef.current?.selectionStart ?? 0)
-      .match(/\[([a-zA-Z0-9_]*)$/);
+    const cursor = textareaRef.current?.selectionStart ?? 0;
+    const match = v.slice(0, cursor).match(/\[([a-zA-Z0-9_]*)$/);
 
     if (match) {
       const q = match[1];
-      const filtered = trackers.filter((t) => t.startsWith(q));
+      const filtered = trackers.filter((t) =>
+        t.toLowerCase().startsWith(q.toLowerCase()),
+      );
       setSuggestions(filtered);
       setActiveIndex(0);
       setOpen(filtered.length > 0);
@@ -75,68 +82,88 @@ export const ExpressionEditor: React.FC<Props> = ({
     const before = value.slice(0, pos).replace(/\[[^\[]*$/, `[${name}]`);
     const after = value.slice(pos);
 
-    const next = before + after;
-    onChange(next);
+    onChange(before + after);
     setOpen(false);
 
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       ta.selectionStart = ta.selectionEnd = before.length;
       ta.focus();
-    });
+    }, 0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!open) return;
-
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveIndex((i) => (i + 1) % suggestions.length);
-    }
-    if (e.key === "ArrowUp") {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActiveIndex((i) => (i === 0 ? suggestions.length - 1 : i - 1));
-    }
-    if (e.key === "Enter") {
+    } else if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
       applySuggestion(suggestions[activeIndex]);
-    }
-    if (e.key === "Escape") {
+    } else if (e.key === "Escape") {
       setOpen(false);
     }
   };
 
-  /* ---------------- render ---------------- */
+  // Shared geometric styles for perfect cursor alignment
+  const sharedStyles: React.CSSProperties = {
+    fontFamily:
+      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    fontSize: "14px",
+    lineHeight: "20px",
+    padding: "12px",
+    borderWidth: "1px",
+    letterSpacing: "normal",
+    tabSize: 4,
+  };
 
   return (
-    <div className={cn("relative font-mono text-sm", className)}>
-      {/* Highlight layer */}
+    <div className={cn("relative rounded-md border bg-background", className)}>
+      {/* Background Highlight Layer */}
       <pre
-        className="pointer-events-none absolute inset-0 p-2 whitespace-pre-wrap wrap-break-word text-transparent"
+        ref={preRef}
+        className="absolute inset-0 m-0 overflow-hidden whitespace-pre-wrap wrap-break-word border-transparent pointer-events-none text-foreground"
+        style={sharedStyles} // REMOVED color: transparent
         aria-hidden
-        dangerouslySetInnerHTML={{ __html: highlighted }}
-      />
+      >
+        <code dangerouslySetInnerHTML={{ __html: highlighted }} />
+      </pre>
 
-      {/* Input */}
+      {/* Foreground Input Layer */}
       <Textarea
         ref={textareaRef}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="relative bg-transparent font-mono resize-none"
-        rows={4}
+        onScroll={handleScroll}
         spellCheck={false}
+        className={cn(
+          "relative z-10 bg-transparent resize-none min-h-[120px]",
+          "text-transparent caret-foreground focus-visible:ring-1 focus-visible:ring-ring border-none shadow-none",
+        )}
+        style={sharedStyles}
       />
 
-      {/* Intellisense */}
+      {/* Intellisense Dropdown */}
       {open && (
-        <div className="absolute z-10 mt-1 w-48 rounded border bg-popover shadow">
+        <div
+          className="absolute left-0 right-0 z-50 mt-1 max-h-48 overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-xl p-1"
+          style={{ top: "100%" }}
+        >
           {suggestions.map((s, i) => (
             <div
               key={s}
-              onMouseDown={() => applySuggestion(s)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applySuggestion(s);
+              }}
               className={cn(
-                "px-2 py-1 cursor-pointer",
-                i === activeIndex && "bg-accent"
+                "px-2 py-1.5 cursor-pointer text-xs rounded-sm",
+                i === activeIndex
+                  ? "bg-accent text-accent-foreground"
+                  : "hover:bg-muted",
               )}
             >
               {s}

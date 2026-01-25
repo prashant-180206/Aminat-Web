@@ -42,6 +42,7 @@ export class LatexTextProperty extends BaseProperty {
     super.update({
       color: Colors.BG,
     });
+    mobj.on("click", () => this.update({ LatexContent: this.LatexContent }));
   }
 
   override update(prop: Partial<LatexTextProperties>): void {

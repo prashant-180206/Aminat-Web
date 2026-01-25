@@ -40,10 +40,10 @@ export class LineProperty extends BaseProperty {
   private changeLabel() {
     const text = this.label.defaultText;
     const updatedLine = text
-      .replace("lstartx", this.lineEnds.start.x.toFixed(2))
-      .replace("lstarty", this.lineEnds.start.y.toFixed(2))
-      .replace("lendx", this.lineEnds.end.x.toFixed(2))
-      .replace("lendy", this.lineEnds.end.y.toFixed(2));
+      .replace("lstartx", this.lineEnds.start.x.toFixed(1))
+      .replace("lstarty", this.lineEnds.start.y.toFixed(1))
+      .replace("lendx", this.lineEnds.end.x.toFixed(1))
+      .replace("lendy", this.lineEnds.end.y.toFixed(1));
     this.labelobj.text(updatedLine);
   }
 

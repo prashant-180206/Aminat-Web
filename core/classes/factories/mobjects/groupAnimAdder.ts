@@ -33,9 +33,7 @@ export class GroupAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-GridAppear-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-GridAppear-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "GridAppear",
           label: `Grid appear animation for ${mobj.id()}`,
@@ -71,9 +69,7 @@ export class GroupAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-GridDisappear-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-GridDisappear-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "GridDisappear",
           label: `Grid disappear animation for ${mobj.id()}`,
@@ -109,9 +105,7 @@ export class GroupAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-LabelAppear-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-LabelAppear-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "LabelAppear",
           label: `Label appear animation for ${mobj.id()}`,
@@ -147,9 +141,7 @@ export class GroupAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-LabelDisappear-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-LabelDisappear-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "LabelDisappear",
           label: `Label disappear animation for ${mobj.id()}`,
@@ -187,9 +179,7 @@ export class GroupAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-LabelAppear-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-LabelAppear-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "LabelAppear",
           label: `Label appear animation for ${mobj.id()}`,
@@ -225,9 +215,7 @@ export class GroupAnimAdder {
           },
         });
         return {
-          id: `${mobj.id()}-LabelDisappear-${
-            mobj.animgetter.getAnimNames().length
-          }`,
+          id: `${mobj.id()}-LabelDisappear-${mobj.animgetter.counter++}`,
           targetId: mobj.id(),
           type: "LabelDisappear",
           label: `Label disappear animation for ${mobj.id()}`,
@@ -237,6 +225,5 @@ export class GroupAnimAdder {
         };
       },
     });
-    // Add animations specific to MNumberLine here
   }
 }
