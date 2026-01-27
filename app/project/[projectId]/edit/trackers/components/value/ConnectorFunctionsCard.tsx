@@ -23,11 +23,10 @@ ConnectorFunctionsCardProps) => {
   const { valRefresh, valToggle } = useScene();
   void valToggle;
   const [selectedFunc, setSelectedFunc] = React.useState<string | null>(
-    connectorNames[0] ?? null
+    connectorNames[0] ?? null,
   );
   const [expression, setExpression] = React.useState("t");
 
-  // Import hooks inside component to avoid circular dependencies
   const { scene, activeMobject } = useScene();
 
   const connectFuncs = () => {
@@ -37,10 +36,8 @@ ConnectorFunctionsCardProps) => {
       selectedTracker || "",
       activeMobject.id(),
       selectedFunc,
-      expression
+      expression,
     );
-
-    // onConnectionMade(success, id);
 
     if (success) {
       toast.success("Function connected to tracker");

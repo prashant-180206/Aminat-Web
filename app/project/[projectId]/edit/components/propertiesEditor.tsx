@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useScene } from "@/hooks/SceneContext";
-import { Copy, SquarePlay, Trash2 } from "lucide-react";
+import { Copy, Spotlight, SquarePlay, Trash2 } from "lucide-react";
 import { MText } from "@/core/classes/mobjects/text/text";
 
 const PropertiesEditor = () => {
@@ -40,6 +40,14 @@ const PropertiesEditor = () => {
     const anim = activeMobject.animgetter.getAnimMeta(funcname);
     if (!anim) return;
     const res = anim.func({ duration: 2, easing: "EaseInOut" });
+    if (!res) return;
+    scene.animManager.addAnimations(res);
+  };
+  const quickFocus = () => {
+    if (!scene || !activeMobject) return;
+    const anim = activeMobject.animgetter.getAnimMeta("Focus");
+    if (!anim) return;
+    const res = anim.func({ duration: 1, easing: "EaseInOut" });
     if (!res) return;
     scene.animManager.addAnimations(res);
   };
@@ -80,6 +88,18 @@ const PropertiesEditor = () => {
             }}
           >
             <SquarePlay className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="gap-2"
+            onClick={() => {
+              if (scene && scene.activeMobject) {
+                quickFocus();
+              }
+            }}
+          >
+            <Spotlight className="h-4 w-4" />
           </Button>
           <Button
             variant="destructive"

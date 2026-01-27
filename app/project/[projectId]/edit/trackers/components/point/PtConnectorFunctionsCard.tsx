@@ -21,10 +21,10 @@ const PtConnectorFunctionsCard = ({
   onConnectionMade,
 }: PtConnectorFunctionsCardProps) => {
   const [selectedFuncX, setSelectedFuncX] = React.useState<string | null>(
-    connectorNames[0] ?? null
+    connectorNames[0] ?? null,
   );
   const [selectedFuncY, setSelectedFuncY] = React.useState<string | null>(
-    connectorNames[0] ?? null
+    connectorNames[0] ?? null,
   );
   const [expressionX, setExpressionX] = React.useState("t");
   const [expressionY, setExpressionY] = React.useState("t");
@@ -43,19 +43,19 @@ const PtConnectorFunctionsCard = ({
       return;
     }
 
-    const success = scene.connManager.ConnectXPtValueTrackerToMobject(
+    const result = scene.connManager.ConnectXPtValueTrackerToMobject(
       selectedTracker,
       activeMobject.id(),
       selectedFuncX,
-      expressionX
+      expressionX,
     );
-    if (!success) {
+    if (!result.success) {
       toast.error("Failed to connect X function to mobject " + selectedTracker);
     } else {
       toast.success("Connected X function to mobject " + selectedTracker);
     }
 
-    onConnectionMade(success);
+    onConnectionMade(result.success);
   };
 
   const connectY = () => {
@@ -68,18 +68,18 @@ const PtConnectorFunctionsCard = ({
     )
       return;
 
-    const success = scene.connManager.ConnectYPtValueTrackerToMobject(
+    const result = scene.connManager.ConnectYPtValueTrackerToMobject(
       selectedTracker,
       activeMobject.id(),
       selectedFuncY,
-      expressionY
+      expressionY,
     );
-    if (!success) {
-      toast.error("Failed to connect X function to mobject " + selectedTracker);
+    if (!result.success) {
+      toast.error("Failed to connect Y function to mobject " + selectedTracker);
     }
     toast.success("Connected Y function to mobject " + selectedTracker);
 
-    onConnectionMade(success);
+    onConnectionMade(result.success);
   };
 
   return (

@@ -24,8 +24,8 @@ export class DotProperty extends BaseProperty {
   private changeLabel() {
     const text = this.label.defaultText;
     const updatedLine = text
-      .replace("posx", this.position.x.toFixed(2))
-      .replace("posy", this.position.y.toFixed(2));
+      .replace("posx", this.position.x.toFixed(1))
+      .replace("posy", this.position.y.toFixed(1));
     this.labelobj.text(updatedLine);
   }
   override update(prop: Partial<DotProperties>): void {

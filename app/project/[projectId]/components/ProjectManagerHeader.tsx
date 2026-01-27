@@ -14,9 +14,9 @@ import {
 const DropdownMenuTrigger = dynamic(
   () =>
     import("@/components/ui/dropdown-menu").then(
-      (mod) => mod.DropdownMenuTrigger
+      (mod) => mod.DropdownMenuTrigger,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 import { toast } from "sonner";
 import { Save, Sparkles, Trash2, Edit, Layers } from "lucide-react";
@@ -26,6 +26,7 @@ import NewSceneDialog from "./NewSceneDialog";
 import SaveSceneDialog from "./SaveSceneDialog";
 import LoadSceneDialog from "./LoadSceneDialog";
 import DeleteDialog from "./DeleteDialog";
+import DeleteSceneDialog from "./DeleteSceneDialog";
 import { ProjectDoc, SceneDoc } from "./types";
 import LocalFileDropdown from "./LocalFileDropdown";
 import dynamic from "next/dynamic";
@@ -51,6 +52,8 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
   const [saveSceneOpen, setSaveSceneOpen] = useState(false);
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
   const [loadSceneOpen, setLoadSceneOpen] = useState(false);
+  const [deleteSceneOpen, setDeleteSceneOpen] = useState(false);
+  const [sceneToDelete, setSceneToDelete] = useState<string | null>(null);
   const canPersistScene = useMemo(() => Boolean(scene), [scene]);
 
   const projectQuery = useQuery({
@@ -164,7 +167,7 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }
+        },
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Save failed");
@@ -184,7 +187,7 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
     }
     try {
       const res = await fetch(
-        `/api/projects/${resolvedProjectId}/scenes/${sceneId}`
+        `/api/projects/${resolvedProjectId}/scenes/${sceneId}`,
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load scene");
@@ -193,6 +196,29 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
       setLoadSceneOpen(false);
     } catch (e: any) {
       toast.error(e.message || "Failed to load scene");
+    }
+  };
+
+  const handleDeleteScene = async () => {
+    if (!sceneToDelete || !resolvedProjectId) {
+      toast.error("No scene selected");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `/api/projects/${resolvedProjectId}/scenes/${sceneToDelete}`,
+        {
+          method: "DELETE",
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to delete scene");
+      toast.success("Scene deleted successfully");
+      setDeleteSceneOpen(false);
+      setSceneToDelete(null);
+      scenesQuery.refetch();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to delete scene");
     }
   };
 
@@ -212,7 +238,9 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
           <span className="text-muted-foreground">/</span>
           <div className="truncate">
             <span className="text-sm font-medium truncate">
-              {projectQuery.isLoading ? "Loading…" : project?.name ?? "Project"}
+              {projectQuery.isLoading
+                ? "Loading…"
+                : (project?.name ?? "Project")}
             </span>
           </div>
         </div>
@@ -272,6 +300,14 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
                 <Save className="mr-2 h-4 w-4" />
                 Save to existing…
               </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={scenes.length === 0}
+                onClick={() => setDeleteSceneOpen(true)}
+                className="text-destructive"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete scene…
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               {scenes.length === 0 ? (
                 <div className="px-2 py-1.5 text-sm text-muted-foreground">
@@ -330,6 +366,14 @@ const ProjectManagerHeader: React.FC<ProjectManagerHeaderProps> = ({
         scenes={scenes}
         onOpenChange={setLoadSceneOpen}
         onSelect={handleLoadScene}
+      />
+      <DeleteSceneDialog
+        open={deleteSceneOpen}
+        scenes={scenes}
+        selectedId={sceneToDelete}
+        onOpenChange={setDeleteSceneOpen}
+        onSelect={setSceneToDelete}
+        onDelete={handleDeleteScene}
       />
       <DeleteDialog
         open={confirmDeleteOpen}
