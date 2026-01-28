@@ -13,16 +13,50 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/**
+ * Base properties interface that all Mobject controllers inherit.
+ * Defines common visual properties for all objects.
+ */
 export interface BaseProperties {
+  /** Position in Cartesian coordinates (not canvas coordinates) */
   position: { x: number; y: number };
+  /** Hex color code (e.g., "#ffffff") */
   color: string;
+  /** Uniform scale factor (1 = normal size) */
   scale: number;
+  /** Rotation in degrees */
   rotation: number;
+  /** Opacity from 0 (transparent) to 1 (opaque) */
   opacity: number;
+  /** Z-index for layer ordering (higher = on top) */
   zindex: number;
 }
 
-// import { Colors } from "../../utils/colors";
+/**
+ * Base controller class for all Mobject properties.
+ *
+ * Manages common state (position, color, scale, rotation, opacity, z-index)
+ * and provides standard UI components for editing these properties.
+ *
+ * All custom controllers should extend this class to inherit base functionality.
+ *
+ * @example
+ * ```typescript
+ * export class DotProperty extends BaseProperty {
+ *   protected radius: number = 10;
+ *
+ *   constructor(mobj: Dot) {
+ *     super(mobj.circle, mobj);
+ *     // Custom initialization
+ *   }
+ *
+ *   override update(prop: Partial<DotProperties>): void {
+ *     super.update(prop);  // Handle base properties
+ *     // Handle custom properties
+ *   }
+ * }
+ * ```
+ */
 export class BaseProperty {
   protected position: { x: number; y: number } = { x: 0, y: 0 };
   protected color: string = Colors.PRIMARY;
@@ -53,6 +87,26 @@ export class BaseProperty {
       zindex: this.zindex,
     });
   }
+  /**
+   * Update properties and sync changes to the Konva object.
+   *
+   * Override this method in subclasses to handle custom properties.
+   * Always call super.update(prop) first to handle base properties.
+   *
+   * @param prop - Partial properties object with values to update
+   *
+   * @example
+   * ```typescript
+   * override update(prop: Partial<DotProperties>): void {
+   *   super.update(prop);  // Handle base properties
+   *
+   *   if (prop.radius !== undefined) {
+   *     this.radius = prop.radius;
+   *     this.shapemobj.radius(this.radius);
+   *   }
+   * }
+   * ```
+   */
   update(prop: Partial<BaseProperties>) {
     if (prop.position !== undefined) {
       const newpos = p2c(
@@ -211,6 +265,12 @@ export class BaseProperty {
     return components;
   }
 
+  /**
+   * Get current property values as an object.
+   * Used for serialization and animation.
+   *
+   * @returns Object containing all current property values
+   */
   getData(): BaseProperties {
     return {
       position: this.position,
@@ -221,10 +281,23 @@ export class BaseProperty {
       zindex: this.zindex,
     };
   }
+
+  /**
+   * Set property values from an object.
+   * Used for deserialization and restoring state.
+   *
+   * @param data - Object containing property values to set
+   */
   setData(data: BaseProperties) {
     this.update(data);
   }
 
+  /**
+   * Sync controller state FROM the Konva object.
+   * Called after drag operations or external modifications.
+   *
+   * Override in subclasses if you have additional properties to sync.
+   */
   refresh() {
     const pos = this.shapemobj.position();
     this.position = c2p(pos.x, pos.y);

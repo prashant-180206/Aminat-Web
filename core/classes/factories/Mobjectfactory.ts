@@ -3,8 +3,38 @@ import { Mobject } from "@/core/types/mobjects";
 import Konva from "@/lib/konva";
 import { MText } from "../mobjects/text/text";
 
-// factories/MobjectFactory.ts
+/**
+ * Factory for creating Mobject instances.
+ *
+ * Uses the Factory pattern to create Mobjects from type strings.
+ * Handles:
+ * - Instantiation via MobjectMap
+ * - Layer assignment (text vs main layer)
+ * - ID assignment
+ * - Initial configuration (draggable, z-index)
+ *
+ * @example
+ * ```typescript
+ * const dot = MobjectFactory.create("Dot", layer, textlayer, {
+ *   id: "myDot",
+ *   number: 1
+ * });
+ * ```
+ */
 export class MobjectFactory {
+  /**
+   * Create a new Mobject instance.
+   *
+   * @param type - Type of Mobject to create (must exist in MobjectMap)
+   * @param layer - Main Konva layer for shapes
+   * @param textlayer - Text Konva layer for text objects
+   * @param opts - Options object
+   * @param opts.number - Sequential number for auto-generated IDs
+   * @param opts.id - Optional custom ID
+   * @returns Configured Mobject instance, ready to use
+   *
+   * @throws Error if type doesn't exist in MobjectMap
+   */
   static create(
     type: string,
     layer: Konva.Layer,

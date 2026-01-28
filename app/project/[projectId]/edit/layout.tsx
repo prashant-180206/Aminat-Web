@@ -21,27 +21,45 @@ export default function Layout({
   panel?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3.6rem)] md:h-[calc(100vh-3.5rem)] w-full bg-background no-scrollbar">
+    <div className="flex flex-col md:h-[calc(100vh-3.5rem)] w-full bg-background">
       {/* Main Content Area */}
-      <div className="flex flex-row flex-1 overflow-hidden">
-        {/* Left Sidebar with route content */}
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+        {/* Left Sidebar with route content - Hidden on mobile by default, shows as drawer */}
         <EditSidebar>{children}</EditSidebar>
-        {/* Center content */}
-        <div className="flex-1 flex flex-col items-center justify-center h-auto overflow-auto no-scrollbar bg-muted/20 ">
-          <div className="flex flex-col items-center justify-around ">
-            <PropertiesEditor />
+
+        {/* Center content - Full width on mobile, flex-1 on desktop */}
+        <div className="flex-1 pt-20 flex flex-col items-center justify-start md:justify-center h-full overflow-auto no-scrollbar bg-muted/20">
+          <div className="w-full flex max-w-5xl flex-col items-center justify-center gap-2 md:gap-4 py-2 md:py-4">
+            {/* Properties Editor - Scrollable on mobile */}
+            <div className="w-full items-center justify-center flex">
+              <PropertiesEditor />
+            </div>
+
+            {/* Scene View - Responsive canvas */}
             <SceneView />
-            <TimeLine />
-            <Controller />
+
+            {/* Timeline - Full width */}
+            <div className="w-full">
+              <TimeLine />
+            </div>
+
+            {/* Controller - Centered */}
+            <div className="w-full flex justify-center mb-2 md:mb-0">
+              <Controller />
+            </div>
           </div>
         </div>
-        {/* Right Panel */}
+
+        {/* Right Panel - Hidden on mobile, shown on desktop */}
         {panel && (
-          <aside className="border-l border-border bg-card">{panel}</aside>
+          <aside className=" border-l border-border bg-card">{panel}</aside>
         )}
       </div>
-      {/* Footer */}
-      <EditorFooter />
+
+      {/* Footer - Hidden on small mobile, shown on tablet+ */}
+      <div className="hidden sm:block">
+        <EditorFooter />
+      </div>
     </div>
   );
 }

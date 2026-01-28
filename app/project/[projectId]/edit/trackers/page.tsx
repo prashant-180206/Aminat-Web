@@ -11,28 +11,44 @@ import PointValueTrackersTab from "./PointValueTrackersTab";
 
 const TrackersPage = () => {
   return (
-    <div className="w-[280px] h-full p-4 flex flex-col gap-4 text-sm overflow-y-auto no-scrollbar">
+    <div className="w-full h-full flex flex-col bg-card overflow-hidden no-scrollbar">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-base">Trackers</h2>
+      <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border-b bg-muted/30 flex items-center justify-between flex-shrink-0">
+        <h2 className="font-semibold text-xs sm:text-sm md:text-base leading-tight">
+          Trackers
+        </h2>
       </div>
 
-      <Separator />
-
       {/* Tabs */}
-      <Tabs defaultValue="value" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="value">Value</TabsTrigger>
-          <TabsTrigger value="point">Point</TabsTrigger>
+      <Tabs defaultValue="value" className="w-full h-full flex flex-col">
+        <TabsList className="grid w-full grid-cols-2 h-7 sm:h-8 md:h-9 m-2 sm:m-3 md:m-4 mb-0 flex-shrink-0">
+          <TabsTrigger
+            value="value"
+            className="text-[10px] sm:text-xs md:text-sm"
+          >
+            Value
+          </TabsTrigger>
+          <TabsTrigger
+            value="point"
+            className="text-[10px] sm:text-xs md:text-sm"
+          >
+            Point
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="value" className="mt-4">
-          <ValueTrackersTab />
-        </TabsContent>
+        <div className="flex-1 overflow-hidden">
+          <TabsContent value="value" className="h-full mt-0 p-0">
+            <div className="h-full overflow-y-auto">
+              <ValueTrackersTab />
+            </div>
+          </TabsContent>
 
-        <TabsContent value="point" className="mt-4">
-          <PointValueTrackersTab />
-        </TabsContent>
+          <TabsContent value="point" className="h-full mt-0 p-0">
+            <div className="h-full overflow-y-auto">
+              <PointValueTrackersTab />
+            </div>
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

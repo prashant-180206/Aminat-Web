@@ -10,6 +10,29 @@ import { Colors } from "../utils/colors";
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "../config";
 import { TrackerAnimator } from "./managers/trackerAnimator";
 
+/**
+ * Main Scene class for the Animat animation system.
+ *
+ * Extends Konva.Stage to provide a canvas-based animation environment.
+ * Manages multiple layers, Mobjects (mathematical objects), trackers, animations,
+ * and connections between them.
+ *
+ * @extends Konva.Stage
+ *
+ * @example
+ * ```typescript
+ * const scene = new Scene({ container: 'canvas', width: 800, height: 600 });
+ *
+ * // Add a Mobject
+ * const dot = scene.addMobject("Dot");
+ *
+ * // Create a tracker
+ * const slider = scene.trackerManager.add("Slider");
+ *
+ * // Save scene
+ * const data = scene.storeAsObj();
+ * ```
+ */
 class Scene extends Konva.Stage {
   /* ---------------- Public ---------------- */
   private layer: Konva.Layer;
@@ -18,6 +41,12 @@ class Scene extends Konva.Stage {
   private sliderLayer: Konva.Layer;
   private _activeMobject: Mobject | null = null;
 
+  /**
+   * Enable or disable edit mode for the scene.
+   * When disabled, layers stop listening to events (useful during animation playback).
+   *
+   * @param value - true to enable editing, false to disable
+   */
   set editMode(value: boolean) {
     if (value) {
       this.layer.listening(true);
@@ -85,10 +114,34 @@ class Scene extends Konva.Stage {
     this.mobjManager.addMobjectFunction(func);
   }
 
+  /**
+   * Create and add a new Mobject to the scene.
+   *
+   * @param type - The type of Mobject to create (e.g., "Dot", "Circle", "Line")
+   * @param id - Optional custom ID. If not provided, auto-generated as "{type}-{number}"
+   * @returns The created Mobject instance
+   *
+   * @example
+   * ```typescript
+   * const dot = scene.addMobject("Dot");
+   * const circle = scene.addMobject("Circle", "myCircle");
+   * ```
+   */
   addMobject(type: string, id?: string): Mobject {
     return this.mobjManager.addMobject(type, id);
   }
 
+  /**
+   * Remove a Mobject from the scene.
+   * Also removes all associated animations.
+   *
+   * @param id - The ID of the Mobject to remove
+   *
+   * @example
+   * ```typescript
+   * scene.removeMobject("Dot-0");
+   * ```
+   */
   removeMobject(id: string) {
     this.mobjManager.removeMobject(id);
     this.animManager.removeAnimForMobject(id);
@@ -111,11 +164,35 @@ class Scene extends Konva.Stage {
     this.layer.destroyChildren();
   }
 
+  /**
+   * Serialize the entire scene to a JSON-compatible object.
+   * Includes all Mobjects, trackers, animations, and connections.
+   *
+   * @returns Serialized scene data
+   *
+   * @example
+   * ```typescript
+   * const sceneData = scene.storeAsObj();
+   * localStorage.setItem('myScene', JSON.stringify(sceneData));
+   * ```
+   */
   storeAsObj(): SceneData {
     this.animManager.resetAll();
     return SceneSerializer.serialize(this);
   }
 
+  /**
+   * Load a scene from serialized data.
+   * Clears the current scene and recreates all objects from saved data.
+   *
+   * @param data - Serialized scene data (from storeAsObj)
+   *
+   * @example
+   * ```typescript
+   * const data = JSON.parse(localStorage.getItem('myScene'));
+   * scene.loadFromObj(data);
+   * ```
+   */
   loadFromObj(data: SceneData) {
     this.reset();
     SceneSerializer.deserialize(data, this);

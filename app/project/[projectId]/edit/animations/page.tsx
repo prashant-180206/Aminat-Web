@@ -67,17 +67,19 @@ const AnimationsTab: React.FC = () => {
   };
 
   return (
-    <div className="h-full overflow-auto no-scrollbar w-full flex flex-col bg-card">
-      {/* Header */}
-      <div className="px-4 py-3 border-b bg-muted/30">
-        <h2 className="font-semibold text-sm">Add Animation</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">
+    <div className="h-full overflow-hidden no-scrollbar w-full flex flex-col bg-card">
+      {/* Header - Responsive padding */}
+      <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border-b bg-muted/30 flex-shrink-0">
+        <h2 className="font-semibold text-xs sm:text-sm md:text-base leading-tight">
+          Add Animation
+        </h2>
+        <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 leading-tight">
           Configure and stage animations
         </p>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="p-4 flex flex-col gap-4">
+        <div className="p-1.5 sm:p-2 md:p-4 flex flex-col gap-2 sm:gap-3 md:gap-4">
           {/* Target Object */}
           <TargetObjectCard
             activeMobjectId={activeMobjectId}

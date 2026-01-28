@@ -6,10 +6,37 @@ import SliderInput from "../input/sliderInput";
 import { c2p } from "@/core/utils/conversion";
 import { CircleArrowOutDownRight } from "lucide-react";
 
+/**
+ * Properties interface for Dot Mobject.
+ * Extends base properties with dot-specific properties.
+ */
 export interface DotProperties extends BaseProperties {
+  /** Radius of the dot circle */
   radius: number;
+  /** Label configuration */
   label: Label;
 }
+
+/**
+ * Controller for Dot Mobject properties.
+ *
+ * Manages the state and behavior of a Dot, including:
+ * - Circle radius
+ * - Label text and positioning
+ * - All base properties (position, color, scale, etc.)
+ *
+ * @extends BaseProperty
+ *
+ * @example
+ * ```typescript
+ * const dot = new Dot("Dot");
+ * dot.features.update({
+ *   radius: 20,
+ *   color: "#ff0000",
+ *   label: { labelText: "A" }
+ * });
+ * ```
+ */
 export class DotProperty extends BaseProperty {
   protected radius: number = 10;
   protected label: LabelProperty;
@@ -28,6 +55,13 @@ export class DotProperty extends BaseProperty {
       .replace("posy", this.position.y.toFixed(1));
     this.labelobj.text(updatedLine);
   }
+  /**
+   * Update Dot properties and sync to Konva objects.
+   *
+   * Handles radius changes and label updates when position changes.
+   *
+   * @param prop - Partial properties to update
+   */
   override update(prop: Partial<DotProperties>): void {
     super.update(prop);
     if (prop.position !== undefined && this.label) {

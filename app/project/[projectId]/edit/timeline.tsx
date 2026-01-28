@@ -7,9 +7,9 @@ const TimeLine = () => {
   const { scene, animToggle } = useScene();
   void animToggle;
   return (
-    <div className="my-1 flex h-4 w-full px-4">
+    <div className="my-1 md:my-2 flex h-3 md:h-4 w-full px-2 md:px-4">
       <Progress
-        className="flex-1 "
+        className="flex-1"
         value={(scene?.animManager?.getProgress() ?? 0) * 100}
       />
     </div>

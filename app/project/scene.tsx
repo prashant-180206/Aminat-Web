@@ -22,7 +22,7 @@ export default function SceneView({ scaleFactor = 0.45 }: SceneViewProps) {
 
   return (
     <div
-      className="flex flex-row items-start justify-start bg-card border-2 border-border  overflow-hidden rounded-lg shadow-xl mx-4"
+      className=" aspect-video items-start justify-start bg-card border-2 border-border overflow-hidden rounded-lg shadow-xl"
       style={{
         height: DEFAULT_HEIGHT * scaleFactor,
         width: DEFAULT_WIDTH * scaleFactor,
@@ -31,7 +31,7 @@ export default function SceneView({ scaleFactor = 0.45 }: SceneViewProps) {
       <div
         ref={containerref}
         id="canvasParent"
-        className="inline-block "
+        className=""
         style={{
           height: DEFAULT_HEIGHT,
           width: DEFAULT_WIDTH,

@@ -33,7 +33,7 @@ const Controller = () => {
   };
 
   return (
-    <div className="flex items-center gap-0.5 rounded-md border bg-background px-1 shadow-sm">
+    <div className="flex items-center gap-0.5 rounded-md border bg-background px-0.5 md:px-1 shadow-sm">
       {/* Reverse */}
       <Tooltip>
         <TooltipTrigger asChild>
@@ -41,9 +41,9 @@ const Controller = () => {
             variant="ghost"
             size="icon"
             onClick={reverse}
-            className="h-6 w-6 p-0"
+            className="h-7 w-7 md:h-8 md:w-8 p-0"
           >
-            <Rewind className="h-3.5 w-3.5" />
+            <Rewind className="h-3 w-3 md:h-3.5 md:w-3.5" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">Reverse</TooltipContent>
@@ -56,15 +56,15 @@ const Controller = () => {
             variant="ghost"
             size="icon"
             onClick={play}
-            className="h-6 w-6 p-0"
+            className="h-7 w-7 md:h-8 md:w-8 p-0"
           >
-            <Play className="h-3.5 w-3.5" />
+            <Play className="h-3 w-3 md:h-3.5 md:w-3.5" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">Play</TooltipContent>
       </Tooltip>
 
-      <Separator orientation="vertical" className="mx-0.5 h-4" />
+      <Separator orientation="vertical" className="mx-0.5 h-3 md:h-4" />
 
       {/* Reset */}
       <Tooltip>
@@ -73,9 +73,9 @@ const Controller = () => {
             variant="ghost"
             size="icon"
             onClick={reset}
-            className="h-6 w-6 p-0"
+            className="h-7 w-7 md:h-8 md:w-8 p-0"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-3 w-3 md:h-3.5 md:w-3.5" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">Reset</TooltipContent>

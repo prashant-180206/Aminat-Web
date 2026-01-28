@@ -59,15 +59,19 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
   return (
     <TooltipProvider delayDuration={300}>
       <Collapsible
-        defaultOpen
-        className="transition-all ease-in-out duration-300"
+        defaultOpen={false}
+        className="transition-all ease-in-out duration-300 h-full"
       >
-        <div className=" flex h-full flex-1 flex-row bg-card border-r border-border">
-          {/* Icon Bar */}
-          <div className="flex flex-col p-2 gap-2 bg-muted/30">
+        <div className="flex h-full max-w-[320px] flex-row bg-card border-r border-border">
+          {/* Icon Bar - Vertical on all screens */}
+          <div className="flex flex-col p-1 sm:p-1.5 md:p-2 gap-1 sm:gap-1.5 md:gap-2 bg-muted/30 min-w-fit">
             <CollapsibleTrigger asChild>
-              <Button size="icon" variant="ghost" className="mb-2">
-                <Menu size={20} />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="mb-0.5 sm:mb-1 md:mb-2 h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 shrink-0"
+              >
+                <Menu size={16} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
               </Button>
             </CollapsibleTrigger>
 
@@ -78,14 +82,17 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
                     asChild
                     size="icon"
                     variant={isActive(item.route) ? "default" : "ghost"}
-                    className={
+                    className={`h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 shrink-0 ${
                       isActive(item.route)
                         ? "bg-primary text-primary-foreground"
                         : ""
-                    }
+                    }`}
                   >
                     <Link href={item.route} aria-label={item.label}>
-                      <item.icon size={20} />
+                      <item.icon
+                        size={16}
+                        className="sm:w-4 sm:h-4 md:w-5 md:h-5"
+                      />
                     </Link>
                   </Button>
                 </TooltipTrigger>
@@ -96,8 +103,8 @@ const EditSidebar: React.FC<SidebarProps> = ({ children }) => {
             ))}
           </div>
 
-          {/* Collapsible Content Panel */}
-          <CollapsibleContent className="w-[280px] h-full border-l border-border">
+          {/* Collapsible Content Panel - Responsive width */}
+          <CollapsibleContent className="w-full sm:w-60 md:w-64 lg:w-full xl:w-80 h-full border-l border-border overflow-hidden">
             {children}
           </CollapsibleContent>
         </div>

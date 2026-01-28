@@ -53,12 +53,13 @@ const PropertiesEditor = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl  px-6 py-6">
+    <div className="w-full max-w-5xl px-2 md:px-6 py-2 md:py-6">
       {/* Canvas-style container */}
-      <div className="rounded-xl bg-muted/20 border p-2">
-        <div className="flex flex-wrap items-center gap-4 justify-center">
-          <div className="flex bg-card rounded-lg h-8 border px-4 items-center">
-            ID : {activeMobject.id()}
+      <div className="rounded-lg md:rounded-xl bg-muted/20 border p-2 md:p-3">
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 justify-center">
+          <div className="flex bg-card rounded-md md:rounded-lg h-7 md:h-8 border px-2 md:px-4 items-center text-xs md:text-sm">
+            <span className="hidden sm:inline">ID : </span>
+            {activeMobject.id()}
           </div>
 
           {...activeMobject
@@ -68,52 +69,56 @@ const PropertiesEditor = () => {
           <Button
             variant="secondary"
             size="sm"
-            className="gap-2"
+            className="gap-1 md:gap-2 h-7 md:h-8 px-2 md:px-3"
             onClick={() => {
               if (scene && scene.activeMobject) {
                 duplicate();
               }
             }}
           >
-            <Copy className="h-4 w-4" />
+            <Copy className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline text-xs">Duplicate</span>
           </Button>
           <Button
             variant="secondary"
             size="sm"
-            className="gap-2"
+            className="gap-1 md:gap-2 h-7 md:h-8 px-2 md:px-3"
             onClick={() => {
               if (scene && scene.activeMobject) {
                 quickAnimate();
               }
             }}
           >
-            <SquarePlay className="h-4 w-4" />
+            <SquarePlay className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline text-xs">Animate</span>
           </Button>
           <Button
             variant="secondary"
             size="sm"
-            className="gap-2"
+            className="gap-1 md:gap-2 h-7 md:h-8 px-2 md:px-3"
             onClick={() => {
               if (scene && scene.activeMobject) {
                 quickFocus();
               }
             }}
           >
-            <Spotlight className="h-4 w-4" />
+            <Spotlight className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline text-xs">Focus</span>
           </Button>
           <Button
             variant="destructive"
             size="sm"
-            className="gap-2"
+            className="gap-1 md:gap-2 h-7 md:h-8 px-2 md:px-3"
             onClick={() => {
               if (scene && scene.activeMobject) {
-                scene.removeMobject(scene.activeMobject.id());
+                scene.removeMobject(activeMobject.id());
                 setActiveMobject(null);
                 setActiveMobjectId(null);
               }
             }}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline text-xs">Delete</span>
           </Button>
         </div>
       </div>
