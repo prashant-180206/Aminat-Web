@@ -16,8 +16,8 @@ export default function About() {
               About Animat
             </h1>
             <p className="text-xl text-txt-sec">
-              The browser-based animation toolkit for mathematical
-              visualizations
+              A browser-based platform for creating, teaching, and learning
+              mathematical visualizations
             </p>
           </div>
 
@@ -26,7 +26,7 @@ export default function About() {
             <div className="space-y-6 text">
               <p>
                 <strong>Animat Web</strong> is an interactive, browser-based
-                animation toolkit focused on mathematical visualizations,
+                animation platform focused on mathematical visualizations,
                 inspired by <strong>Manim</strong>. It leverages Konva for 2D
                 canvas rendering and a composable mobject class system to build
                 scenes with shapes, vectors, curves, text, and coordinate
@@ -38,7 +38,9 @@ export default function About() {
                 <strong>approachable and intuitive</strong>. Instead of writing
                 code for every animation, users can use our visual editor to
                 craft beautiful visualizations while expressing positions and
-                sizes in a centered math coordinate system.
+                sizes in a centered math coordinate system. Teachers can curate
+                lessons and publish them to the learning module where students
+                explore tutorials and take assessments.
               </p>
 
               <h3 className="text-2xl font-bold text-gray-900 mt-8">
@@ -71,6 +73,20 @@ export default function About() {
                   <span>
                     <strong>Interactive:</strong> Real-time preview with instant
                     feedback
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
+                  <span>
+                    <strong>Teacher-Ready:</strong> Publish lessons and manage
+                    content directly in the portal
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
+                  <span>
+                    <strong>Student-Focused:</strong> A learning module built
+                    for structured tutorials and tests
                   </span>
                 </li>
               </ul>

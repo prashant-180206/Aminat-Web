@@ -5,12 +5,21 @@ import User from "@/lib/models/User";
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, password, role } = await request.json();
 
     // Validation
     if (!name || !email || !password) {
       return NextResponse.json(
         { message: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
+    // Validate role
+    const validRoles = ["student", "teacher", "admin"];
+    if (role && !validRoles.includes(role)) {
+      return NextResponse.json(
+        { message: "Invalid role specified" },
         { status: 400 },
       );
     }
@@ -42,6 +51,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       password: hashedPassword,
+      role: role || "student", // Default to student if no role provided
     });
 
     await newUser.save();

@@ -11,6 +11,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# agents 
+/.agents/
+/.agent/
+/.gemini/
+/.github/
 # testing
 /coverage
 

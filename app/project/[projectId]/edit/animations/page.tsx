@@ -69,7 +69,7 @@ const AnimationsTab: React.FC = () => {
   return (
     <div className="h-full overflow-hidden no-scrollbar w-full flex flex-col bg-card">
       {/* Header - Responsive padding */}
-      <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border-b bg-muted/30 flex-shrink-0">
+      <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border-b bg-muted/30 shrink-0">
         <h2 className="font-semibold text-xs sm:text-sm md:text-base leading-tight">
           Add Animation
         </h2>

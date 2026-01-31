@@ -20,7 +20,7 @@ export default function SettingsPage() {
   return (
     <div className="h-full w-full flex flex-col bg-card overflow-auto no-scrollbar">
       {/* Header */}
-      <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border-b bg-muted/30 flex-shrink-0">
+      <div className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border-b bg-muted/30 shrink-0">
         <h1 className="font-semibold text-xs sm:text-sm md:text-base leading-tight">
           Settings
         </h1>

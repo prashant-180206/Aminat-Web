@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Sparkles, Github } from "lucide-react";
+import { Sparkles, Github, GraduationCap, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
 const SignUp = () => {
@@ -18,6 +18,7 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "student" as "student" | "teacher",
     agreeToTerms: false,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +70,7 @@ const SignUp = () => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          role: formData.role,
         }),
       });
 
@@ -185,6 +187,75 @@ const SignUp = () => {
                 className="mt-2"
                 required
               />
+            </div>
+
+            {/* Role Selection */}
+            <div>
+              <Label className="text-txt-sec mb-3 block">I am a</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, role: "student" }))
+                  }
+                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                    formData.role === "student"
+                      ? "border-blue-600 bg-blue-50 dark:bg-blue-950"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <GraduationCap
+                    className={`w-6 h-6 ${
+                      formData.role === "student"
+                        ? "text-blue-600"
+                        : "text-gray-500"
+                    }`}
+                  />
+                  <span
+                    className={`text-sm font-medium ${
+                      formData.role === "student"
+                        ? "text-blue-600"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Student
+                  </span>
+                  <span className="text-xs text-muted-foreground text-center">
+                    Learn and practice math
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, role: "teacher" }))
+                  }
+                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                    formData.role === "teacher"
+                      ? "border-blue-600 bg-blue-50 dark:bg-blue-950"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <BookOpen
+                    className={`w-6 h-6 ${
+                      formData.role === "teacher"
+                        ? "text-blue-600"
+                        : "text-gray-500"
+                    }`}
+                  />
+                  <span
+                    className={`text-sm font-medium ${
+                      formData.role === "teacher"
+                        ? "text-blue-600"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Teacher
+                  </span>
+                  <span className="text-xs text-muted-foreground text-center">
+                    Create and manage content
+                  </span>
+                </button>
+              </div>
             </div>
 
             {/* Email */}

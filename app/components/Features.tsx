@@ -2,7 +2,14 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Zap, Pencil, Sparkles, Infinity, Code2, Layers } from "lucide-react";
+import {
+  Zap,
+  Pencil,
+  Sparkles,
+  Infinity,
+  GraduationCap,
+  School,
+} from "lucide-react";
 
 const Features = () => {
   const features = [
@@ -10,36 +17,34 @@ const Features = () => {
       icon: Pencil,
       title: "Interactive Editor",
       description:
-        "Intuitive UI to add shapes, curves, and text with real-time preview",
+        "Build scenes visually with mobjects, properties, and live preview.",
     },
     {
       icon: Zap,
-      title: "Fast Rendering",
-      description: "Powered by Konva for smooth 2D canvas performance",
+      title: "High-Performance Canvas",
+      description: "Konva-powered rendering for smooth, responsive editing.",
     },
     {
       icon: Sparkles,
       title: "Math-First Coordinates",
-      description:
-        "Work in centered math coordinates, not pixels. Intuitive and natural.",
+      description: "Work in centered math coordinates instead of pixel space.",
     },
     {
       icon: Infinity,
-      title: "Animated Trackers",
+      title: "Trackers & Expressions",
       description:
-        "Value and point trackers with sliders for dynamic parameter control",
+        "Bind properties to dynamic values, sliders, and expressions.",
     },
     {
-      icon: Code2,
-      title: "Extensible",
+      icon: School,
+      title: "Teacher Portal",
       description:
-        "Composable mobject system with typed properties and uniform APIs",
+        "Create topics, subtopics, tutorials, and tests with publish control.",
     },
     {
-      icon: Layers,
-      title: "Property Keyframing",
-      description:
-        "Timeline-based animations with frame-level control coming soon",
+      icon: GraduationCap,
+      title: "Learning Module",
+      description: "Deliver published lessons and assessments to students.",
     },
   ];
 

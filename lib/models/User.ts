@@ -12,8 +12,13 @@ const userSchema = new mongoose.Schema(
     password: String,
     emailVerified: Date,
     image: String,
+    role: {
+      type: String,
+      enum: ["student", "teacher", "admin"],
+      default: "student",
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

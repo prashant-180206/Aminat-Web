@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "remotion:studio": "remotion studio",
+    "remotion:render": "remotion render"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.1",
@@ -29,6 +31,8 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@remotion/cli": "^4.0.410",
+    "@remotion/player": "^4.0.410",
     "@tanstack/react-query": "^5.90.16",
     "@types/mathjs": "^9.4.1",
     "animejs": "^4.2.2",
@@ -50,10 +54,12 @@
     "react-dom": "19.2.1",
     "react-konva": "^19.2.1",
     "react-mathquill": "^1.0.4",
+    "remotion": "^4.0.410",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@remotion/eslint-plugin": "^4.0.410",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",

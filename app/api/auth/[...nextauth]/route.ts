@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {
@@ -50,6 +50,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image,
+          role: user.role || "student",
         };
       },
     }),
@@ -59,17 +60,49 @@ export const authOptions: NextAuthOptions = {
     error: "/auth/signin",
   },
   callbacks: {
-    // 1. Save the user ID into the JWT token right after sign in
-    async jwt({ token, user }) {
+    // Handle sign in and set default role for OAuth users
+    async signIn({ user, account }) {
+      // For OAuth providers (GitHub), ensure user has a role
+      if (account?.provider !== "credentials") {
+        await connectDB();
+        const dbUser = await User.findOne({ email: user.email });
+        if (dbUser && !dbUser.role) {
+          dbUser.role = "student";
+          await dbUser.save();
+        }
+      }
+      return true;
+    },
+    // 1. Save the user ID and role into the JWT token right after sign in
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
+        // Fetch role from database for OAuth users
+        if (!user.role) {
+          await connectDB();
+          const dbUser = await User.findOne({ email: user.email });
+          token.role = dbUser?.role || "student";
+        } else {
+          token.role = user.role;
+        }
+      }
+      // Update role if session update is triggered
+      if (trigger === "update" && session?.role) {
+        token.role = session.role;
       }
       return token;
     },
-    // 2. Pass the ID from the token into the session object for the client
+    // 2. Pass the ID and role from the token into the session object for the client
     async session({ session, token }): Promise<Session> {
-      if (session.user && token.id) {
-        (session.user as { id: string }).id = token.id as string;
+      if (session.user) {
+        if (token.id) {
+          (session.user as { id: string; role: string }).id =
+            token.id as string;
+        }
+        if (token.role) {
+          (session.user as { id: string; role: string }).role =
+            token.role as string;
+        }
       }
       return session;
     },

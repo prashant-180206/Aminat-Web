@@ -8,27 +8,27 @@ const HowItWorks = () => {
   const steps = [
     {
       number: 1,
-      title: "Create a Scene",
+      title: "Build in the Editor",
       description:
-        "Start with a blank canvas. The editor provides a centered math coordinate system by default.",
+        "Create scenes with mobjects, trackers, and real-time property editing.",
     },
     {
       number: 2,
-      title: "Add Mobjects",
+      title: "Organize in Teacher Portal",
       description:
-        "Insert shapes, curves, text, and vectors from the sidebar. Each object has typed properties.",
+        "Create topics, subtopics, tutorials, and tests for structured lessons.",
     },
     {
       number: 3,
-      title: "Edit Properties",
+      title: "Publish Content",
       description:
-        "Adjust position, color, scale, rotation, and more in real-time with instant preview.",
+        "Toggle publish to make content visible in the learning module.",
     },
     {
       number: 4,
-      title: "Animate & Control",
+      title: "Students Learn",
       description:
-        "Use value/point trackers and sliders to control animations dynamically with expressions.",
+        "Students browse lessons, follow tutorials, and take assessments.",
     },
   ];
 
@@ -74,9 +74,9 @@ const HowItWorks = () => {
         {/* Benefits */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
+            "Editor, teacher portal, and learning module in one app",
+            "Role-based access for students and teachers",
             "Works entirely in your browser",
-            "No installation required",
-            "Built on modern tech stack",
           ].map((benefit, idx) => (
             <div key={idx} className="flex items-center gap-3">
               <CheckCircle className="w-6 h-6 text-success shrink-0" />

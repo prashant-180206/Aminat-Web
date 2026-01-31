@@ -5,15 +5,33 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Sparkles } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
 
   const navItems = [
-    { href: "/#features", label: "Features" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/about", label: "About" },
+    { href: "/learn", label: "Learn", roles: ["student", "teacher", "admin"] },
+    { href: "/teacher", label: "Teacher", roles: ["teacher", "admin"] },
+    {
+      href: "/#features",
+      label: "Features",
+      roles: ["student", "teacher", "admin"],
+    },
+    {
+      href: "/pricing",
+      label: "Pricing",
+      roles: ["student", "teacher", "admin"],
+    },
+    { href: "/about", label: "About", roles: ["student", "teacher", "admin"] },
   ];
+
+  // Filter nav items based on user role
+  const visibleNavItems = navItems.filter(
+    (item) => !userRole || item.roles.includes(userRole),
+  );
 
   return (
     <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
@@ -29,14 +47,14 @@ const Navigation = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <a
+            {visibleNavItems.map((item) => (
+              <Link
                 key={item.href}
                 href={item.href}
                 className="text-foreground hover:text-primary transition"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -59,7 +77,7 @@ const Navigation = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="flex flex-col gap-6 mt-8">
-                {navItems.map((item) => (
+                {visibleNavItems.map((item) => (
                   <a
                     key={item.href}
                     href={item.href}
