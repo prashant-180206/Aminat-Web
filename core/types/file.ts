@@ -4,7 +4,8 @@ import { AnimStoreData } from "./animation";
 export interface MobjectData {
   properties: BaseProperties;
   id: string;
-  specificData?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  specificData?: any;
 }
 
 export interface SceneData {

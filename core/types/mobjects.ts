@@ -1,3 +1,4 @@
+import { Table } from "@/core/classes/mobjects/text/table";
 import { MArc } from "../classes/mobjects/geometric/arc";
 import { DoubleArrow, MVector } from "../classes/mobjects/geometric/vector";
 import { MNumberLine } from "../classes/mobjects/group/numberLine";
@@ -28,7 +29,8 @@ export type Mobject =
   | DynamicText
   | MDashedLine
   | MNumberLine
-  | MArc;
+  | MArc
+  | Table;
 
 export type MobjectMapType = {
   [key: string]: {

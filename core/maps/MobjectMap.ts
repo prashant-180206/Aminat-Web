@@ -22,6 +22,7 @@ import {
   RectangleHorizontal,
   Slash,
   SquareFunction,
+  Table2,
   TextInitial,
   TriangleDashed,
 } from "lucide-react";
@@ -32,6 +33,7 @@ import { DynamicText } from "../classes/mobjects/text/DynamicText";
 import { MDashedLine } from "../classes/mobjects/simple/dashedLine";
 import { MNumberLine } from "../classes/mobjects/group/numberLine";
 import { MArc } from "../classes/mobjects/geometric/arc";
+import { Table } from "@/core/classes/mobjects/text/table";
 
 const MobjectMap: MobjectMapType = {
   Circle: { func: () => new MCircle("Circle"), name: "Circle", Icon: Circle },
@@ -89,6 +91,11 @@ const MobjectMap: MobjectMapType = {
     func: () => new MArc("Arc"),
     name: "Arc",
     Icon: LoaderCircle,
+  },
+  Table: {
+    func: () => new Table("Table"),
+    name: "Table",
+    Icon: Table2,
   },
 };
 
