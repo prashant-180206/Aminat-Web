@@ -152,7 +152,7 @@ export class AnimGetter {
           args.toX = 0;
           args.toY = 0;
         }
-        const currentval = this.node.properties.position;
+        const currentval = this.node.features.getData().position;
         const easefunc = args.easing
           ? easings.eases[
               easingMap[args.easing] as keyof typeof easings.eases.in

@@ -14,14 +14,14 @@ export class TrackerConnector {
       this.node.features.update({
         position: {
           x: value,
-          y: this.node.properties.position.y,
+          y: this.node.features.getData().position.y,
         },
       });
     });
     this.connectorFuncs.set("y", (value: number) => {
       this.node.features.update({
         position: {
-          x: this.node.properties.position.x,
+          x: this.node.features.getData().position.x,
           y: value,
         },
       });

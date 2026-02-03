@@ -96,6 +96,7 @@ export class CurveProperty extends BaseProperty {
         prop.funcs.Xfunc,
         prop.funcs.Yfunc,
         this.parameterRange,
+        this.position,
       );
       this.updatePosCoords();
     }

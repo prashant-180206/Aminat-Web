@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useScene } from "@/hooks/SceneContext";
 import { AnimMeta, AnimFuncMeta } from "@/core/types/animation";
 import { toast } from "sonner";
@@ -78,69 +77,67 @@ const AnimationsTab: React.FC = () => {
         </p>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-1.5 sm:p-2 md:p-4 flex flex-col gap-2 sm:gap-3 md:gap-4">
-          {/* Target Object */}
-          <TargetObjectCard
-            activeMobjectId={activeMobjectId}
-            activeMobjectType={activeMobject?.getType()}
-          />
+      <div className="p-1.5 sm:p-2 md:p-4 flex flex-col gap-2 sm:gap-3 md:gap-4 overflow-auto no-scrollbar flex-1 ">
+        {/* Target Object */}
+        <TargetObjectCard
+          activeMobjectId={activeMobjectId}
+          activeMobjectType={activeMobject?.getType()}
+        />
 
-          {/* Animation Selection, Parameters, and Group Management */}
-          {activeMobjectId && (
-            <>
-              <AnimationSelector
-                animNames={animNames}
-                selectedAnim={selectedAnim}
-                onSelectAnim={selectAnim}
-              />
+        {/* Animation Selection, Parameters, and Group Management */}
+        {activeMobjectId && (
+          <>
+            <AnimationSelector
+              animNames={animNames}
+              selectedAnim={selectedAnim}
+              onSelectAnim={selectAnim}
+            />
 
-              <Separator />
+            <Separator />
 
-              {/* Parameters */}
-              <AnimationParameters
-                animMeta={animMeta}
-                inputObject={inputObject}
-                onInputChange={(key, value) =>
-                  setInputObject((prev) => ({
-                    ...prev,
-                    [key]: value,
-                  }))
+            {/* Parameters */}
+            <AnimationParameters
+              animMeta={animMeta}
+              inputObject={inputObject}
+              onInputChange={(key, value) =>
+                setInputObject((prev) => ({
+                  ...prev,
+                  [key]: value,
+                }))
+              }
+            />
+
+            <Button size="sm" onClick={addAnim} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Stage Animation
+            </Button>
+
+            <Separator />
+
+            {/* Staged Group */}
+            <StagedGroupList
+              animGroup={animGroup}
+              onRemoveAnim={(animId) => {
+                const anim = animGroup.find((a) => a.id === animId);
+                if (anim) {
+                  anim.anim.seek(anim.anim.duration); // fast-forward to end
+                  anim.anim.revert(); // detach callbacks
                 }
-              />
+                setAnimGroup((prev) => prev.filter((a) => a.id !== animId));
+              }}
+            />
 
-              <Button size="sm" onClick={addAnim} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Stage Animation
-              </Button>
-
-              <Separator />
-
-              {/* Staged Group */}
-              <StagedGroupList
-                animGroup={animGroup}
-                onRemoveAnim={(animId) => {
-                  const anim = animGroup.find((a) => a.id === animId);
-                  if (anim) {
-                    anim.anim.seek(anim.anim.duration); // fast-forward to end
-                    anim.anim.revert(); // detach callbacks
-                  }
-                  setAnimGroup((prev) => prev.filter((a) => a.id !== animId));
-                }}
-              />
-
-              <Button
-                onClick={addAnimGroup}
-                disabled={animGroup.length === 0}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add Group to Timeline
-              </Button>
-            </>
-          )}
-        </div>
-      </ScrollArea>
+            <Button
+              onClick={addAnimGroup}
+              disabled={animGroup.length === 0}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Group to Timeline
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 };

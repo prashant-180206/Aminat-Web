@@ -28,6 +28,7 @@ export class SceneSerializer {
       .forEach((entry) => {
         const mobject = scene.addMobject(entry.type, entry.mobject.id);
         mobject.loadFromObj(entry.mobject);
+        mobject.features.refresh();
       });
 
     /* ---------------- trackers ---------------- */

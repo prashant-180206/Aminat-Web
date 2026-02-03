@@ -77,7 +77,7 @@ export class BaseProperty {
     this.actualMobj.opacity(this.opacity);
     if (this.actualMobj && this.actualMobj.parent)
       this.actualMobj.zIndex(this.zindex);
-    this.actualMobj.on("dragmove", this.refresh.bind(this));
+    this.actualMobj.on("dragend", this.refresh.bind(this));
     this.update({
       position: this.position,
       color: this.color,
@@ -142,7 +142,7 @@ export class BaseProperty {
           this.actualMobj.zIndex(this.zindex);
       } catch {}
     }
-    this.refresh();
+    // this.refresh();
   }
 
   getUIComponents(): { name: string; component: React.ReactNode }[] {
@@ -299,7 +299,7 @@ export class BaseProperty {
    * Override in subclasses if you have additional properties to sync.
    */
   refresh() {
-    const pos = this.shapemobj.position();
+    const pos = this.actualMobj.position();
     this.position = c2p(pos.x, pos.y);
     this.scale = this.actualMobj.scaleX();
     this.rotation = this.actualMobj.rotation();

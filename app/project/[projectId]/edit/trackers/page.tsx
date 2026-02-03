@@ -20,8 +20,8 @@ const TrackersPage = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="value" className="w-full h-full flex flex-col">
-        <TabsList className="grid w-full grid-cols-2 h-7 sm:h-8 md:h-9 m-2 sm:m-3 md:m-4 mb-0 shrink-0">
+      <Tabs defaultValue="value" className="w-full h-full flex flex-col p-4 ">
+        <TabsList className="flex w-full h-7 sm:h-8 md:h-9  mb-0 shrink-0">
           <TabsTrigger
             value="value"
             className="text-[10px] sm:text-xs md:text-sm"
@@ -36,15 +36,15 @@ const TrackersPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto  mb-10">
           <TabsContent value="value" className="h-full mt-0 p-0">
-            <div className="h-full overflow-y-auto">
+            <div className="h-full overflow-y-auto no-scrollbar">
               <ValueTrackersTab />
             </div>
           </TabsContent>
 
           <TabsContent value="point" className="h-full mt-0 p-0">
-            <div className="h-full overflow-y-auto">
+            <div className="h-full overflow-y-auto no-scrollbar">
               <PointValueTrackersTab />
             </div>
           </TabsContent>

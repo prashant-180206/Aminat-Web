@@ -155,7 +155,7 @@ export class Table extends Konva.Group {
     };
   }
 
-  loadFromObj(obj: MobjectData & { specificData: { data: string[][] } }) {
+  loadFromObj(obj: MobjectData & { specificData?: { data: string[][] } }) {
     this.features.setData(obj.properties as TableProperties);
 
     const data = obj.specificData?.data ?? [];

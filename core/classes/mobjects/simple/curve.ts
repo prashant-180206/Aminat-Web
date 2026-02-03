@@ -7,6 +7,7 @@ import { MobjectData } from "@/core/types/file";
 import { MobjectAnimAdder } from "../../factories/mobjects/addAnimations";
 import { CurveProperties, CurveProperty } from "../../controllers/simple/curve";
 import { TrackerEndPointsAdder } from "../../factories/mobjects/addTrackerEndPoints";
+import { DEFAULT_SCALE } from "@/core/config";
 
 export class ParametricCurve extends Konva.Group {
   public animgetter: AnimGetter;
@@ -57,7 +58,12 @@ export class ParametricCurve extends Konva.Group {
     return this.features.getUIComponents();
   }
 
-  generateCurve(Xfunc: string, Yfunc: string, range: [number, number]) {
+  generateCurve(
+    Xfunc: string,
+    Yfunc: string,
+    range: [number, number],
+    position?: { x: number; y: number },
+  ) {
     const [tMin, tMax] = range;
     const samples = (tMax - tMin) * 30;
     const points: number[] = [];
@@ -77,8 +83,10 @@ export class ParametricCurve extends Konva.Group {
       }
 
       // Convert math coords to canvas coords, then offset by position
-      const canvasX = p2c(x, y).x - this.position().x;
-      const canvasY = p2c(x, y).y - this.position().y;
+      const canvasX =
+        p2c(x, y).x - (this.position().x - (position?.x ?? 0) * DEFAULT_SCALE);
+      const canvasY =
+        p2c(x, y).y - (this.position().y + (position?.y ?? 0) * DEFAULT_SCALE);
 
       points.push(canvasX, canvasY);
     }
